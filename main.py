@@ -4,7 +4,7 @@
 __author__ = 'cloudtogo'
 
 from flask import Flask
-
+from flask import render_template
 
 app = Flask(__name__)
 
@@ -13,12 +13,12 @@ app = Flask(__name__)
 # Push完成后回到Factory ( http://factory.cloudtogo.cn/project/blueprint?id=last )，用同样的方法发布一个新实例即可看到修改后的效果。
 
 
-
-
-
 @app.route('/')
-def hello():
-    return "hello world!!!!~!!!!!"
+@app.route('/index')
+def index():
+    user = {'nickname': 'Miguel'} # fake user
+    return render_template("index.html", title='Home', user=user)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
