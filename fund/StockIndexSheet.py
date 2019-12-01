@@ -1,0 +1,149 @@
+# -*- coding: utf-8 -*-
+
+import openpyxl
+from fund.StockIndex import StockIndex
+from fund.EastMoneyPushStockIndex import EastMoneyPushStockIndex
+from fund.JuheStockIndex import JuheStockIndex
+
+from openpyxl.styles import Border, Side
+from openpyxl.styles.colors import Color, BLUE, RED
+from openpyxl.styles.numbers import FORMAT_NUMBER_00
+
+STOCK_SHEET_NAME = "指数"
+
+CURRENT_INDEX_COLUMN = 6
+
+
+def clear_sheet_columns(work_sheet, row, column_start, column_num):
+    # 当前值相关信息清空
+    work_sheet.cell(column=6, row=row).value = None    # 点数清空
+    work_sheet.cell(column=7, row=row).hyperlink = None
+    work_sheet.cell(column=8, row=row).hyperlink = None
+    work_sheet.cell(column=9, row=row).hyperlink = None
+    work_sheet.cell(column=10, row=row).hyperlink = None
+
+    # 目标比例清空
+    work_sheet.cell(column=11, row=row).hyperlink = None
+    work_sheet.cell(column=14, row=row).hyperlink = None
+
+    # 自动生成极大极小值相关信息清空
+    for index in range(column_num):
+        work_sheet.cell(column=column_start + index, row=row).value = None
+        work_sheet.cell(column=column_start + index, row=row).border = None
+
+
+class StockIndexSheet(object):
+    def __init__(self, wb):
+        self.work_book = wb
+        self.sheet = wb[STOCK_SHEET_NAME]
+        # self.update_stock_index()
+
+    def update_stock_index(self):
+        row = 2
+        for col in self.sheet.iter_cols(min_row=row, max_col=1):
+            for cell in col:
+                fixed_info_column_start = 6
+                auto_extrema_column_start = fixed_info_column_start+12
+                clear_sheet_columns(self.sheet, row, auto_extrema_column_start, 80)  # 把80列清空，目前表格模板够用且留有余量
+
+                stock_index_id = str(cell.value)
+                stock_index = StockIndex(stock_index_id)
+                if not stock_index.initialize():
+                    eastmoney_stock_index = EastMoneyPushStockIndex(stock_index_id)
+                    if eastmoney_stock_index.initialize():
+                        self.sheet.cell(column=fixed_info_column_start, row=row).value = eastmoney_stock_index.current_index
+                        self.sheet.cell(column=fixed_info_column_start + 1,
+                                        row=row).value = eastmoney_stock_index.current_index_change_ratio
+                        self.sheet.cell(column=fixed_info_column_start + 5,
+                                        row=row).value = eastmoney_stock_index.current_index_time
+                    else:
+                        juhe_stock_index = JuheStockIndex(stock_index_id)
+                        if juhe_stock_index.initialize():
+                            self.sheet.cell(column=fixed_info_column_start,
+                                            row=row).value = juhe_stock_index.current_index
+                            self.sheet.cell(column=fixed_info_column_start + 1,
+                                            row=row).value = juhe_stock_index.current_index_change_ratio
+                            self.sheet.cell(column=fixed_info_column_start + 5,
+                                            row=row).value = juhe_stock_index.current_index_time
+                    row = row + 1
+                    continue
+                # self.sheet['B' + str(row)].value = stock_index.fund_name
+                # self.sheet['B' + str(row)].hyperlink = "http://fund.eastmoney.com/{}.html".format(stock_index_id)
+
+                self.sheet.cell(column=fixed_info_column_start, row=row).value = stock_index.current_index
+                self.sheet.cell(column=fixed_info_column_start + 1, row=row).value = stock_index.current_index_change_ratio
+                self.sheet.cell(column=fixed_info_column_start + 1, row=row).number_format = FORMAT_NUMBER_00
+                self.sheet.cell(column=fixed_info_column_start + 2, row=row).value = stock_index.continuous_days
+                self.sheet.cell(column=fixed_info_column_start + 3, row=row).value = stock_index.continuous_ratio
+                self.sheet.cell(column=fixed_info_column_start + 3, row=row).number_format = FORMAT_NUMBER_00
+                self.sheet.cell(column=fixed_info_column_start + 4, row=row).value = stock_index.current_amount
+                self.sheet.cell(column=fixed_info_column_start + 4, row=row).number_format = FORMAT_NUMBER_00
+                self.sheet.cell(column=fixed_info_column_start + 5, row=row).value = stock_index.current_index_time
+
+                if stock_index.recent_index_max is None:
+                    row = row + 1
+                    continue
+
+                # 后面是自动生成的极大极小值比例信息
+                column_start = auto_extrema_column_start
+                # print("fund.recent_ac_worth_max")
+                # print(fund.recent_ac_worth_max)
+                min_min_value = 99999  # 极小值中最小的一个
+                min_min_column = 0  # 极小值中最小的一个对应的列
+                max_max_value = 0  # 极大值中最大的一个
+                max_max_column = 0  # 极大值中最小的一个对应的列
+                index_max = list(stock_index.recent_index_max)
+                for min_item in stock_index.recent_index_min:
+                    max_item = None
+                    if len(index_max) > 0:
+                        max_item = index_max.pop(0)
+                    count,min_min_value,min_min_column,max_max_value,max_max_column = self.write_extrema_index(column_start, row, min_item, max_item, stock_index.current_index, min_min_value, min_min_column, max_max_value, max_max_column)
+                    column_start = column_start + count
+
+                side = Side(border_style='medium', color=Color(rgb=BLUE))
+                border = Border(left=side, right=side, top=side, bottom=side)
+                self.sheet.cell(column=min_min_column, row=row).border = border
+
+                side = Side(border_style='medium', color=Color(rgb=RED))
+                border = Border(left=side, right=side, top=side, bottom=side)
+                self.sheet.cell(column=max_max_column, row=row).border = border
+
+                row = row + 1
+
+    def write_extrema_index(self, column_start, row, min_data, max_data, current, min_value, min_column, max_value, max_column):
+        ratio = (min_data[1] - current) / current
+        self.sheet.cell(column=column_start, row=row).border = None  # 清除原来的框
+        self.sheet.cell(column=column_start, row=row).value = ratio * 100   # 换算成百分数
+        self.sheet.cell(column=column_start + 1, row=row).value = min_data[1]
+        self.sheet.cell(column=column_start + 2, row=row).value = min_data[0]
+        if min_data[1] < min_value:
+            min_value = min_data[1]
+            min_column = column_start
+        if max_data is not None:
+            ratio = (max_data[1] - current) / current
+            self.sheet.cell(column=column_start + 3, row=row).border = None
+            self.sheet.cell(column=column_start + 3, row=row).value = ratio * 100   # 换算成百分数
+            self.sheet.cell(column=column_start + 4, row=row).value = max_data[1]
+            self.sheet.cell(column=column_start + 5, row=row).value = max_data[0]
+            if max_data[1] > max_value:
+                max_value = max_data[1]
+                max_column = column_start + 3
+            return 6,min_value,min_column,max_value,max_column
+        return 6,min_value,min_column,max_value,max_column  # 把3改成6，无论是否有H的值，都把它的列空出来，避免H的列写L的值
+
+    def get_current_price(self, item_id):
+        for col in self.sheet.iter_cols(min_row=2, max_col=1):
+            for cell in col:
+                if cell.value == item_id:
+                    return self.sheet.cell(row=int(cell.row), column=CURRENT_INDEX_COLUMN).value
+        return None
+
+    def get_sheet_name(self):
+        return STOCK_SHEET_NAME
+
+
+if __name__ == '__main__':
+    wb = openpyxl.load_workbook('example_filetest.xlsx')
+    sheet = StockIndexSheet(wb)
+    print(sheet.get_current_price("NDX"))
+    # wb.save('example_filetest2.xlsx')

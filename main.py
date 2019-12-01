@@ -1,16 +1,14 @@
 #!flask/bin/python
 # -- coding: utf-8 --
 
-__author__ = 'cloudtogo'
+__author__ = 'jelly'
 
 from flask import Flask
 from flask import render_template
 
-app = Flask(__name__)
+from fund.FundHelper import update_work_book, str_to_bool
 
-# 请您来修正Hello, word的拼写错误吧！
-# 请在修改完成后，通过主菜单 Git/Commit ... 菜单项完成代码的Commit 和 Push。
-# Push完成后回到Factory ( http://factory.cloudtogo.cn/project/blueprint?id=last )，用同样的方法发布一个新实例即可看到修改后的效果。
+app = Flask(__name__)
 
 
 @app.route('/')
@@ -18,6 +16,13 @@ app = Flask(__name__)
 def index():
     user = {'nickname': 'Miguel'} # fake user
     return render_template("index.html", title='Home', user=user)
+
+
+@app.route('/update-excel/')
+@app.route('/update-excel/<fast_run>')
+def update_excel(fast_run='True'):
+    update_work_book('example_filetest.xlsx', str_to_bool(fast_run))
+    return 'Click.' + fast_run
 
 
 if __name__ == '__main__':

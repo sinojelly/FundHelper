@@ -1,1 +1,14 @@
 flask
+openpyxl
+requests
+PyExecJs
+numpy
+scipy
+tushare
+lxml
+PyTz
+pandas
+bs4
+PyParsing
+matplotlib
+
