@@ -58,5 +58,17 @@ def progress(thread_id):
     return str(exporting_threads[thread_id].progress)
 
 
+@app.route('/form_data', methods=['GET', 'POST'])
+def form_data():
+    if request.method=='GET':
+        username = request.args.get("username")
+        #dumps和loads方法，来自json模块，而json模块是python中的，可以直接导入：
+        #而jsonify是flask封装的扩展包
+        return jsonify({'status': '0', 'username': username, 'errmsg': '登录成功!'})
+    else:
+        username = request.form['username']
+        return jsonify({'status': '0', 'username': username, 'errmsg': '登录成功!'})
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
