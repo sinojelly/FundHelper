@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import openpyxl
-import fund.Fund
+from fund.Fund import Fund, timestamp2time
 from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
@@ -47,7 +47,7 @@ class FundSheet(object):
                 clear_sheet_columns(self.sheet, row, fixed_info_column_start, 80)  # 把80列清空，目前表格模板够用且留有余量
 
                 fund_id = str(cell.value)
-                fund = Fund.Fund(fund_id)
+                fund = Fund(fund_id)
                 if fund_id in invested_funds:
                     self.invested_funds_map[fund_id] = fund
                     # print("store invested fund", fund_id)
@@ -98,7 +98,7 @@ class FundSheet(object):
         self.sheet.cell(column=column_start, row=row).value = ratio * 100   # 换算成百分数
         self.sheet.cell(column=column_start, row=row).number_format = FORMAT_NUMBER_00
         self.sheet.cell(column=column_start + 1, row=row).value = min_data[1]
-        self.sheet.cell(column=column_start + 2, row=row).value = Fund.timestamp2time(min_data[0])
+        self.sheet.cell(column=column_start + 2, row=row).value = timestamp2time(min_data[0])
         if min_data[1] < min_value:
             min_value = min_data[1]
             min_column = column_start
@@ -108,7 +108,7 @@ class FundSheet(object):
             self.sheet.cell(column=column_start + 3, row=row).value = ratio * 100   # 换算成百分数
             self.sheet.cell(column=column_start + 3, row=row).number_format = FORMAT_NUMBER_00
             self.sheet.cell(column=column_start + 4, row=row).value = max_data[1]
-            self.sheet.cell(column=column_start + 5, row=row).value = Fund.timestamp2time(max_data[0])
+            self.sheet.cell(column=column_start + 5, row=row).value = timestamp2time(max_data[0])
             if max_data[1] > max_value:
                 max_value = max_data[1]
                 max_column = column_start + 3
