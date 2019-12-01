@@ -2,10 +2,10 @@
 
 import datetime
 import openpyxl
-import fund.FastFundSheet
-import fund.FundSheet
-import fund.StockIndexSheet
-import fund.InvestSheet
+from fund.FastFundSheet import FastFundSheet
+from fund.FundSheet import FundSheet
+from fund.StockIndexSheet import StockIndexSheet
+from fund.InvestSheet import InvestSheet
 
 import sys
 import getopt
@@ -19,19 +19,19 @@ def update_work_book(file, fast_run):
     starttime = datetime.datetime.now()
     wb = openpyxl.load_workbook(file)
 
-    invest_sheet = InvestSheet.InvestSheet(wb)
+    invest_sheet = InvestSheet(wb)
     invest_funds = invest_sheet.get_all_funds()
 
     if fast_run:
-        fund_sheet = FastFundSheet.FastFundSheet(wb)
+        fund_sheet = FastFundSheet(wb)
     else:
-        fund_sheet = FundSheet.FundSheet(wb)
+        fund_sheet = FundSheet(wb)
     fund_sheet.update_funds(invest_funds)
 
     end_funds_time = datetime.datetime.now()
     print("Finished update funds! It takes", (end_funds_time - starttime).seconds, "seconds.")
 
-    stock_index_sheet = StockIndexSheet.StockIndexSheet(wb)
+    stock_index_sheet = StockIndexSheet(wb)
     stock_index_sheet.update_stock_index()
 
     end_stock_index_time = datetime.datetime.now()

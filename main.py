@@ -21,7 +21,7 @@ def index():
 @app.route('/update-excel/')
 @app.route('/update-excel/<fast_run>')
 def update_excel(fast_run='True'):
-    update_work_book('example_filetest.xlsx', str_to_bool(fast_run))
+    update_work_book('fund/example_filetest.xlsx', str_to_bool(fast_run))
     return 'Click.' + fast_run
 
 
