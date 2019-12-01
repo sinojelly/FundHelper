@@ -3,7 +3,7 @@
 
 __author__ = 'jelly'
 
-from flask import Flask
+from flask import Flask, url_for, request, json, jsonify
 from flask import render_template
 
 from fund.FundHelper import update_work_book, str_to_bool
@@ -54,7 +54,7 @@ def update_excel(fast_run='True'):
 @app.route('/progress/<int:thread_id>')
 def progress(thread_id):
     global exporting_threads
-
+    print("in progress:", thread_id)
     return str(exporting_threads[thread_id].progress)
 
 
