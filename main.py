@@ -46,10 +46,9 @@ def index():
     return render_template("index.html", title='Home', user=user, thread_id=thread_id)
 
 
-@app.route('/update-excel/')
-@app.route('/update-excel/<fast_run>')
-def update_excel(fast_run='True'):
-    thread_id = random.randint(0, 10000)
+@app.route('/update-excel/<int:thread_id>/')
+@app.route('/update-excel/<int:thread_id>/<fast_run>')
+def update_excel(thread_id, fast_run='True'):
     print('update_excel thread id: #%s' % thread_id)
     progress_updater = make_progress_updater(thread_id)
     content = update_work_book('fund/example_filetest.xlsx', str_to_bool(fast_run), progress_updater)
