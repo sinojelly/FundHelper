@@ -28,9 +28,11 @@
 		worker();
 		function worker() {
 			$.get('progress/' + {{thread_id}}, function(data) {
-				if (data < 100) {
-				    $("#progress").append(data);
-					//progress_bar.set_progress(progress)
+			    current = data.current
+				total = data.total
+				$("#progress").append(current+"/"+total);
+				if (current < total) {
+				    $("#progress").append(" next ");
 					setTimeout(worker, 1000);
 				}
 			})

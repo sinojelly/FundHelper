@@ -35,12 +35,13 @@ class ExportingThread(threading.Thread):
 @app.route('/index')
 def index():
     user = {'nickname': 'Miguel'} # fake user
-    # return render_template("index.html", title='Home', user=user)
-    global exporting_threads
 
     thread_id = random.randint(0, 10000)
-    exporting_threads[thread_id] = ExportingThread()
-    exporting_threads[thread_id].start()
+
+    global progress_current
+    global progress_total
+    progress_current[thread_id] = 0
+    progress_total[thread_id] = 0
 
     print('task id: #%s' % thread_id)
     return render_template("index.html", title='Home', user=user, thread_id=thread_id)
@@ -60,11 +61,6 @@ def update_excel(thread_id, fast_run='True'):
 
 
 def make_progress_updater(thread_id):
-    global progress_current
-    global progress_total
-    progress_current[thread_id] = 0
-    progress_total[thread_id] = 0
-
     def update_progress(total=None):
         global progress_current
         progress_current[thread_id] += 1
@@ -77,9 +73,13 @@ def make_progress_updater(thread_id):
 
 @app.route('/progress/<int:thread_id>')
 def progress(thread_id):
-    global exporting_threads
-    print("in progress:", thread_id)
-    return str(exporting_threads[thread_id].progress)
+    global progress_current
+    global progress_total
+
+    print("get progress in thread:", thread_id)
+    # return str(exporting_threads[thread_id].progress)
+    result = {'current': progress_current[thread_id], 'total': progress_total[thread_id]}
+    return jsonify(result)
 
 
 @app.route('/form_data', methods=['GET', 'POST'])
