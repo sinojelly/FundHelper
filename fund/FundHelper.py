@@ -10,6 +10,7 @@ from fund.InvestSheet import InvestSheet
 import sys
 import getopt
 
+from io import BytesIO
 
 FAST_RUN = False
 
@@ -38,10 +39,15 @@ def update_work_book(file, fast_run):
     print("Finished update stock index! It takes", (end_stock_index_time - end_funds_time).seconds, "seconds.")
 
     invest_sheet.update_all_invests(fund_sheet, stock_index_sheet)
-    wb.save(file)
+    # wb.save(file)  # not save to the origin file
 
     endtime = datetime.datetime.now()
     print("Finished all! It takes", (endtime - starttime).seconds, "seconds.")
+
+    virtual_workbook = BytesIO()
+    wb.save(virtual_workbook)
+
+    return virtual_workbook.getvalue()   # 返回临时生成的文件内容，而不是修改文件。避免多应用访问把文件改乱
 
 
 def str_to_bool(str):
