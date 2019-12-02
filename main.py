@@ -61,6 +61,11 @@ def update_excel(thread_id, fast_run='True'):
 
 
 def make_progress_updater(thread_id):
+    global progress_current
+    global progress_total
+    progress_current[thread_id] = 0
+    progress_total[thread_id] = 0
+
     def update_progress(total=None):
         global progress_current
         progress_current[thread_id] += 1
