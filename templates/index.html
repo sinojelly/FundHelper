@@ -4,34 +4,20 @@
 	<meta charset=utf-8>
   </head>
   <body>
-      <h1>Fund Helper</h1>
-      <p>This web app is used to get fund information automatically!</p>
-	  <p>Thread Id: {{thread_id}}</p>
-	  <button formaction="/update-excel/{{thread_id}}/"  class="showProgress" type="submit" >Fast update</button><p>
-	  <button formaction="/update-excel/{{thread_id}}/<False>"  class="showProgress" type="submit" >All update</button><p>
-	  <button class="showProgress">Show progress</button>
-	  Progress:<div id="progress"></div>
-	  <p>Test ajax below:</p>
-	      <form action="/update-excel/{{thread_id}}/" method="get"> 
-    <label>Full update</label>
-    <input name="full_update" id="full_update" type="radio" value="True" /><br /> 
-    <input name="" type="button" class="showProgress" value="Update"/> 
+  <h1>Fund Helper</h1>
+  <p>This web app is used to get fund information automatically!</p>
+  <p>Thread Id: {{thread_id}}</p>
+	<form action="" method="get"> 
+		<label>Full update</label>
+		<input name="full_update" id="full_update" type="radio" value="True" /><br/> 
+		<input name="" type="button" class="showProgress" value="Update"/> 
     </form> 
-	  <form action='{{ url_for('form_data') }}' method="POST">
-    <input name="username" type="text"/>
-    <input type="submit">
-
-	</form>
-	<Br>
-	<input type="button" name="sendjson" value="提交" id="sendjson">
-	<div id="myDiv"></div>
+	Progress:<div id="progress"></div>
 	<script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
 	<script>
 	function check_progress() {
-	    //alert({{thread_id}});
 		$("#progress").append("start...0000....");
 		var full_update = $("#full_update[name='full_update']:checked").val();//获取当前选中的radio的值
-		//alert(full_update);
 		var download_url = "/update-excel/{{thread_id}}/False"
 		if (full_update === undefined) { // 未选中是undefined,选中是 True
 		   download_url = "/update-excel/{{thread_id}}/"
@@ -51,40 +37,6 @@
 		}
 	}
 	$(".showProgress").click(check_progress);
-		$("#sendjson").click(function () {
-			params = {"username": "lisi"}
-
-			{#$.getJSON("{{ url_for('form_data') }}",params, function (result) {#}
-			{#        $("#myDiv").append("hello world1");#}
-			{#        console.log(obj.username + "<br>");#}
-			{# });#}
-
-			{#$.ajax({#}
-			{#    "url": "{{ url_for('form_data') }}",#}
-			{#    "type": "POST",#}
-			{#    "data": params,#}
-			{#    "success": function (obj) {#}
-			{#        $("#myDiv").append("hello world")#}
-			{#        console.log(obj.username + "<br>")#}
-			{#    },#}
-			{#    "error": function (obj) {#}
-			{#        console.log(obj)#}
-			{#    },#}
-			{#    "dataType": "json",#}
-			{#    "async": true#}
-			{# });#}
-
-			{#$.get("{{ url_for('form_data') }}", params, function (obj) {#}
-			{#    $("#myDiv").append("hello world")#}
-			{#    console.log(obj.username + "<br>");#}
-			{# }, "json");#}
-
-			$.post("{{ url_for('form_data') }}", params, function (obj) {
-				$("#myDiv").append(obj.username + "<br>")
-				console.log(obj);
-			}, "json");
-		})
-		{#$('#sendjson').bind('click', submit_form);#}
 	</script>
   </body>
 </html>

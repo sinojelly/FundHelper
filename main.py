@@ -14,21 +14,9 @@ import time
 import datetime
 
 app = Flask(__name__)
-app.debug = True
-exporting_threads = {}
+
 progress_current = {}   # 当前处理到的步骤序号
 progress_total = {}     # 所有步骤总数
-
-class ExportingThread(threading.Thread):
-    def __init__(self):
-        self.progress = 0
-        super().__init__()
-
-    def run(self):
-        # Your exporting stuff goes here ...
-        for _ in range(10):
-            time.sleep(1)
-            self.progress += 10
 
 
 @app.route('/')
@@ -85,18 +73,6 @@ def progress(thread_id):
     # return str(exporting_threads[thread_id].progress)
     result = {'current': progress_current[thread_id], 'total': progress_total[thread_id]}
     return jsonify(result)
-
-
-@app.route('/form_data', methods=['GET', 'POST'])
-def form_data():
-    if request.method=='GET':
-        username = request.args.get("username")
-        #dumps和loads方法，来自json模块，而json模块是python中的，可以直接导入：
-        #而jsonify是flask封装的扩展包
-        return jsonify({'status': '0', 'username': username, 'errmsg': '登录成功!'})
-    else:
-        username = request.form['username']
-        return jsonify({'status': '0', 'username': username, 'errmsg': '登录成功!'})
 
 
 if __name__ == '__main__':
