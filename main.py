@@ -48,11 +48,16 @@ def index():
 
 
 @app.route('/update-excel/<int:thread_id>/')
-@app.route('/update-excel/<int:thread_id>/<fast_run>')
-def update_excel(thread_id, fast_run='True'):
-    print('update_excel thread id: #%s' % thread_id)
+def update_excel(thread_id, fast_run2='True'):
+    full_update = 'False'
+    if request.method == 'GET':
+        full_update = request.args.get("full_update")
+        if full_update is None:
+            full_update = 'False'
+        print("update_excel full_update =====", full_update)
+    print('update_excel thread id: #%s' % thread_id, "full update:", full_update)
     progress_updater = make_progress_updater(thread_id)
-    content = update_work_book('fund/example_filetest.xlsx', str_to_bool(fast_run), progress_updater)
+    content = update_work_book('fund/example_filetest.xlsx', not str_to_bool(full_update), progress_updater)
     file_name = datetime.datetime.now().strftime("Funds_%Y-%m-%d_%H_%M_%S.xlsx")
     response = make_response(content)
     response.headers["Content-Disposition"] = "attachment; filename=" + file_name
