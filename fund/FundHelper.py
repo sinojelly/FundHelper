@@ -15,7 +15,7 @@ from io import BytesIO
 FAST_RUN = False
 
 
-def update_work_book(file, fast_run):
+def update_work_book(file, fast_run, progress_updater):
     print("Start ...")
     starttime = datetime.datetime.now()
     wb = openpyxl.load_workbook(file)
@@ -27,13 +27,20 @@ def update_work_book(file, fast_run):
         fund_sheet = FastFundSheet(wb)
     else:
         fund_sheet = FundSheet(wb)
+
+    progress_updater(10)  # 更新步骤总数
+
     fund_sheet.update_funds(invest_funds)
+
+    progress_updater()   # 更新当前步骤
 
     end_funds_time = datetime.datetime.now()
     print("Finished update funds! It takes", (end_funds_time - starttime).seconds, "seconds.")
 
     stock_index_sheet = StockIndexSheet(wb)
     stock_index_sheet.update_stock_index()
+
+    progress_updater()  # 更新当前步骤
 
     end_stock_index_time = datetime.datetime.now()
     print("Finished update stock index! It takes", (end_stock_index_time - end_funds_time).seconds, "seconds.")

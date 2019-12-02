@@ -16,7 +16,8 @@ import datetime
 app = Flask(__name__)
 app.debug = True
 exporting_threads = {}
-
+progress_current = {}   # 当前处理到的步骤序号
+progress_total = {}     # 所有步骤总数
 
 class ExportingThread(threading.Thread):
     def __init__(self):
@@ -48,12 +49,31 @@ def index():
 @app.route('/update-excel/')
 @app.route('/update-excel/<fast_run>')
 def update_excel(fast_run='True'):
-    content = update_work_book('fund/example_filetest.xlsx', str_to_bool(fast_run))
+    thread_id = random.randint(0, 10000)
+    print('update_excel thread id: #%s' % thread_id)
+    progress_updater = make_progress_updater(thread_id)
+    content = update_work_book('fund/example_filetest.xlsx', str_to_bool(fast_run), progress_updater)
     file_name = datetime.datetime.now().strftime("Funds_%Y-%m-%d_%H_%M_%S.xlsx")
     response = make_response(content)
     response.headers["Content-Disposition"] = "attachment; filename=" + file_name
     response.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     return response
+
+
+def make_progress_updater(thread_id):
+    global progress_current
+    global progress_total
+    progress_current[thread_id] = 0
+    progress_total[thread_id] = 0
+
+    def update_progress(total=None):
+        global progress_current
+        progress_current[thread_id] += 1
+        if total is not None:
+            global progress_total
+            progress_total[thread_id] = total
+        print("thread:", thread_id, "total:", progress_total[thread_id], "current:", progress_current[thread_id])
+    return update_progress
 
 
 @app.route('/progress/<int:thread_id>')
