@@ -12,6 +12,11 @@
 	  <button class="showProgress">Show progress</button>
 	  Progress:<div id="progress"></div>
 	  <p>Test ajax below:</p>
+	      <form action="/update-excel/{{thread_id}}/" method="get"> 
+    <label>Fast update</label>
+    <input name="" type="radio" value="" /><br /> 
+    <input name="" type="submit" value="Update" class="showProgress"/> 
+    </form> 
 	  <form action='{{ url_for('form_data') }}' method="POST">
     <input name="username" type="text"/>
     <input type="submit">
@@ -25,7 +30,7 @@
 	function check_progress() {
 	    //alert({{thread_id}});
 		$("#progress").append("start...");
-		window.location.href = "/update-excel/{{thread_id}}/";
+		//window.location.href = "/update-excel/{{thread_id}}/";
 		worker();
 		function worker() {
 			$.get('progress/' + {{thread_id}}, function(data) {
