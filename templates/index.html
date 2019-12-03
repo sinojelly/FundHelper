@@ -12,11 +12,12 @@
 		<input name="full_update" id="full_update" type="radio" value="True" /><br/> 
 		<input name="" type="button" class="showProgress" value="Update"/> 
     </form> 
-	Progress:<div id="progress"></div>
+	<div id="progress"></div>
+	<div id="timeCost"></div>
 	<script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
 	<script>
 	function check_progress() {
-		$("#progress").append("Start...");
+		$("#progress").text("Progress: Start...");
 		var full_update = $("#full_update[name='full_update']:checked").val();//获取当前选中的radio的值
 		var download_url = "/update-excel/{{thread_id}}/False"
 		if (full_update === undefined) { // 未选中是undefined,选中是 True
@@ -29,7 +30,11 @@
 			    current = data.current
 				total = data.total
 				if (total > 0 && current <= total) {
-				    $("#progress").text(current+"/"+total);
+				    $("#progress").text("Progress: " + current+"/"+total);
+				}
+				time = data.time
+				if (time > 0) {
+				    $("#timeCost").text("Total time : " + time + " seconds.");
 				}
 				if (current < total || total == 0) {
 					setTimeout(worker, 1000);

@@ -43,6 +43,7 @@ def update_work_book(file, fast_run, progress_updater):
     stock_index_sheet.update_stock_index(progress_updater)
 
     end_stock_index_time = datetime.datetime.now()
+
     print("Finished update stock index! It takes", (end_stock_index_time - end_funds_time).seconds, "seconds.")
 
     invest_sheet.update_all_invests(fund_sheet, stock_index_sheet)

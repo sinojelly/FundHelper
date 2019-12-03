@@ -17,6 +17,7 @@ app = Flask(__name__)
 
 progress_current = {}   # 当前处理到的步骤序号
 progress_total = {}     # 所有步骤总数
+progress_start_time = {}      # 记录开始时间
 
 
 @app.route('/')
@@ -28,8 +29,10 @@ def index():
 
     global progress_current
     global progress_total
+    global progress_start_time
     progress_current[thread_id] = 0
     progress_total[thread_id] = 0
+    progress_start_time[thread_id] = None
 
     print('task id: #%s' % thread_id)
     return render_template("index.html", title='Home', user=user, thread_id=thread_id)
@@ -59,7 +62,9 @@ def make_progress_updater(thread_id):
         progress_current[thread_id] += 1
         if total is not None:
             global progress_total
+            global progress_start_time
             progress_total[thread_id] = total
+            progress_start_time[thread_id] = datetime.datetime.now()
         if finished and progress_current[thread_id] != progress_total[thread_id]:
             print("Finished! current =", progress_current[thread_id], "total =", progress_total[thread_id])
             progress_current[thread_id] = progress_total[thread_id]
@@ -74,7 +79,9 @@ def progress(thread_id):
 
     print("get progress in thread:", thread_id)
     # return str(exporting_threads[thread_id].progress)
-    result = {'current': progress_current[thread_id], 'total': progress_total[thread_id]}
+    result = {'current': progress_current[thread_id], 'total': progress_total[thread_id], 'time': 0}
+    if progress_current[thread_id] >= progress_total[thread_id] and progress_start_time[thread_id] is not None:
+        result['time'] = (datetime.datetime.now() - progress_start_time[thread_id]).seconds
     return jsonify(result)
 
 
