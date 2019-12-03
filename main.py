@@ -43,8 +43,13 @@ def index():
 def update_excel(thread_id, fast_run='True'):
     print('update_excel thread id: #%s' % thread_id, "fast_run:", fast_run)
     progress_updater = make_progress_updater(thread_id)
-    content = update_work_book('fund/example_filetest.xlsx', str_to_bool(fast_run), progress_updater)
+    is_fast_run = str_to_bool(fast_run)
+    content = update_work_book('fund/example_filetest.xlsx', is_fast_run, progress_updater)
     file_name = datetime.datetime.now().strftime("Funds_%Y-%m-%d_%H_%M_%S.xlsx")
+    if is_fast_run:
+        file_name = "Fast_" + file_name
+    else:
+        file_name = "Full_" + file_name
     response = make_response(content)
     response.headers["Content-Disposition"] = "attachment; filename=" + file_name
     response.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
