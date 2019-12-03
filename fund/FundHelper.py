@@ -27,26 +27,28 @@ def update_work_book(file, fast_run, progress_updater):
         fund_sheet = FastFundSheet(wb)
     else:
         fund_sheet = FundSheet(wb)
+    stock_index_sheet = StockIndexSheet(wb)
 
-    progress_updater(10)  # 更新步骤总数
+    fund_sheet_row_count = fund_sheet.get_row_count()
+    stock_index_sheet_row_count = stock_index_sheet.get_row_count()
+    step_count = fund_sheet_row_count + stock_index_sheet_row_count + 1  # invest sheet更新作为1步
 
-    fund_sheet.update_funds(invest_funds)
+    progress_updater(total=step_count)  # 更新步骤总数
 
-    progress_updater()   # 更新当前步骤
+    fund_sheet.update_funds(invest_funds, progress_updater)
 
     end_funds_time = datetime.datetime.now()
     print("Finished update funds! It takes", (end_funds_time - starttime).seconds, "seconds.")
 
-    stock_index_sheet = StockIndexSheet(wb)
-    stock_index_sheet.update_stock_index()
-
-    progress_updater()  # 更新当前步骤
+    stock_index_sheet.update_stock_index(progress_updater)
 
     end_stock_index_time = datetime.datetime.now()
     print("Finished update stock index! It takes", (end_stock_index_time - end_funds_time).seconds, "seconds.")
 
     invest_sheet.update_all_invests(fund_sheet, stock_index_sheet)
     # wb.save(file)  # not save to the origin file
+
+    progress_updater(finished=True)  # 更新当前步骤，并且表明已经结束
 
     endtime = datetime.datetime.now()
     print("Finished all! It takes", (endtime - starttime).seconds, "seconds.")

@@ -38,7 +38,7 @@ class StockIndexSheet(object):
         self.sheet = wb[STOCK_SHEET_NAME]
         # self.update_stock_index()
 
-    def update_stock_index(self):
+    def update_stock_index(self, progress_updater):
         row = 2
         for col in self.sheet.iter_cols(min_row=row, max_col=1):
             for cell in col:
@@ -65,6 +65,7 @@ class StockIndexSheet(object):
                                             row=row).value = juhe_stock_index.current_index_change_ratio
                             self.sheet.cell(column=fixed_info_column_start + 5,
                                             row=row).value = juhe_stock_index.current_index_time
+                    progress_updater()
                     row = row + 1
                     continue
                 # self.sheet['B' + str(row)].value = stock_index.fund_name
@@ -81,6 +82,7 @@ class StockIndexSheet(object):
                 self.sheet.cell(column=fixed_info_column_start + 5, row=row).value = stock_index.current_index_time
 
                 if stock_index.recent_index_max is None:
+                    progress_updater()
                     row = row + 1
                     continue
 
@@ -108,6 +110,7 @@ class StockIndexSheet(object):
                 border = Border(left=side, right=side, top=side, bottom=side)
                 self.sheet.cell(column=max_max_column, row=row).border = border
 
+                progress_updater()
                 row = row + 1
 
     def write_extrema_index(self, column_start, row, min_data, max_data, current, min_value, min_column, max_value, max_column):
@@ -140,6 +143,9 @@ class StockIndexSheet(object):
 
     def get_sheet_name(self):
         return STOCK_SHEET_NAME
+
+    def get_row_count(self):
+        return self.sheet.max_row - 1  # 去掉表头
 
 
 if __name__ == '__main__':

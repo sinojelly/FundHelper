@@ -13,7 +13,7 @@ class FastFundSheet(object):
         self.sheet = wb[FUND_SHEET_NAME]
         # self.update_funds(None)
 
-    def update_funds(self, invest_funds):
+    def update_funds(self, invest_funds, progress_updater):
         row = 2
         for col in self.sheet.iter_cols(min_row=row, max_col=1):
             for cell in col:
@@ -23,6 +23,7 @@ class FastFundSheet(object):
                 fund_id = str(cell.value)
                 fund = FastFund(fund_id)
                 if not fund.initialize():
+                    progress_updater()
                     row = row + 1
                     continue
 
@@ -37,6 +38,7 @@ class FastFundSheet(object):
                 self.sheet.cell(column=fixed_info_column_start + 1, row=row).number_format = FORMAT_NUMBER_00
                 self.sheet.cell(column=fixed_info_column_start + 4, row=row).value = fund.unit_worth_time # datetime.datetime.now()
 
+                progress_updater()
                 row = row + 1
             else:
                 # Continue if the inner loop wasn't broken.
@@ -56,6 +58,9 @@ class FastFundSheet(object):
 
     def get_invest_price(self, fund_id, time_str):
         return None, None
+
+    def get_row_count(self):
+        return self.sheet.max_row - 1  # 表头不用处理
 
 
 if __name__ == '__main__':

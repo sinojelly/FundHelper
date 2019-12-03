@@ -54,12 +54,15 @@ def make_progress_updater(thread_id):
     progress_current[thread_id] = 0
     progress_total[thread_id] = 0
 
-    def update_progress(total=None):
+    def update_progress(total=None, finished=False):   # total: 第一次调用传回total； finished:最后一次调用传入true,避免永不结束的情况
         global progress_current
         progress_current[thread_id] += 1
         if total is not None:
             global progress_total
             progress_total[thread_id] = total
+        if finished and progress_current[thread_id] != progress_total[thread_id]:
+            print("Finished! current =", progress_current[thread_id], "total =", progress_total[thread_id])
+            progress_current[thread_id] = progress_total[thread_id]
         print("thread:", thread_id, "total:", progress_total[thread_id], "current:", progress_current[thread_id])
     return update_progress
 

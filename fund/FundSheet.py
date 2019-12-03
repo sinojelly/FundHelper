@@ -36,7 +36,7 @@ class FundSheet(object):
         self.invested_funds_map = {}
         # self.update_funds()
 
-    def update_funds(self, invested_funds):
+    def update_funds(self, invested_funds, progress_updater):
         row = 2
         for col in self.sheet.iter_cols(min_row=row, max_col=1):
             for cell in col:
@@ -85,6 +85,7 @@ class FundSheet(object):
                 border = Border(left=side, right=side, top=side, bottom=side)
                 self.sheet.cell(column=max_max_column, row=row).border = border
 
+                progress_updater()   # 每次row增加前+1
                 row = row + 1
             else:
                 # Continue if the inner loop wasn't broken.
@@ -130,6 +131,9 @@ class FundSheet(object):
         if fund is None:
             return None
         return fund.get_price(time_str), fund.fund_name
+
+    def get_row_count(self):
+        return self.sheet.max_row - 1   # 表头去掉
 
 
 if __name__ == '__main__':

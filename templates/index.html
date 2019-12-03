@@ -16,7 +16,7 @@
 	<script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
 	<script>
 	function check_progress() {
-		$("#progress").append("start...0000....");
+		$("#progress").append("Start...");
 		var full_update = $("#full_update[name='full_update']:checked").val();//获取当前选中的radio的值
 		var download_url = "/update-excel/{{thread_id}}/False"
 		if (full_update === undefined) { // 未选中是undefined,选中是 True
@@ -28,9 +28,10 @@
 			$.get('progress/' + {{thread_id}}, function(data) {
 			    current = data.current
 				total = data.total
-				$("#progress").text(current+"/"+total);
-				if (current < total) {
-				    $("#progress").append(" next ");
+				if (total > 0 && current <= total) {
+				    $("#progress").text(current+"/"+total);
+				}
+				if (current < total || total == 0) {
 					setTimeout(worker, 1000);
 				}
 			})
