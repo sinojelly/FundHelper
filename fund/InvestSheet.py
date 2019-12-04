@@ -6,6 +6,9 @@ from openpyxl.styles.numbers import FORMAT_NUMBER_00
 from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles.fills import PatternFill
 
+from fund.XslxTools import set_p_n_condition
+
+
 INVEST_SHEET_NAME = "投资"
 
 INVEST_COLUMN_START = 6
@@ -83,17 +86,11 @@ class InvestSheet(object):
                     income_cell = self.sheet.cell(column=int(cell.col_idx), row=row + 1)
                     income_cell.value = income
                     income_cell.number_format = FORMAT_NUMBER_00
-                    red_fill = PatternFill(start_color='AA110D', end_color='FFC7CE', fill_type='solid')
-                    self.sheet.conditional_formatting.add(income_cell.coordinate, CellIsRule(operator='greaterThan',
-                                                                                            formula=['0'],
-                                                                                            stopIfTrue=True,
-                                                                                            fill=red_fill))
+                    set_p_n_condition(self.sheet, income_cell)
                     ratio_cell = self.sheet.cell(column=int(cell.col_idx) + 1, row=row + 1)
                     ratio_cell.value = ratio * 100  # ratio
                     ratio_cell.number_format = FORMAT_NUMBER_00
-                    green_fill = PatternFill(start_color='006100', end_color='C6EFCE', fill_type='solid')
-                    self.sheet.conditional_formatting.add(ratio_cell.coordinate, CellIsRule(operator='lessThan',
-                                                    formula=['0'], stopIfTrue=True, fill=green_fill))
+                    set_p_n_condition(self.sheet, ratio_cell)
                 elif invest_amount < 0:    # 表示后面的投资都已经卖掉了
                     break
             else:
@@ -108,8 +105,10 @@ class InvestSheet(object):
             self.sheet.cell(column=5, row=row).value = price           # 当前价格/点数
             self.sheet.cell(column=4, row=row + 1).value = total_income   # 总收益
             self.sheet.cell(column=4, row=row + 1).number_format = FORMAT_NUMBER_00
+            set_p_n_condition(self.sheet, self.sheet.cell(column=4, row=row + 1))
             self.sheet.cell(column=5, row=row + 1).value = total_income / total_invest * 100   # 总收益率
             self.sheet.cell(column=5, row=row + 1).number_format = FORMAT_NUMBER_00
+            set_p_n_condition(self.sheet, self.sheet.cell(column=5, row=row + 1))
 
     def update_all_invests(self, *stock_sheets):
         for stock_sheet in stock_sheets:
