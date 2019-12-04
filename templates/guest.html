@@ -4,18 +4,9 @@
 	<meta charset=utf-8>
   </head>
   <body>
-  <h1>Fund Helper</h1>
+  <h1>{{title}} Fund Helper</h1>
   <p>This web app is used to get fund information automatically!</p>
-  <p>
-  Login or use the default user without login. (Now, registrition is not ready.).
-  	<form action="/user-login" method="post"> 
-		<label>User name: </label>
-		<input name="username" id="username" type="text" value="guest" /><br/> 
-		<label>Password: </label>
-		<input name="password" id="password" type="text" value="guest"/><br/>
-		<input name="" type="submit" value="Login"/> 
-    </form> 
-	</p>
+  <p>Hi, {{user}}, welcome!</p>
 	<p>
 	<form action="" method="get"> 
 		<label>Full update</label>
