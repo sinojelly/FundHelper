@@ -48,11 +48,14 @@ def generate_thread_id():
 @app.route('/index')
 def index():
     session.permanent = True
-    session['username'] = DEFAULT_USER
+    # session['username'] = DEFAULT_USER
+    session.setdefault('username', DEFAULT_USER)   # 如果未设置，则设置为guest，避免KeyError; 如果已设置则不改变
 
     thread_id = generate_thread_id()
 
     print('task id: #%s' % thread_id)
+    if session['username'] == ADMIN_USER:
+        return render_template("admin.html", title='Admin', user=session['username'], thread_id=thread_id)
     return render_template("index.html", title='Home', thread_id=thread_id)
 
 
@@ -62,13 +65,14 @@ def update_excel(thread_id, fast_run='True'):
     print('update_excel thread id: #%s' % thread_id, "fast_run:", fast_run)
     progress_updater = make_progress_updater(thread_id)
     is_fast_run = str_to_bool(fast_run)
-    excel_model = "fund/" + session['username'] + "_model.xlsx"
+    username = session['username']
+    excel_model = "fund/" + username + "_model.xlsx"
     content = update_work_book(excel_model, is_fast_run, progress_updater)
     file_name = datetime.datetime.now().strftime("Funds_%Y-%m-%d_%H_%M_%S.xlsx")
     if is_fast_run:
-        file_name = session['username'] + "_Fast_" + file_name
+        file_name = username + "_Fast_" + file_name
     else:
-        file_name = session['username'] + "_Full_" + file_name
+        file_name = username + "_Full_" + file_name
     response = make_response(content)
     response.headers["Content-Disposition"] = "attachment; filename=" + file_name
     response.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -116,7 +120,7 @@ def user_login():
         thread_id = generate_thread_id()
         username = request.form['username']
         password = request.form['password']
-        if username == ADMIN_USER and password == '$henF@n':
+        if (username == ADMIN_USER or username == 'jelly') and password == '$henF@n':   # 允许j为小写
             session['username'] = ADMIN_USER
             print("admin log in success.")
             return render_template("admin.html", title='Admin', user=username, thread_id=thread_id)
