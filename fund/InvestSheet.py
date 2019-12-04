@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import openpyxl
-from fund.StockIndex import StockIndex
-from fund.EastMoneyPushStockIndex import EastMoneyPushStockIndex
-from fund.JuheStockIndex import JuheStockIndex
 
-from openpyxl.styles import Border, Side
-from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
 from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles.fills import PatternFill
@@ -88,12 +83,17 @@ class InvestSheet(object):
                     income_cell = self.sheet.cell(column=int(cell.col_idx), row=row + 1)
                     income_cell.value = income
                     income_cell.number_format = FORMAT_NUMBER_00
+                    red_fill = PatternFill(start_color='AA110D', end_color='FFC7CE', fill_type='solid')
+                    self.sheet.conditional_formatting.add(income_cell.coordinate, CellIsRule(operator='greaterThan',
+                                                                                            formula=['0'],
+                                                                                            stopIfTrue=True,
+                                                                                            fill=red_fill))
                     ratio_cell = self.sheet.cell(column=int(cell.col_idx) + 1, row=row + 1)
                     ratio_cell.value = ratio * 100  # ratio
                     ratio_cell.number_format = FORMAT_NUMBER_00
-                    redFill = PatternFill(start_color='EE1111', end_color='EE1111', fill_type='solid')
+                    green_fill = PatternFill(start_color='006100', end_color='C6EFCE', fill_type='solid')
                     self.sheet.conditional_formatting.add(ratio_cell.coordinate, CellIsRule(operator='lessThan',
-                                                    formula=['0'], stopIfTrue=True, fill=redFill))
+                                                    formula=['0'], stopIfTrue=True, fill=green_fill))
                 elif invest_amount < 0:    # 表示后面的投资都已经卖掉了
                     break
             else:
@@ -150,11 +150,11 @@ class InvestSheet(object):
 
 
 if __name__ == '__main__':
-    wb = openpyxl.load_workbook('example_filetest.xlsx')
-    # import StockIndexSheet
-    # stock_index_sheet = StockIndexSheet(wb)
+    wb = openpyxl.load_workbook('example_filetest2.xlsx')
+    import StockIndexSheet
+    stock_index_sheet = StockIndexSheet.StockIndexSheet(wb)
     invest_sheet = InvestSheet(wb)
-    my_funds = invest_sheet.get_all_funds()
-    print(my_funds)
-    # invest_sheet.update_all_invests(stock_index_sheet)
-    # wb.save('example_filetest.xlsx')
+    # my_funds = invest_sheet.get_all_funds()
+    # print(my_funds)
+    invest_sheet.update_all_invests(stock_index_sheet)
+    wb.save('example_filetest2.xlsx')
