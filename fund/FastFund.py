@@ -13,7 +13,6 @@ class FastFund(object):
         self.unit_worth = None
         self.unit_worth_time = None
         self.unit_worth_change_ratio = None
-        # self.init_info()
         print("[FastFund] process :", self.fund_id, self.fund_name)
 
     def get_url(self):
@@ -54,5 +53,6 @@ class FastFund(object):
 
 if __name__ == '__main__':
     fund = FastFund('001186')   # 易方达中小盘
-    # fund = Fund("005911")  # 广发双引擎
-    # fund = Fund("320007")  # 诺安成长混合(320007)
+    fund.initialize()
+    # fund = FastFund("005911")  # 广发双引擎
+    # fund = FastFund("320007")  # 诺安成长混合(320007)

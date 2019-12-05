@@ -147,11 +147,11 @@ class InvestSheet(object):
 
 
 if __name__ == '__main__':
-    wb = openpyxl.load_workbook('example_filetest2.xlsx')
+    wb = openpyxl.load_workbook('test_model.xlsx')
     import StockIndexSheet
     stock_index_sheet = StockIndexSheet.StockIndexSheet(wb)
     invest_sheet = InvestSheet(wb)
     # my_funds = invest_sheet.get_all_funds()
     # print(my_funds)
     invest_sheet.update_all_invests(stock_index_sheet)
-    wb.save('example_filetest2.xlsx')
+    wb.save('test_model.xlsx')

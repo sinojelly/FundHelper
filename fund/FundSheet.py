@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import openpyxl
-# from fund.Fund import Fund, timestamp2time
 from Fund import Fund, timestamp2time
 from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
@@ -138,6 +137,8 @@ class FundSheet(object):
 
 
 if __name__ == '__main__':
-    wb = openpyxl.load_workbook('example_filetest.xlsx')
+    from TestTools import empty_func
+    wb = openpyxl.load_workbook('test_model.xlsx')
     sheet = FundSheet(wb)
-    wb.save('example_filetest.xlsx')
+    sheet.update_funds([], empty_func)
+    wb.save('test_model.xlsx')

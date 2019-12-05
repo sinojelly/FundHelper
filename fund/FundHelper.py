@@ -12,8 +12,6 @@ import getopt
 
 from io import BytesIO
 
-FAST_RUN = False
-
 
 def update_work_book(file, fast_run, progress_updater):
     print("Start ...")
@@ -67,12 +65,13 @@ def str_to_bool(str):
 # 此文件是总的入口
 if __name__ == '__main__':
     try:
+        from TestTools import empty_func
         #第一个参数是程序本身 即 parameter.py
         # print(sys.argv[0])
         #解析参数
         opts, args = getopt.getopt(sys.argv[1:], 'f:t:', ["fast=", "target="])
         fast_run = str_to_bool(opts[0][1])   # 目前只有fast一个参数，直接取0号里面的   [('fast','True')]
         # print(opts)
-        update_work_book('example_filetest.xlsx', fast_run)
+        update_work_book('test_model.xlsx', fast_run, empty_func)
     except getopt.GetoptError as e:
         print("Get opt error:", e)
