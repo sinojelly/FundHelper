@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import openpyxl
-from fund.FastFund import FastFund
+from FastFund import FastFund
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
 
-from fund.FundSheet import FUND_SHEET_NAME, UNIT_WORTH_COLUMN, CURRENT_PRICE_COLUMN, clear_sheet_columns
+from FundSheet import FUND_SHEET_NAME, UNIT_WORTH_COLUMN, CURRENT_PRICE_COLUMN, clear_sheet_columns
 
 
 class FastFundSheet(object):

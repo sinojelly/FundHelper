@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import openpyxl
-from fund.StockIndex import StockIndex
-from fund.EastMoneyPushStockIndex import EastMoneyPushStockIndex
-from fund.JuheStockIndex import JuheStockIndex
+from StockIndex import StockIndex
+from EastMoneyPushStockIndex import EastMoneyPushStockIndex
+from JuheStockIndex import JuheStockIndex
 
 from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED

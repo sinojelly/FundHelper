@@ -2,10 +2,10 @@
 
 import datetime
 import openpyxl
-from fund.FastFundSheet import FastFundSheet
-from fund.FundSheet import FundSheet
-from fund.StockIndexSheet import StockIndexSheet
-from fund.InvestSheet import InvestSheet
+from FastFundSheet import FastFundSheet
+from FundSheet import FundSheet
+from StockIndexSheet import StockIndexSheet
+from InvestSheet import InvestSheet
 
 import sys
 import getopt

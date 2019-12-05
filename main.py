@@ -6,14 +6,17 @@ __author__ = 'jelly'
 from flask import Flask, url_for, request, json, jsonify
 from flask import render_template, make_response, session
 
-from fund.FundHelper import update_work_book, str_to_bool
-
 import threading
 import random
 import time
 import datetime
 import os
 from datetime import timedelta
+import sys
+
+sys.path.append(os.path.join(os.getcwd(), 'fund'))
+
+from FundHelper import update_work_book, str_to_bool
 
 app = Flask(__name__)
 

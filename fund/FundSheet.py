@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import openpyxl
-from fund.Fund import Fund, timestamp2time
+# from fund.Fund import Fund, timestamp2time
+from Fund import Fund, timestamp2time
 from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00

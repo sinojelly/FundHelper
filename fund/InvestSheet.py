@@ -3,10 +3,8 @@
 import openpyxl
 
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
-from openpyxl.formatting.rule import CellIsRule
-from openpyxl.styles.fills import PatternFill
 
-from fund.XslxTools import set_p_n_condition
+from XslxTools import set_p_n_condition
 
 
 INVEST_SHEET_NAME = "投资"

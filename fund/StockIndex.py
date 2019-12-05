@@ -8,7 +8,7 @@ import numpy as np
 import scipy.signal as signal
 import matplotlib.pyplot as plt
 
-from fund.SinaStock import SinaStock
+from SinaStock import SinaStock
 
 
 TUSHARE_APP_KEY = 'a64231cf514f205f90798848538491d7ed8725255809716c18fb48ee'
