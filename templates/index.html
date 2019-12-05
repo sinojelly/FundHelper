@@ -16,44 +16,6 @@
 		<input name="" type="submit" value="Login"/> 
     </form> 
 	</p>
-	<p>
-	<form action="" method="get"> 
-		<label>Full update</label>
-		<input name="full_update" id="full_update" type="radio" value="True" /><br/> 
-		<input name="" type="button" class="showProgress" value="Update"/> <!-- only type button can trigger showProgress javascript, but only type submit can submit form parameters.-->
-    </form> 
-	<div id="progress"></div>
-	<div id="timeCost"></div>
-	</p>
-	<script src="{{url_for('static', filename='jquery-3.4.0.min.js')}}"></script>
-	<script>
-	function check_progress() {
-		$("#progress").text("Progress: Start...");
-		var full_update = $("#full_update[name='full_update']:checked").val();//获取当前选中的radio的值
-		var download_url = "/update-excel/{{thread_id}}/False"
-		if (full_update === undefined) { // 未选中是undefined,选中是 True
-		   download_url = "/update-excel/{{thread_id}}/"
-		}
-		window.location.href = download_url;
-		worker();
-		function worker() {
-			$.get('progress/' + {{thread_id}}, function(data) {
-			    current = data.current
-				total = data.total
-				if (total > 0 && current <= total) {
-				    $("#progress").text("Progress: " + current+"/"+total);
-				}
-				time = data.time
-				if (time > 0) {
-				    $("#timeCost").text("Total time : " + time + " seconds.");
-				}
-				if (current < total || total == 0) {
-					setTimeout(worker, 1000);
-				}
-			})
-		}
-	}
-	$(".showProgress").click(check_progress);
-	</script>
+	{% include "update_funds.html" %}
   </body>
 </html>
