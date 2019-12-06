@@ -133,5 +133,27 @@ def user_login():
             return render_template("guest.html", title='Guest', user=username, thread_id=thread_id)
 
 
+@app.route('/update-model', methods=['GET'])
+def update_model():
+    if request.method == 'GET':
+        fund_id_str = request.args.get('fund_id', default='', type=str)
+        fund_level_str = request.args.get('fund_level', default='', type=str)
+        fund_high_date_str = request.args.get('fund_high_date', default='', type=str)
+        fund_low_date_str = request.args.get('fund_low_date', default='', type=str)
+        remove_fund_id_str = request.args.get('remove_fund_id', default='', type=str)
+        fund_ids = fund_id_str.split(' ')
+        fund_levels = fund_level_str.split(' ')
+        fund_high_dates = fund_high_date_str.split(' ')
+        fund_low_dates = fund_low_date_str.split(' ')
+        remove_fund_ids = remove_fund_id_str.split(' ')
+        print("fund_id_str:", fund_ids)
+        print("fund_level_str",fund_levels)
+        print("fund_high_date_str",fund_high_dates)
+        print("fund_low_date_str", fund_low_dates)
+        print("remove_fund_id_str", remove_fund_ids)
+    print("000000000 - update model")
+    return jsonify({'msg': 'finished'})
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

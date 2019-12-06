@@ -1,0 +1,46 @@
+	<p>
+	<form action="" method="get"> 
+	    <label><h3>Add new funds:</h3></label></br>
+		<label>Fund ID</label></br>
+		<input name="fund_id" id="fund_id" type="text" value="" /><br/> 
+		<label>Fund Level (2 normal, 4 normal-with-opportunity; 3 good, 5 good-with-opportunity)</label></br>
+		<input name="fund_level" id="fund_level" type="text" value="" /><br/> 
+		<label>Fund high date</label></br>
+		<input name="fund_high_date" id="fund_high_date" type="text" value="" /><br/> 
+		<label>Fund low date</label></br>
+		<input name="fund_low_date" id="fund_low_date" type="text" value="" /><br/> 
+		<label><h3>Remove funds:</h3></label></br>
+		<label>Fund ID</label></br>
+		<input name="remove_fund_id" id="remove_fund_id" type="text" value="" /><br/> 
+		<input name="" type="button" class="updateModel" value="Update"/>
+    </form> 
+	<div id="updateModelStatus"></div>
+	</p>
+	<script>
+	function append_parameter(url, name, value) {
+	    if (!url.endsWith('?')) {
+		    url = url + "&";
+		}
+	    return url + name + "=" + encodeURIComponent(value);
+	}
+	function update_model() {
+		$("#updateModelStatus").text("Update model: Start...");
+		var fund_id = $("#fund_id[name='fund_id']").val();
+		var fund_level = $("#fund_level[name='fund_level']").val();
+		var fund_high_date = $("#fund_high_date[name='fund_high_date']").val();
+		var fund_low_date = $("#fund_low_date[name='fund_low_date']").val();
+		var remove_fund_id = $("#remove_fund_id[name='remove_fund_id']").val();
+		
+		var url = 'update-model?';
+		url = append_parameter(url, "fund_id", fund_id);
+		url = append_parameter(url, "fund_level", fund_level);
+		url = append_parameter(url, "fund_high_date", fund_high_date);
+		url = append_parameter(url, "fund_low_date", fund_low_date);
+		url = append_parameter(url, "remove_fund_id", remove_fund_id);
+		
+		$.get(url, function(data) {
+			$("#updateModelStatus").text("Update model: " + data.msg);
+		})
+	}
+	$(".updateModel").click(update_model);
+	</script>
