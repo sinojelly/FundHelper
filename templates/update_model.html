@@ -37,9 +37,11 @@
 	});
 	
 	function save_data() {
-	  var temp = hot.getData();
+	  var data = hot.getData();
+	  var save_url = 'save-data/' + {{thread_id}} + '?';
+	  save_url = append_parameter(save_url, "data", data); 
 	  // save all cell's data
-	  $.ajax('save-data/' + {{thread_id}}, 'GET', JSON.stringify({data: hot.getData()}), function (res) {
+	  $.ajax(save_url, 'GET', function (res) {
 		var response = JSON.parse(res.response);
 
 		if (response.result === 'ok') {
