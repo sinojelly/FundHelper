@@ -4,44 +4,6 @@
 	<div id="updateModelStatus"></div>
 	</p>
 	<script>
-	var dateEditor = function(cell, onRendered, success, cancel, editorParams){
-		//cell - the cell component for the editable cell
-		//onRendered - function to call when the editor has been rendered
-		//success - function to call to pass the successfuly updated value to Tabulator
-		//cancel - function to call to abort the edit and return to a normal cell
-		//editorParams - params object passed into the editorParams column definition property
-
-		//create and style editor
-		var editor = document.createElement("input");
-
-		editor.setAttribute("type", "date");
-
-		//create and style input
-		editor.style.padding = "3px";
-		editor.style.width = "100%";
-		editor.style.boxSizing = "border-box";
-
-		//Set value of editor to the current value of the cell
-		editor.value = moment(cell.getValue(), "YYYYMMDD").format("YYYYMMDD")
-
-		//set focus on the select box when the editor is selected (timeout allows for editor to be added to DOM)
-		onRendered(function(){
-			editor.focus();
-			editor.style.css = "100%";
-		});
-
-		//when the value has been set, trigger the cell to update
-		function successFunc(){
-			success(moment(editor.value, "YYYYMMDD").format("YYYYMMDD"));
-		}
-
-		editor.addEventListener("change", successFunc);
-		editor.addEventListener("blur", successFunc);
-
-		//return the editor element
-		return editor;
-	};
-	
 	var tabledata = [
  	{id:"005911", name:"广发双擎升级混合", level:"5", price:"2.0368", change:"0.17", ratio_to_low:"-15.21", low_date:"20191021", ratio_to_high:"-1.02", high_date:"20191120"},
 	{id:"320007", name:"诺安成长混合", level:"5", price:"1.195", change:"0.5", ratio_to_low:"-16.15", low_date:"20191021", ratio_to_high:"-3.77", high_date:"20191119"},
@@ -58,15 +20,16 @@
 		{title:"Price", field:"price"},
 		{title:"Change", field:"change", sorter:"number"},
 		{title:"R2Low", field:"ratio_to_low", sorter:"number"},
-		{title:"LowDate", field:"low_date", sorter:"date",  editor:dateEditor},
+		{title:"LowDate", field:"low_date", sorter:"date",  editor:"input"},
 	 	{title:"R2High", field:"ratio_to_high", sorter:"number"},
-		{title:"HighDate", field:"high_date", sorter:"date",  editor:dateEditor},
+		{title:"HighDate", field:"high_date", sorter:"date",  editor:"input"},
 		{title:"Trend", field:"trend"}
  	],
  	rowClick:function(e, row){ //trigger an alert message when the row is clicked
- 		alert("Row " + row.getData().id + " Clicked!!!!");
+ 		//alert("Row " + row.getData().id + " Clicked!!!!");
  	},
 	dataEdited:function(data) {
+	    var test=data;
 	    //alert(data);
 	},
     });
