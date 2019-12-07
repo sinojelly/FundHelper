@@ -36,12 +36,31 @@
 		});
 	});
 	
-	function save_data() {
-	  var data = hot.getData();
-	  var save_url = 'save-data/' + {{thread_id}} + '?';
-	  save_url = append_parameter(save_url, "data", data); 
+	function save_data() { 
+	    var csrftoken = $("meta[name=csrf-token]").attr("content");
+	    var arr = { "data": hot.getData()};
+		var temp = JSON.stringify(arr);
+		$.ajax({
+			url: 'save-data/' + {{thread_id}},
+			type: 'POST',
+			data: JSON.stringify(arr),
+			contentType: 'application/json; charset=utf-8',    
+			dataType: 'json',
+			//processData: true,
+			headers:{"X-CSRFToken":csrftoken},
+			success: function(res) {
+				//var response = JSON.parse(res.response);
+
+				if (res.result === 'ok') {
+				  $("#updateModelStatus").text("Update model: Save success");
+				}
+				else {
+				  $("#updateModelStatus").text("Update model: Save error");
+				}
+			}
+		});
 	  // save all cell's data
-	  $.ajax(save_url, 'GET', function (res) {
+	  /*$.post('save-data/' + {{thread_id}}, JSON.stringify({data: hot.getData()}), function (res) {
 		var response = JSON.parse(res.response);
 
 		if (response.result === 'ok') {
@@ -50,7 +69,7 @@
 		else {
 		  $("#updateModelStatus").text("Update model: Save error");
 		}
-	  });
+	  });*/
     }
 	$("#save").click(save_data);
 	

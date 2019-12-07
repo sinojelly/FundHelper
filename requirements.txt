@@ -11,4 +11,5 @@ pandas
 bs4
 PyParsing
 matplotlib
+flask_wtf
 

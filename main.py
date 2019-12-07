@@ -18,7 +18,10 @@ sys.path.append(os.path.join(os.getcwd(), 'fund'))
 
 from FundHelper import update_work_book, str_to_bool
 
+from flask_wtf.csrf import CSRFProtect
+
 app = Flask(__name__)
+CSRFProtect(app)
 
 app.config['SECRET_KEY'] = os.urandom(24)  # 设置为24位的字符,每次运行服务器都是不同的，所以服务器启动一次上次的session就清除。
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)  # 设置session的保存时间。
@@ -140,12 +143,15 @@ def load_fund_data(thread_id):
     return jsonify(result)
 
 
-@app.route('/save-data/<int:thread_id>')
+@app.route('/save-data/<int:thread_id>', methods=['POST'])
 def save_data(thread_id):
     print("save data .....", thread_id)
-    if request.method == 'GET':
-        data = request.args.get('data', default='', type=str)
-        print("data : ", data)
+    if request.method == 'POST':
+        #data = request.form['data']
+        data = request.form.get('data', None)
+        print("request.form : ", request.form)
+        print("request.args : ", request.args)
+        print("request.get_json(): ", request.get_json())
     result = {'result': 'ok'}
     return jsonify(result)
 
