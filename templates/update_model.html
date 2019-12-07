@@ -5,54 +5,36 @@
 	</p>
 	<script>
 	var tabledata = [
- 	{id:"005911", name:"广发双擎升级混合", level:"5", price:"2.0368", change:"0.17", ratio_to_low:"-15.21", low_date:"20191021", ratio_to_high:"-1.02", high_date:"20191120"},
-	{id:"320007", name:"诺安成长混合", level:"5", price:"1.195", change:"0.5", ratio_to_low:"-16.15", low_date:"20191021", ratio_to_high:"-3.77", high_date:"20191119"},
+ 	["005911", "广发双擎升级混合", "5", "2.0368", "0.17", "-15.21", "20191021", "-1.02", "20191120"],
+	["320007", "诺安成长混合", "5", "1.195", "0.5", "-16.15", "20191021", "-3.77", "20191119"],
     ];
-	var table = new Tabulator("#fund-table", {
- 	height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
- 	data:tabledata, //assign data to table
- 	layout:"fitColumns", //fit columns to width of table (optional)
-	addRowPos:"bottom",
- 	columns:[ //Define Table Columns
-	    {title:"Fund ID", field:"id", editor:"input"},
-	 	{title:"Name", field:"name", editor:"input"},
-	 	{title:"Level", field:"level", editor:"input"},
-		{title:"Price", field:"price"},
-		{title:"Change", field:"change", sorter:"number"},
-		{title:"R2Low", field:"ratio_to_low", sorter:"number"},
-		{title:"LowDate", field:"low_date", sorter:"date",  editor:"input"},
-	 	{title:"R2High", field:"ratio_to_high", sorter:"number"},
-		{title:"HighDate", field:"high_date", sorter:"date",  editor:"input"},
-		{title:"Trend", field:"trend"}
- 	],
- 	rowClick:function(e, row){ //trigger an alert message when the row is clicked
- 		//alert("Row " + row.getData().id + " Clicked!!!!");
- 	},
-	dataEdited:function(data) {
-	    var test=data;
-	    //alert(data);
-	},
-    });
+	var container = document.getElementById('fund-table');
+	var hot = new Handsontable(container, {
+	  data: null, //tabledata,
+	  rowHeaders: false,
+	  colHeaders: ["Fund ID", "Name", "Level", "Price", "Change", "R2Low", "LowDate", "R2High", "HighDate"],
+	  filters: true,
+	  dropdownMenu: true,
+      autoColumnSize: true,
+	  contextMenu: true,
+	  licenseKey: 'non-commercial-and-evaluation'
+	});	
 	
-//Add row on "Add Row" button click
-$("#add-row").click(function(){
-    table.addRow({});
-});
-
-//Delete row on "Delete Row" button click
-$("#del-row").click(function(){
-    table.deleteRow(1);
-});
-
-//Clear table on "Empty the table" button click
-$("#clear").click(function(){
-    table.clearData()
-});
-
-//Reset table contents on "Reset the table" button click
-$("#reset").click(function(){
-    table.setData(tabledata);
-});
+	$( document ).ready(function() {
+		console.log( "ready!" );
+		$.ajax({
+			url: 'load-fund-data/' + {{thread_id}},
+			type: 'GET',
+			contentType: 'application/json; charset=utf-8',    
+			dataType: 'json',
+			async: true,
+			success: function(msg) {
+				hot.loadData(msg.data);
+				console.log('Loaded:');
+				console.log(msg.data);
+			}
+		});
+	});
 	
 	function append_parameter(url, name, value) {
 	    if (!url.endsWith('?')) {

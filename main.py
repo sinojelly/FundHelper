@@ -133,6 +133,13 @@ def user_login():
             return render_template("guest.html", title='Guest', user=username, thread_id=thread_id)
 
 
+@app.route('/load-fund-data/<int:thread_id>')
+def load_fund_data(thread_id):
+    print("load fund data .....", thread_id)
+    result = {'data': [["005911", "广发双擎升级混合", "5", "2.0368", "0.17", "-15.21", "20191021", "-1.02", "20191120"]]} # 必须是两重数组
+    return jsonify(result)
+
+
 @app.route('/update-model', methods=['GET'])
 def update_model():
     if request.method == 'GET':
