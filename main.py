@@ -140,6 +140,16 @@ def load_fund_data(thread_id):
     return jsonify(result)
 
 
+@app.route('/save-data/<int:thread_id>')
+def save_data(thread_id):
+    print("save data .....", thread_id)
+    if request.method == 'GET':
+        data = request.args.get('data', default='', type=str)
+        print("data : ", data)
+    result = {'result': 'ok'}
+    return jsonify(result)
+
+
 @app.route('/update-model', methods=['GET'])
 def update_model():
     if request.method == 'GET':

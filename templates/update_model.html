@@ -1,5 +1,5 @@
 	<p>
-	<button id="add-row">Add row</button>
+	<button id="save">Save</button>
 	<div id="fund-table"></div> 
 	<div id="updateModelStatus"></div>
 	</p>
@@ -36,13 +36,30 @@
 		});
 	});
 	
+	function save_data() {
+	  var temp = hot.getData();
+	  // save all cell's data
+	  $.ajax('save-data/' + {{thread_id}}, 'GET', JSON.stringify({data: hot.getData()}), function (res) {
+		var response = JSON.parse(res.response);
+
+		if (response.result === 'ok') {
+		  $("#updateModelStatus").text("Update model: Save success");
+		}
+		else {
+		  $("#updateModelStatus").text("Update model: Save error");
+		}
+	  });
+    }
+	$("#save").click(save_data);
+	
+	
 	function append_parameter(url, name, value) {
 	    if (!url.endsWith('?')) {
 		    url = url + "&";
 		}
 	    return url + name + "=" + encodeURIComponent(value);
 	}
-	function update_model() {
+	function update_model_old() {
 		$("#updateModelStatus").text("Update model: Start...");
 		var fund_id = $("#fund_id[name='fund_id']").val();
 		var fund_level = $("#fund_level[name='fund_level']").val();
@@ -61,5 +78,5 @@
 			$("#updateModelStatus").text("Update model: " + data.msg);
 		})
 	}
-	$(".updateModel").click(update_model);
+	$(".updateModel").click(update_model_old);
 	</script>
