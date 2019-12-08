@@ -21,7 +21,7 @@
 	});	
 	
 	$( document ).ready(function() {
-		console.log( "ready!" );
+		//console.log( "ready!" );
 		$.ajax({
 			url: 'load-fund-data/' + {{thread_id}},
 			type: 'GET',
@@ -30,27 +30,25 @@
 			async: true,
 			success: function(msg) {
 				hot.loadData(msg.data);
-				console.log('Loaded:');
-				console.log(msg.data);
+				//console.log('Loaded:');
+				//console.log(msg.data);
 			}
 		});
 	});
 	
 	function save_data() { 
+	    // save all cell's data
 	    var csrftoken = $("meta[name=csrf-token]").attr("content");
 	    var arr = { "data": hot.getData()};
-		var temp = JSON.stringify(arr);
 		$.ajax({
 			url: 'save-data/' + {{thread_id}},
 			type: 'POST',
 			data: JSON.stringify(arr),
 			contentType: 'application/json; charset=utf-8',    
 			dataType: 'json',
-			//processData: true,
 			headers:{"X-CSRFToken":csrftoken},
 			success: function(res) {
 				//var response = JSON.parse(res.response);
-
 				if (res.result === 'ok') {
 				  $("#updateModelStatus").text("Update model: Save success");
 				}
@@ -59,45 +57,6 @@
 				}
 			}
 		});
-	  // save all cell's data
-	  /*$.post('save-data/' + {{thread_id}}, JSON.stringify({data: hot.getData()}), function (res) {
-		var response = JSON.parse(res.response);
-
-		if (response.result === 'ok') {
-		  $("#updateModelStatus").text("Update model: Save success");
-		}
-		else {
-		  $("#updateModelStatus").text("Update model: Save error");
-		}
-	  });*/
     }
 	$("#save").click(save_data);
-	
-	
-	function append_parameter(url, name, value) {
-	    if (!url.endsWith('?')) {
-		    url = url + "&";
-		}
-	    return url + name + "=" + encodeURIComponent(value);
-	}
-	function update_model_old() {
-		$("#updateModelStatus").text("Update model: Start...");
-		var fund_id = $("#fund_id[name='fund_id']").val();
-		var fund_level = $("#fund_level[name='fund_level']").val();
-		var fund_high_date = $("#fund_high_date[name='fund_high_date']").val();
-		var fund_low_date = $("#fund_low_date[name='fund_low_date']").val();
-		var remove_fund_id = $("#remove_fund_id[name='remove_fund_id']").val();
-		
-		var url = 'update-model?';
-		url = append_parameter(url, "fund_id", fund_id);
-		url = append_parameter(url, "fund_level", fund_level);
-		url = append_parameter(url, "fund_high_date", fund_high_date);
-		url = append_parameter(url, "fund_low_date", fund_low_date);
-		url = append_parameter(url, "remove_fund_id", remove_fund_id);
-		
-		$.get(url, function(data) {
-			$("#updateModelStatus").text("Update model: " + data.msg);
-		})
-	}
-	$(".updateModel").click(update_model_old);
 	</script>
