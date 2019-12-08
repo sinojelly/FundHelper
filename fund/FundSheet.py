@@ -148,7 +148,7 @@ class FundSheet(object):
                 for column in WEB_SHOW_COLUMNS:
                     cell = self.sheet.cell(row=row_index, column=column)
                     # value = reader.get_cell_value(cell.coordinate, FUND_SHEET_NAME)
-                    value = get_cell_value(self.sheet, cell) #get_non_none_value(cell.value)
+                    value = get_cell_value(self.sheet, cell)
                     row_result.append(value)
                 result.append(row_result)
                 row_index = row_index + 1

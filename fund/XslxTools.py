@@ -17,12 +17,6 @@ def set_p_n_condition(sheet, cell):
     sheet.conditional_formatting.add(cell.coordinate, CellIsRule(operator='lessThan', formula=['0'], stopIfTrue=True, font=green_text, fill=green_fill))
 
 
-def get_non_none_value(value):
-    if value is None:
-        return ''
-    return value
-
-
 def get_cell_value(sheet, cell, default=''):
     if cell.value is None:
         return default
