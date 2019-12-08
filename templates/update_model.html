@@ -14,9 +14,9 @@
 	  rowHeaders: false,
 	  colHeaders: ["Fund ID", "Name", "Level", "Price", "Change", "Day", "UpdateTime", "R2Low", "LowDate", "R2High", "HighDate"],
 	  columnSorting : true,
-	  columns: [{}, {},{},
-	            {type:'numeric', numericFormat: {pattern: '0.00'}},
-				{type:'numeric', numericFormat: {pattern: '0.00'}},
+	  columns: [{renderer:firstRowRenderer}, {},{},
+	            {type:'numeric', numericFormat: {pattern: '0.00'}, renderer:firstRowRenderer},
+				{type:'numeric', numericFormat: {pattern: '0.00'}, renderer:numericRenderer},
 				{},
 				{},
 				{type:'numeric', numericFormat: {pattern: '0.00'}},
@@ -26,23 +26,7 @@
 	  dropdownMenu: true,
       autoColumnSize: true,
 	  contextMenu: true,
-	  licenseKey: 'non-commercial-and-evaluation',
-	  cells: function (row, col) {
-		var cellProperties = {};
-		var data = this.instance.getData();
-
-		if (row === 0 || data[row] && data[row][col] === 'readOnly') {
-		  cellProperties.readOnly = true; // make cell read-only if it is first row or the text reads 'readOnly'
-		}
-		if (row === 0) {
-		  cellProperties.renderer = firstRowRenderer; // uses function directly
-		}
-		else {
-		  cellProperties.renderer = numericRenderer;
-		}
-
-		return cellProperties;
-	  }
+	  licenseKey: 'non-commercial-and-evaluation'
 	});	
 	
 	$( document ).ready(function() {
