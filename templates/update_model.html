@@ -26,7 +26,23 @@
 	  dropdownMenu: true,
       autoColumnSize: true,
 	  contextMenu: true,
-	  licenseKey: 'non-commercial-and-evaluation'
+	  licenseKey: 'non-commercial-and-evaluation',
+	  cells: function (row, col) {
+		var cellProperties = {};
+		var data = this.instance.getData();
+
+		if (row === 0 || data[row] && data[row][col] === 'readOnly') {
+		  cellProperties.readOnly = true; // make cell read-only if it is first row or the text reads 'readOnly'
+		}
+		if (row === 0) {
+		  cellProperties.renderer = firstRowRenderer; // uses function directly
+		}
+		else {
+		  cellProperties.renderer = numericRenderer;
+		}
+
+		return cellProperties;
+	  }
 	});	
 	
 	$( document ).ready(function() {
@@ -68,4 +84,24 @@
 		});
     }
 	$("#save").click(save_data);
+	
+	function numericRenderer(instance, td, row, col, prop, value, cellProperties) {
+		Handsontable.renderers.TextRenderer.apply(this, arguments);
+
+	    // if row contains negative number
+	    if (parseFloat(value, 10) < 0) {
+			// add class "negative"
+			td.className = 'make-me-red';
+   	    }
+		//td.style.background = '#EEE';
+		//td.style.fontStyle = 'italic';
+	}
+	
+	function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
+	  Handsontable.renderers.TextRenderer.apply(this, arguments);
+	  td.style.fontWeight = 'bold';
+	  td.style.color = 'green';
+	  td.style.background = '#CEC';
+	}
+
 	</script>
