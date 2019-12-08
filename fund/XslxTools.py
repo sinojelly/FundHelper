@@ -3,6 +3,8 @@
 from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles.fills import PatternFill
 from openpyxl.styles import Font
+from openpyxl.cell.cell import TYPE_FORMULA
+import re
 
 
 # 设置positive, negative 条件格式
@@ -18,4 +20,19 @@ def set_p_n_condition(sheet, cell):
 def get_non_none_value(value):
     if value is None:
         return ''
+    return value
+
+
+def get_cell_value(sheet, cell, default=''):
+    if cell.value is None:
+        return default
+    if cell.data_type is not TYPE_FORMULA:
+        return cell.value
+
+    #计算公式
+    formula = cell.value[1:]  # 去掉等号
+    match = re.match(".*?([A-Z]\d+).*?([A-Z]\d+).*?([A-Z]\d+).*", formula)
+    for address in match.groups():
+        formula = formula.replace(address, str(sheet[address].value))
+    value = eval(formula)
     return value

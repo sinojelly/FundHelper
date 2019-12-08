@@ -5,7 +5,7 @@ from Fund import Fund, timestamp2time
 from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
-from XslxTools import get_non_none_value
+from XslxTools import get_cell_value
 
 FUND_SHEET_NAME = "基金"
 
@@ -148,7 +148,7 @@ class FundSheet(object):
                 for column in WEB_SHOW_COLUMNS:
                     cell = self.sheet.cell(row=row_index, column=column)
                     # value = reader.get_cell_value(cell.coordinate, FUND_SHEET_NAME)
-                    value = get_non_none_value(cell.value)
+                    value = get_cell_value(self.sheet, cell) #get_non_none_value(cell.value)
                     row_result.append(value)
                 result.append(row_result)
                 row_index = row_index + 1
