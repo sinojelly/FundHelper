@@ -14,9 +14,9 @@
 	  rowHeaders: false,
 	  colHeaders: ["Fund ID", "Name", "Level", "Price", "Change", "Day", "UpdateTime", "R2Low", "LowDate", "R2High", "HighDate"],
 	  columnSorting : true,
-	  columns: [{renderer:firstRowRenderer}, {},{},
-	            {type:'numeric', numericFormat: {pattern: '0.00'}, renderer:firstRowRenderer},
-				{type:'numeric', numericFormat: {pattern: '0.00'}, renderer:numericRenderer},
+	  columns: [{}, {},{},
+	            {type:'numeric', numericFormat: {pattern: '0.00'}},
+				{type:'numeric', numericFormat: {pattern: '0.00'}},
 				{},
 				{},
 				{type:'numeric', numericFormat: {pattern: '0.00'}},
@@ -26,7 +26,28 @@
 	  dropdownMenu: true,
       autoColumnSize: true,
 	  contextMenu: true,
-	  licenseKey: 'non-commercial-and-evaluation'
+	  licenseKey: 'non-commercial-and-evaluation',
+	  cells: function (row, col) {
+		var cellProperties = {};
+		var data = this.instance.getData();
+		
+		if (col == 4 || col == 5 || col == 8 || col == 10) {
+		   cellProperties.type = 'numeric';
+		   cellProperties.numericFormat = {pattern: '0.00'};
+		}
+
+		if (row === 0 || data[row] && data[row][col] === 'readOnly') {
+		  cellProperties.readOnly = true; // make cell read-only if it is first row or the text reads 'readOnly'
+		}
+		if (row === 0) {
+		  cellProperties.renderer = firstRowRenderer; // uses function directly
+		}
+		else {
+		  cellProperties.renderer = numericRenderer;
+		}
+
+		return cellProperties;
+	  }
 	});	
 	
 	$( document ).ready(function() {
@@ -86,6 +107,17 @@
 	  td.style.fontWeight = 'bold';
 	  td.style.color = 'green';
 	  td.style.background = '#CEC';
+	  if (isFloat(value)) {
+	     td.innerHTML = value.toFixed(2);
+	  }
+	}
+	
+	function isNumber(obj) {  
+		return typeof obj === 'number' && !isNaN(obj)  
+	}
+	
+	function isFloat(n) {
+		return typeof n === 'number' && (~~n !== n) && !isNaN(n);
 	}
 
 	</script>
