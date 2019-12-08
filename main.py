@@ -13,12 +13,13 @@ import datetime
 import os
 from datetime import timedelta
 import sys
+from flask_wtf.csrf import CSRFProtect
 
 sys.path.append(os.path.join(os.getcwd(), 'fund'))
 
 from FundHelper import update_work_book, str_to_bool
+from FundWorkbook import FundWorkbook
 
-from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__)
 CSRFProtect(app)
@@ -33,6 +34,8 @@ progress_current = {}   # 当前处理到的步骤序号
 progress_total = {}     # 所有步骤总数
 progress_start_time = {}      # 记录开始时间
 
+work_book = {}
+
 DEFAULT_USER = 'Guest'
 ADMIN_USER = 'Jelly'
 
@@ -46,8 +49,15 @@ def generate_thread_id():
     progress_current[thread_id] = 0
     progress_total[thread_id] = 0
     progress_start_time[thread_id] = None
+    work_book[thread_id] = FundWorkbook(get_model_name())
 
     return thread_id
+
+
+def get_model_name():
+    username = session['username']
+    excel_model = "fund/" + username + "_model.xlsx"
+    return excel_model
 
 
 @app.route('/')
@@ -71,9 +81,7 @@ def update_excel(thread_id, fast_run='True'):
     print('update_excel thread id: #%s' % thread_id, "fast_run:", fast_run)
     progress_updater = make_progress_updater(thread_id)
     is_fast_run = str_to_bool(fast_run)
-    username = session['username']
-    excel_model = "fund/" + username + "_model.xlsx"
-    content = update_work_book(excel_model, is_fast_run, progress_updater)
+    content = update_work_book(get_model_name(), is_fast_run, progress_updater)
     file_name = datetime.datetime.now().strftime("Funds_%Y-%m-%d_%H_%M_%S.xlsx")
     if is_fast_run:
         file_name = username + "_Fast_" + file_name
@@ -139,7 +147,8 @@ def user_login():
 @app.route('/load-fund-data/<int:thread_id>')
 def load_fund_data(thread_id):
     print("load fund data .....", thread_id)
-    result = {'data': [["005911", "广发双擎升级混合", "5", "2.0368", "0.17", "-15.21", "20191021", "-1.02", "20191120"]]} # 必须是两重数组
+    # result = {'data': [["005911", "广发双擎升级混合", "5", "2.0368", "0.17", "-15.21", "20191021", "-1.02", "20191120"]]} # 必须是两重数组
+    result = work_book[thread_id].get_table()
     return jsonify(result)
 
 

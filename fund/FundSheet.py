@@ -5,6 +5,7 @@ from Fund import Fund, timestamp2time
 from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
+from XslxTools import get_non_none_value
 
 FUND_SHEET_NAME = "基金"
 
@@ -134,6 +135,29 @@ class FundSheet(object):
 
     def get_row_count(self):
         return self.sheet.max_row - 1   # 表头去掉
+
+    def get_table(self):
+        WEB_SHOW_COLUMNS = [1,2,8,9,10,11,13,14,16,17,19]
+        result = []
+        row_index = 2
+        for row in self.sheet.iter_rows(min_row=row_index, max_col=1):
+            for cell in row:
+                if cell.value is None:  # 遇到空行(id为空)，则后面不再更新
+                    break
+                row_result = []
+                for column in WEB_SHOW_COLUMNS:
+                    cell = self.sheet.cell(row=row_index, column=column)
+                    # value = reader.get_cell_value(cell.coordinate, FUND_SHEET_NAME)
+                    value = get_non_none_value(cell.value)
+                    row_result.append(value)
+                result.append(row_result)
+                row_index = row_index + 1
+            else:
+                # Continue if the inner loop wasn't broken.
+                continue
+            # Inner loop was broken, break the outer.
+            break
+        return result
 
 
 if __name__ == '__main__':

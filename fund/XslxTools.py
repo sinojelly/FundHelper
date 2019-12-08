@@ -13,3 +13,9 @@ def set_p_n_condition(sheet, cell):
     green_text = Font(color="006100")
     green_fill = PatternFill(start_color='006100', end_color='C6EFCE', fill_type='solid')
     sheet.conditional_formatting.add(cell.coordinate, CellIsRule(operator='lessThan', formula=['0'], stopIfTrue=True, font=green_text, fill=green_fill))
+
+
+def get_non_none_value(value):
+    if value is None:
+        return ''
+    return value
