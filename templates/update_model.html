@@ -35,7 +35,13 @@
 		   cellProperties.type = 'numeric';
 		   cellProperties.numericFormat = {pattern: '0.00'};
 		}
-
+		if (col == 7) {
+		    cellProperties.renderer = toLowConditionColourRenderer;
+		}
+		if (col == 9) {
+		    cellProperties.renderer = toHightConditionColourRenderer;
+		}
+		/*
 		if (row === 0 || data[row] && data[row][col] === 'readOnly') {
 		  cellProperties.readOnly = true; // make cell read-only if it is first row or the text reads 'readOnly'
 		}
@@ -44,7 +50,7 @@
 		}
 		else {
 		  cellProperties.renderer = numericRenderer;
-		}
+		}*/
 
 		return cellProperties;
 	  }
@@ -112,8 +118,41 @@
 	  }
 	}
 	
-	function isNumber(obj) {  
-		return typeof obj === 'number' && !isNaN(obj)  
+	function toHightConditionColourRenderer(instance, td, row, col, prop, value, cellProperties) {
+	   Handsontable.renderers.TextRenderer.apply(this, arguments);
+	   rendConditionColour(td, value, true, false);
+	}
+
+	function toLowConditionColourRenderer(instance, td, row, col, prop, value, cellProperties) {
+	   Handsontable.renderers.TextRenderer.apply(this, arguments);
+	   rendConditionColour(td, value, false, true);
+	}
+	
+	function rendConditionColour(td, value, toHigh, toLow) {
+		rendFloat(td, value);
+		if (toHigh && value < 3) {
+			td.innerHTML = "<font color=\"#B3770F\">"+td.innerHTML+"</font>"
+			td.style.background = '#FEEA9B';
+			return;
+		}
+		if (toLow && value > -3) {
+			td.innerHTML = "<font color=\"#B3770F\">"+td.innerHTML+"</font>"
+			td.style.background = '#FEEA9B';
+			return;
+		}
+		if (value < 0) {
+			td.innerHTML = "<font color=\"green\">"+td.innerHTML+"</font>"
+			td.style.background = '#C6EFCE';
+		} else if (value > 0) {
+			td.innerHTML = "<font color=\"red\">"+td.innerHTML+"</font>"
+			td.style.background = '#FFC7CE';
+		}
+	}
+	
+	function rendFloat(td, value) {
+		if (isFloat(value)) {
+			td.innerHTML = value.toFixed(2);
+		}
 	}
 	
 	function isFloat(n) {
