@@ -45,3 +45,12 @@ def find_value_row_index(sheet, start_row, col, value):
             if str(cell.value) == str(value):
                 return cell.row
     return None
+
+
+# 把col列为value的行都删除
+def delete_rows(sheet, start_row, col, value):
+    while True:
+        row_index = find_value_row_index(sheet, start_row, col, value)
+        if row_index is None:
+            break
+        sheet.delete_rows(row_index, 1)   # 删除一行

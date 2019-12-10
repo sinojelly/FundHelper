@@ -5,7 +5,7 @@ from Fund import Fund, timestamp2time
 from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
-from XslxTools import get_cell_value, set_cell_value, find_value_row_index
+from XslxTools import get_cell_value, set_cell_value, find_value_row_index, delete_rows
 
 FUND_SHEET_NAME = "基金"
 
@@ -178,6 +178,7 @@ class FundSheet(object):
                 cell = self.sheet.cell(row=row_index, column=column)
                 set_cell_value(cell, row_data[array_index])
                 array_index += 1
+        delete_rows(self.sheet, 2, 2, MARK_AS_DELETE)
 
 
 if __name__ == '__main__':
