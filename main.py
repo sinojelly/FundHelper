@@ -50,6 +50,7 @@ def generate_thread_id():
     progress_total[thread_id] = 0
     progress_start_time[thread_id] = None
     work_book[thread_id] = FundWorkbook(get_model_name())
+    print("thread id:", thread_id, "username: ", session['username'], "model_name:", get_model_name())
 
     return thread_id
 

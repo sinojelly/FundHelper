@@ -34,7 +34,11 @@ def get_cell_value(sheet, cell, default=''):
     match = re.match(".*?([A-Z]\d+).*?([A-Z]\d+).*?([A-Z]\d+).*", formula)
     for address in match.groups():
         formula = formula.replace(address, str(sheet[address].value))
-    value = eval(formula)
+    try:
+        value = eval(formula)
+    except TypeError as err:
+        print("eval formula fail: ", formula, " exception: ", err)
+        return default
     return value
 
 
