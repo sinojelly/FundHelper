@@ -3,7 +3,7 @@
 from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles.fills import PatternFill
 from openpyxl.styles import Font
-# from openpyxl.cell.cell import TYPE_FORMULA
+from openpyxl.formula.translate import Translator
 import re
 
 
@@ -32,9 +32,15 @@ def get_cell_value(sheet, cell, default=''):
     return value
 
 
-def set_cell_value(cell, value):
+def set_cell_value(sheet, cell, value, start_row):
     if cell.data_type is cell.TYPE_FORMULA:
-        return       # not change the formula
+        return    # 目标单元格已经有公式，不覆盖它
+    else:
+        start_cell = sheet.cell(row=start_row, column=cell.col_idx)
+        if start_cell.data_type is start_cell.TYPE_FORMULA:  # 新插入单元格还没有公式，但是该列应该有公式
+            # 从start_row对应位置拷贝公式到当前单元格
+            cell.value = Translator(start_cell.value, origin=start_cell.coordinate).translate_formula(cell.coordinate)
+            return
     cell.value = value
 
 
@@ -65,16 +71,16 @@ def find_last_row_index(sheet, start_row, col):
     return row_index
 
 
-def set_row_data(sheet, row_index, data, columns):
+def set_row_data(sheet, row_index, data, columns, start_row):
     array_index = 0
     for column in columns:
         cell = sheet.cell(row=row_index, column=column)
-        set_cell_value(cell, data[array_index])
+        set_cell_value(sheet, cell, data[array_index], start_row)
         array_index += 1
 
 
 # 在最后一行后面插入一行
 def insert_row(sheet, start_row, id_col, data, columns):
     last_row_index = find_last_row_index(sheet, start_row, id_col)
-    set_row_data(sheet, last_row_index, data, columns)
+    set_row_data(sheet, last_row_index, data, columns, start_row)
 

@@ -176,7 +176,7 @@ class FundSheet(object):
             if row_index is None:   # 原来不存在添加行
                 insert_row(self.sheet, 2, 1, row_data, WEB_SHOW_COLUMNS)
             else:
-                set_row_data(self.sheet, row_index, row_data, WEB_SHOW_COLUMNS)
+                set_row_data(self.sheet, row_index, row_data, WEB_SHOW_COLUMNS, 2)
         delete_rows(self.sheet, 2, 2, MARK_AS_DELETE)
 
 
@@ -187,7 +187,7 @@ if __name__ == '__main__':
     # sheet.update_funds([], empty_func)
     tabledata = [
         ["005911", "广发双擎升级混合AAA", "6", "12.0368", "0.17", "3", "20191210", "-15.21", "20191201", "-1.02", "20191202"],
-        ["320007", "诺安成长混合", "4", "1.195", "0.5", "4", "20191210", "-16.15", "20191021", "-3.77", "20191119"],
+        ["519674", "诺安成长混合", "4", "1.195", "0.5", "4", "20191210", "-16.15", "20191021", "-3.77", "20191119"],
         ["005999", "广发双擎升级混合CCC", "6", "12.0368", "0.17", "5", "20191210", "-15.21", "20191201", "-1.02", "20191202"],
         ["320088", "诺安成长混合BB", "4", "1.195", "0.5", "4", "20191210", "-16.15", "20191021", "-3.77", "20191119"]]
     sheet.save_table(tabledata)
