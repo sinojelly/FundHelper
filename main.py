@@ -132,16 +132,17 @@ def progress(thread_id):
 @app.route('/user-login', methods=['POST'])
 def user_login():
     if request.method == 'POST':
-        thread_id = generate_thread_id()
         username = request.form['username']
         password = request.form['password']
         if (username == ADMIN_USER or username == 'jelly') and password == '$henF@n':   # 允许j为小写
             session['username'] = ADMIN_USER
             print("admin log in success.")
+            thread_id = generate_thread_id()
             return render_template("admin.html", title='Admin', user=username, thread_id=thread_id)
         else:
             session['username'] = DEFAULT_USER
             print("log in fail.")
+            thread_id = generate_thread_id()
             return render_template("guest.html", title='Guest', user=username, thread_id=thread_id)
 
 
