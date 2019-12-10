@@ -5,7 +5,7 @@ from Fund import Fund, timestamp2time
 from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
-from XslxTools import get_cell_value, set_cell_value, find_value_row_index, delete_rows
+from XslxTools import get_cell_value, set_row_data, find_value_row_index, delete_rows, insert_row
 
 FUND_SHEET_NAME = "基金"
 
@@ -173,11 +173,10 @@ class FundSheet(object):
         self.mark_name_delete()
         for row_data in data:   # for each row data
             row_index = find_value_row_index(self.sheet, 2, 1, row_data[0])
-            array_index = 0
-            for column in WEB_SHOW_COLUMNS:
-                cell = self.sheet.cell(row=row_index, column=column)
-                set_cell_value(cell, row_data[array_index])
-                array_index += 1
+            if row_index is None:   # 原来不存在添加行
+                insert_row(self.sheet, 2, 1, row_data, WEB_SHOW_COLUMNS)
+            else:
+                set_row_data(self.sheet, row_index, row_data, WEB_SHOW_COLUMNS)
         delete_rows(self.sheet, 2, 2, MARK_AS_DELETE)
 
 
@@ -188,6 +187,8 @@ if __name__ == '__main__':
     # sheet.update_funds([], empty_func)
     tabledata = [
         ["005911", "广发双擎升级混合AAA", "6", "12.0368", "0.17", "3", "20191210", "-15.21", "20191201", "-1.02", "20191202"],
-        ["320007", "诺安成长混合", "4", "1.195", "0.5", "4", "20191210", "-16.15", "20191021", "-3.77", "20191119"]]
+        ["320007", "诺安成长混合", "4", "1.195", "0.5", "4", "20191210", "-16.15", "20191021", "-3.77", "20191119"],
+        ["005999", "广发双擎升级混合CCC", "6", "12.0368", "0.17", "5", "20191210", "-15.21", "20191201", "-1.02", "20191202"],
+        ["320088", "诺安成长混合BB", "4", "1.195", "0.5", "4", "20191210", "-16.15", "20191021", "-3.77", "20191119"]]
     sheet.save_table(tabledata)
     wb.save('test_model - 副本.xlsx')
