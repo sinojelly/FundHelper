@@ -29,11 +29,13 @@
 	  licenseKey: 'non-commercial-and-evaluation',
 	  cells: function (row, col) {
 		var cellProperties = {};
-		var data = this.instance.getData();
 		
-		if (col == 4 || col == 5 || col == 8 || col == 10) {
+		if (col == 3) { // col从0开始
 		   cellProperties.type = 'numeric';
 		   cellProperties.numericFormat = {pattern: '0.00'};
+		}
+		if (col == 4) {
+		    cellProperties.renderer = normalConditionColourRenderer
 		}
 		if (col == 7) {
 		    cellProperties.renderer = toLowConditionColourRenderer;
@@ -41,16 +43,6 @@
 		if (col == 9) {
 		    cellProperties.renderer = toHightConditionColourRenderer;
 		}
-		/*
-		if (row === 0 || data[row] && data[row][col] === 'readOnly') {
-		  cellProperties.readOnly = true; // make cell read-only if it is first row or the text reads 'readOnly'
-		}
-		if (row === 0) {
-		  cellProperties.renderer = firstRowRenderer; // uses function directly
-		}
-		else {
-		  cellProperties.renderer = numericRenderer;
-		}*/
 
 		return cellProperties;
 	  }
@@ -96,26 +88,9 @@
     }
 	$("#save").click(save_data);
 	
-	function numericRenderer(instance, td, row, col, prop, value, cellProperties) {
-		Handsontable.renderers.TextRenderer.apply(this, arguments);
-
-	    // if row contains negative number
-	    if (parseFloat(value, 10) < 0) {
-			// add class "negative"
-			td.className = 'make-me-red';
-   	    }
-		//td.style.background = '#EEE';
-		//td.style.fontStyle = 'italic';
-	}
-	
-	function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
-	  Handsontable.renderers.TextRenderer.apply(this, arguments);
-	  td.style.fontWeight = 'bold';
-	  td.style.color = 'green';
-	  td.style.background = '#CEC';
-	  if (isFloat(value)) {
-	     td.innerHTML = value.toFixed(2);
-	  }
+	function normalConditionColourRenderer(instance, td, row, col, prop, value, cellProperties) {
+	   Handsontable.renderers.TextRenderer.apply(this, arguments);
+	   rendConditionColour(td, value, false, false);
 	}
 	
 	function toHightConditionColourRenderer(instance, td, row, col, prop, value, cellProperties) {
