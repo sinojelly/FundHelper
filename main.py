@@ -84,6 +84,7 @@ def update_excel(thread_id, fast_run='True'):
     is_fast_run = str_to_bool(fast_run)
     content = update_work_book(get_model_name(), is_fast_run, progress_updater)
     file_name = datetime.datetime.now().strftime("Funds_%Y-%m-%d_%H_%M_%S.xlsx")
+    username = session['username']
     if is_fast_run:
         file_name = username + "_Fast_" + file_name
     else:
