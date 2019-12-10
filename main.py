@@ -156,11 +156,9 @@ def load_fund_data(thread_id):
 def save_data(thread_id):
     print("save data .....", thread_id)
     if request.method == 'POST':
-        #data = request.form['data']
-        data = request.form.get('data', None)
-        print("request.form : ", request.form)
-        print("request.args : ", request.args)
-        print("type of request.get_json(): ", type(request.get_json()))
+        # data = request.form['data']
+        # data = request.form.get('data', None)
+        # print("type of request.get_json(): ", type(request.get_json()))
         work_book[thread_id].save_table(request.get_json())
     result = {'result': 'ok'}
     return jsonify(result)
