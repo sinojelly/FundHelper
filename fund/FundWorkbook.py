@@ -7,6 +7,7 @@ from FundSheet import FUND_SHEET_NAME, FundSheet
 
 class FundWorkbook(object):
     def __init__(self, file):
+        self.file = file
         self.wb = load_workbook(file)   # self.reader.get_book()
         self.sheet = {FUND_SHEET_NAME: FundSheet(self.wb)}  # 注意不是原始wb 中的Sheet，而是这里的FundSheet包装类对象
         self.sheet_alias = {FUND_SHEET_NAME: 'fund'}  # 使用英文别名，便于在javascript中直接访问
@@ -20,6 +21,7 @@ class FundWorkbook(object):
     def save_table(self, data):
         for key,value in data.items():
             # 每个key对应一个sheet
+            print("save_table key is ", key)
             self.alias_to_sheet[key].save_table(value)
-
+        self.wb.save(self.file)
 

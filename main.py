@@ -160,7 +160,8 @@ def save_data(thread_id):
         data = request.form.get('data', None)
         print("request.form : ", request.form)
         print("request.args : ", request.args)
-        print("request.get_json(): ", request.get_json())
+        print("type of request.get_json(): ", type(request.get_json()))
+        work_book[thread_id].save_table(request.get_json())
     result = {'result': 'ok'}
     return jsonify(result)
 

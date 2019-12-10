@@ -4,6 +4,7 @@ from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles.fills import PatternFill
 from openpyxl.styles import Font
 from openpyxl.formula.translate import Translator
+from openpyxl.cell.cell import TYPE_FORMULA
 import re
 
 
@@ -17,10 +18,15 @@ def set_p_n_condition(sheet, cell):
     sheet.conditional_formatting.add(cell.coordinate, CellIsRule(operator='lessThan', formula=['0'], stopIfTrue=True, font=green_text, fill=green_fill))
 
 
+def get_formula_type(cell):
+    # return cell.TYPE_FORMULA   # 直接在pycharm中运行，要使用这个（可能是openpyxl的新版本)
+    return TYPE_FORMULA    # 在flask中运行，要用这个
+
+
 def get_cell_value(sheet, cell, default=''):
     if cell.value is None:
         return default
-    if cell.data_type is not cell.TYPE_FORMULA:
+    if cell.data_type is not get_formula_type(cell):
         return cell.value
 
     #计算公式
@@ -33,11 +39,11 @@ def get_cell_value(sheet, cell, default=''):
 
 
 def set_cell_value(sheet, cell, value, start_row):
-    if cell.data_type is cell.TYPE_FORMULA:
+    if cell.data_type is get_formula_type(cell):
         return    # 目标单元格已经有公式，不覆盖它
     else:
         start_cell = sheet.cell(row=start_row, column=cell.col_idx)
-        if start_cell.data_type is start_cell.TYPE_FORMULA:  # 新插入单元格还没有公式，但是该列应该有公式
+        if start_cell.data_type is get_formula_type(cell):  # 新插入单元格还没有公式，但是该列应该有公式
             # 从start_row对应位置拷贝公式到当前单元格
             cell.value = Translator(start_cell.value, origin=start_cell.coordinate).translate_formula(cell.coordinate)
             return
@@ -56,7 +62,7 @@ def find_value_row_index(sheet, start_row, col, value):
 def process_formula_for_rows(sheet, start_row):
     for row in sheet.iter_rows(min_row=start_row, min_col=1):
         for cell in row:
-            if cell.data_type is cell.TYPE_FORMULA:
+            if cell.data_type is get_formula_type(cell):
                 new_position = sheet.cell(row=cell.row - 1, column=cell.col_idx)
                 cell.value = Translator(cell.value, origin=cell.coordinate).translate_formula(
                     new_position.coordinate)
