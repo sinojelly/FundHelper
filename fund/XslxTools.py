@@ -52,13 +52,26 @@ def find_value_row_index(sheet, start_row, col, value):
     return None
 
 
+# 考虑删除一行时，把改行后面的每一行的公式都做个调整
+def process_formula_for_rows(sheet, start_row):
+    for row in sheet.iter_rows(min_row=start_row, min_col=1):
+        for cell in row:
+            if cell.data_type is cell.TYPE_FORMULA:
+                new_position = sheet.cell(row=cell.row - 1, column=cell.col_idx)
+                cell.value = Translator(cell.value, origin=cell.coordinate).translate_formula(
+                    new_position.coordinate)
+
+
 # 把col列为value的行都删除
 def delete_rows(sheet, start_row, col, value):
     while True:
         row_index = find_value_row_index(sheet, start_row, col, value)
         if row_index is None:
             break
-        sheet.delete_rows(row_index, 1)   # 删除一行
+        process_formula_for_rows(sheet, row_index + 1)
+        #sheet.delete_rows(row_index, 1, translate=True)   # 删除一行，并且自动对公式进行translate处理， 这个还不支持
+        # https://bitbucket.org/openpyxl/openpyxl/issues?status=new&status=open
+        sheet.delete_rows(row_index, 1)
 
 
 def find_last_row_index(sheet, start_row, col):
