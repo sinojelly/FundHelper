@@ -5,13 +5,16 @@ from Fund import Fund, timestamp2time
 from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
-from XslxTools import get_cell_value
+from XslxTools import get_cell_value, set_cell_value, find_value_row_index
 
 FUND_SHEET_NAME = "基金"
 
 CURRENT_PRICE_COLUMN = 9
 UNIT_WORTH_COLUMN = CURRENT_PRICE_COLUMN
 HISTORY_WORTH_COLUMN_START = UNIT_WORTH_COLUMN + 11
+
+WEB_SHOW_COLUMNS = [1, 2, 8, 9, 10, 11, 13, 14, 16, 17, 19]
+MARK_AS_DELETE = "delete"
 
 
 def clear_sheet_columns(work_sheet, row, column_start, column_num):
@@ -137,7 +140,6 @@ class FundSheet(object):
         return self.sheet.max_row - 1   # 表头去掉
 
     def get_table(self):
-        WEB_SHOW_COLUMNS = [1,2,8,9,10,11,13,14,16,17,19]
         result = []
         row_index = 2
         for row in self.sheet.iter_rows(min_row=row_index, max_col=1):
@@ -159,10 +161,32 @@ class FundSheet(object):
             break
         return result
 
+    def mark_name_delete(self):
+        row_index = 2
+        for row in self.sheet.iter_rows(min_row=row_index, min_col=2, max_col=2):
+            for cell in row:
+                cell.value = MARK_AS_DELETE
+                row_index = row_index + 1
+
+    def save_table(self, data):
+        # 先把所有行第二列（名称）改为delete，然后根据web传来的数据覆盖excel内容，最后把名称为delete的删掉
+        self.mark_name_delete()
+        for row_data in data:   # for each row data
+            row_index = find_value_row_index(self.sheet, 2, 1, row_data[0])
+            array_index = 0
+            for column in WEB_SHOW_COLUMNS:
+                cell = self.sheet.cell(row=row_index, column=column)
+                set_cell_value(cell, row_data[array_index])
+                array_index += 1
+
 
 if __name__ == '__main__':
     from TestTools import empty_func
-    wb = openpyxl.load_workbook('test_model.xlsx')
+    wb = openpyxl.load_workbook('test_model - 副本.xlsx')
     sheet = FundSheet(wb)
-    sheet.update_funds([], empty_func)
-    wb.save('test_model.xlsx')
+    # sheet.update_funds([], empty_func)
+    tabledata = [
+        ["005911", "广发双擎升级混合AAA", "6", "12.0368", "0.17", "3", "20191210", "-15.21", "20191201", "-1.02", "20191202"],
+        ["320007", "诺安成长混合", "4", "1.195", "0.5", "4", "20191210", "-16.15", "20191021", "-3.77", "20191119"]]
+    sheet.save_table(tabledata)
+    wb.save('test_model - 副本.xlsx')

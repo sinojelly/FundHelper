@@ -3,7 +3,7 @@
 from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles.fills import PatternFill
 from openpyxl.styles import Font
-from openpyxl.cell.cell import TYPE_FORMULA
+# from openpyxl.cell.cell import TYPE_FORMULA
 import re
 
 
@@ -20,7 +20,7 @@ def set_p_n_condition(sheet, cell):
 def get_cell_value(sheet, cell, default=''):
     if cell.value is None:
         return default
-    if cell.data_type is not TYPE_FORMULA:
+    if cell.data_type is not cell.TYPE_FORMULA:
         return cell.value
 
     #计算公式
@@ -30,3 +30,18 @@ def get_cell_value(sheet, cell, default=''):
         formula = formula.replace(address, str(sheet[address].value))
     value = eval(formula)
     return value
+
+
+def set_cell_value(cell, value):
+    if cell.data_type is cell.TYPE_FORMULA:
+        return       # not change the formula
+    cell.value = value
+
+
+def find_value_row_index(sheet, start_row, col, value):
+    row_index = start_row
+    for row in sheet.iter_rows(min_row=row_index, min_col=col, max_col=col):
+        for cell in row:
+            if str(cell.value) == str(value):
+                return cell.row
+    return None
