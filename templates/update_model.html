@@ -69,7 +69,7 @@
 	    var csrftoken = $("meta[name=csrf-token]").attr("content");
 	    var arr = { "fund": hot.getData()};
 		$.ajax({
-			url: 'save-data/' + {{thread_id}},
+			url: '/save-data/' + {{thread_id}},
 			type: 'POST',
 			data: JSON.stringify(arr),
 			contentType: 'application/json; charset=utf-8',    
