@@ -4,7 +4,7 @@
 __author__ = 'jelly'
 
 from flask import Flask, url_for, request, json, jsonify
-from flask import render_template, make_response, session
+from flask import render_template, make_response, session, redirect
 
 import threading
 import random
@@ -35,6 +35,7 @@ progress_total = {}     # 所有步骤总数
 progress_start_time = {}      # 记录开始时间
 
 work_book = {}
+update_status ={}
 
 DEFAULT_USER = 'Guest'
 ADMIN_USER = 'Jelly'
@@ -50,6 +51,7 @@ def generate_thread_id():
     progress_total[thread_id] = 0
     progress_start_time[thread_id] = None
     work_book[thread_id] = FundWorkbook(get_model_name())
+    update_status[thread_id] = 'Model'    # 未更新
     print("thread id:", thread_id, "username: ", session['username'], "model_name:", get_model_name())
 
     return thread_id
@@ -63,12 +65,14 @@ def get_model_name():
 
 @app.route('/')
 @app.route('/index')
-def index():
+@app.route('/index/<int:thread_id>/')
+def index(thread_id=None):
     session.permanent = True
     # session['username'] = DEFAULT_USER
     session.setdefault('username', DEFAULT_USER)   # 如果未设置，则设置为guest，避免KeyError; 如果已设置则不改变
 
-    thread_id = generate_thread_id()
+    if thread_id is None:
+        thread_id = generate_thread_id()
 
     print('task id: #%s' % thread_id)
     if session['username'] == ADMIN_USER:
@@ -82,13 +86,22 @@ def update_excel(thread_id, fast_run='True'):
     print('update_excel thread id: #%s' % thread_id, "fast_run:", fast_run)
     progress_updater = make_progress_updater(thread_id)
     is_fast_run = str_to_bool(fast_run)
-    content = update_work_book(get_model_name(), is_fast_run, progress_updater)
+    update_status[thread_id] = 'Fast' if is_fast_run is True else 'Full'
+    work_book[thread_id].update_funds(is_fast_run, progress_updater)
+    if session['username'] == ADMIN_USER:
+        # return "<meta http-equiv=\"refresh\" content=\"1\">"
+        # return "<meta http-equiv=\"Refresh\" content=\"0; url=" + url_for("admin-page") + "/" + str(thread_id) + "\" />"
+        return redirect(url_for('index') + "/" + str(thread_id))
+        # return render_template("admin.html", title='Admin', user=session['username'], thread_id=thread_id)
+    return download_excel(thread_id)   # 非admin登录，直接下载excel
+
+
+@app.route('/download-excel/<int:thread_id>/')
+def download_excel(thread_id):
+    content = work_book[thread_id].download_excel()
     file_name = datetime.datetime.now().strftime("Funds_%Y-%m-%d_%H_%M_%S.xlsx")
     username = session['username']
-    if is_fast_run:
-        file_name = username + "_Fast_" + file_name
-    else:
-        file_name = username + "_Full_" + file_name
+    file_name = username + "_" + update_status[thread_id] + "_" + file_name
     response = make_response(content)
     response.headers["Content-Disposition"] = "attachment; filename=" + file_name
     response.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

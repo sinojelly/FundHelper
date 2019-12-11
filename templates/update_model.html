@@ -51,7 +51,7 @@
 	$( document ).ready(function() {
 		//console.log( "ready!" );
 		$.ajax({
-			url: 'load-fund-data/' + {{thread_id}},
+			url: '/load-fund-data/' + {{thread_id}},
 			type: 'GET',
 			contentType: 'application/json; charset=utf-8',    
 			dataType: 'json',

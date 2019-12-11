@@ -2,7 +2,8 @@
 	<form action="" method="get"> 
 		<label>Full update</label>
 		<input name="full_update" id="full_update" type="radio" value="True" /><br/> 
-		<input name="" type="button" class="showProgress" value="Update"/> <!-- only type button can trigger showProgress javascript, but only type submit can submit form parameters.-->
+		<input name="" type="button" class="showProgress" value="Update Funds"/> <!-- only type button can trigger showProgress javascript, but only type submit can submit form parameters.-->
+		<input name="" type="button" class="downloadExcel" value="Download"/> 
     </form> 
 	<div id="progress"></div>
 	<div id="timeCost"></div>
@@ -31,9 +32,16 @@
 				}
 				if (current < total || total == 0) {
 					setTimeout(worker, 1000);
+				} else {
+				    //window.location.reload();  // 刷新页面，从而把fund数据更新结果显示出来
 				}
 			})
 		}
 	}
 	$(".showProgress").click(check_progress);
+	
+	function download_excel() {
+		window.location.href = "/download-excel/{{thread_id}}/";
+	}
+	$(".downloadExcel").click(download_excel);
 	</script>
