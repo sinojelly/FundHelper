@@ -147,6 +147,10 @@ class StockIndexSheet(object):
     def get_row_count(self):
         return self.sheet.max_row - 1  # 去掉表头
 
+    # 目前没有历史信息，不能查到指定某天的价格，所以直接返回空。Invest表需要手动填写名称和投资时价格点数
+    def get_invest_price(self, fund_id, time_str):
+        return None
+
 
 if __name__ == '__main__':
     wb = openpyxl.load_workbook('example_filetest.xlsx')
