@@ -89,10 +89,7 @@ def update_excel(thread_id, fast_run='True'):
     update_status[thread_id] = 'Fast' if is_fast_run is True else 'Full'
     work_book[thread_id].update_funds(is_fast_run, progress_updater)
     if session['username'] == ADMIN_USER:
-        # return "<meta http-equiv=\"refresh\" content=\"1\">"
-        # return "<meta http-equiv=\"Refresh\" content=\"0; url=" + url_for("admin-page") + "/" + str(thread_id) + "\" />"
         return redirect(url_for('index') + "/" + str(thread_id))
-        # return render_template("admin.html", title='Admin', user=session['username'], thread_id=thread_id)
     return download_excel(thread_id)   # 非admin登录，直接下载excel
 
 
