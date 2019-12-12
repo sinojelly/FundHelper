@@ -104,3 +104,6 @@ venv.bak/
 .mypy_cache/
 
 fund/.idea/
+
+*- 副本.xlsx
+~$Jelly_model.xlsx

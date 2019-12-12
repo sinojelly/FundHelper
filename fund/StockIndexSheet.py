@@ -9,9 +9,15 @@ from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
 
+from XslxTools import get_cell_value
+
+
 STOCK_SHEET_NAME = "指数"
 
 CURRENT_INDEX_COLUMN = 6
+
+# excel: start from 1,  javascript: start from 0
+WEB_SHOW_COLUMNS = [1, 2, 6, 7, 8, 9, 10, 11, 12, 14, 15, 17]
 
 
 def clear_sheet_columns(work_sheet, row, column_start, column_num):
@@ -150,6 +156,28 @@ class StockIndexSheet(object):
     # 目前没有历史信息，不能查到指定某天的价格，所以直接返回空。Invest表需要手动填写名称和投资时价格点数
     def get_invest_price(self, fund_id, time_str):
         return None
+
+    def get_table(self):
+        result = []
+        row_index = 2
+        for row in self.sheet.iter_rows(min_row=row_index, max_col=1):
+            for cell in row:
+                if cell.value is None:  # 遇到空行(id为空)，则后面不再更新
+                    break
+                row_result = []
+                for column in WEB_SHOW_COLUMNS:
+                    cell = self.sheet.cell(row=row_index, column=column)
+                    # value = reader.get_cell_value(cell.coordinate, FUND_SHEET_NAME)
+                    value = get_cell_value(self.sheet, cell)
+                    row_result.append(value)
+                result.append(row_result)
+                row_index = row_index + 1
+            else:
+                # Continue if the inner loop wasn't broken.
+                continue
+            # Inner loop was broken, break the outer.
+            break
+        return result
 
 
 if __name__ == '__main__':

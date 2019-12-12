@@ -1,15 +1,18 @@
 	<p>
 	<button id="save">Save</button>
-	<div id="fund-table"></div> 
 	<div id="updateModelStatus"></div>
+	<div id="fund-table"></div> 
+	<div id="stock-index-table"></div> 
+	<div id="invest-table"></div> 
+	<div id="information-table"></div> 
 	</p>
 	<script>
 	var tabledata = [
  	["005911", "广发双擎升级混合", "5", "2.0368", "0.17", "-15.21", "20191021", "-1.02", "20191120"],
 	["320007", "诺安成长混合", "5", "1.195", "0.5", "-16.15", "20191021", "-3.77", "20191119"],
     ];
-	var container = document.getElementById('fund-table');
-	var hot = new Handsontable(container, {
+	var fundTableContainer = document.getElementById('fund-table');
+	var fundTable = new Handsontable(fundTableContainer, {
 	  data: null, //tabledata,
 	  rowHeaders: false,
 	  colHeaders: ["Fund ID", "Name", "Level", "Price", "Change", "Day", "UpdateTime", "R2Low", "LowDate", "R2High", "HighDate"],
@@ -47,7 +50,37 @@
 		return cellProperties;
 	  }
 	});	
-	
+	var stockIndexTableContainer = document.getElementById('fund-table');
+	var stockIndexTable = new Handsontable(stockIndexTableContainer, {
+	  data: null, //tabledata,
+	  rowHeaders: false,
+	  colHeaders: ["StockIndex", "Name", "Point", "Change", "Day", "CChange","Amount", "UpdateTime", "R2Low", "LowDate", "R2High", "HighDate"],
+	  columnSorting : true,
+	  dropdownMenu: true,
+      autoColumnSize: true,
+	  contextMenu: true,
+	  licenseKey: 'non-commercial-and-evaluation',
+	  cells: function (row, col) {
+		var cellProperties = {};
+		
+		if (col == 2 || col == 6) { // col从0开始
+		   cellProperties.type = 'numeric';
+		   cellProperties.numericFormat = {pattern: '0.00'};
+		}
+		if (col == 3 || col == 5) {
+		    cellProperties.renderer = normalConditionColourRenderer
+		}
+		if (col == 8) {
+		    cellProperties.renderer = toLowConditionColourRenderer;
+		}
+		if (col == 10) {
+		    cellProperties.renderer = toHightConditionColourRenderer;
+		}
+
+		return cellProperties;
+	  }
+	});	
+
 	$( document ).ready(function() {
 		//console.log( "ready!" );
 		$.ajax({
@@ -57,7 +90,8 @@
 			dataType: 'json',
 			async: true,
 			success: function(msg) {
-				hot.loadData(msg.fund);
+				fundTable.loadData(msg.fund);
+				stockIndexTable.loadData(msg.stock)
 				//console.log('Loaded:');
 				//console.log(msg.data);
 			}
@@ -67,7 +101,7 @@
 	function save_data() { 
 	    // save all cell's data
 	    var csrftoken = $("meta[name=csrf-token]").attr("content");
-	    var arr = { "fund": hot.getData()};
+	    var arr = { "fund": fundTable.getData()};
 		$.ajax({
 			url: '/save-data/' + {{thread_id}},
 			type: 'POST',
