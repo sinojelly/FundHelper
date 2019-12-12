@@ -80,6 +80,26 @@
 		return cellProperties;
 	  }
 	});	
+	var infoTableContainer = document.getElementById('information-table');
+	var infoTable = new Handsontable(infoTableContainer, {
+	  data: null,
+	  rowHeaders: false,
+	  colHeaders: ["ID", "Date", "Category", "Source", "Scope", "Degree", "Impact","Information"],
+	  columnSorting : true,
+	  dropdownMenu: true,
+      autoColumnSize: true,
+	  contextMenu: true,
+	  licenseKey: 'non-commercial-and-evaluation',
+	  cells: function (row, col) {
+		var cellProperties = {};
+		
+		if (col == 4) {
+		    cellProperties.renderer = normalIntConditionColourRenderer
+		}
+
+		return cellProperties;
+	  }
+	});	
 
 	$( document ).ready(function() {
 		//console.log( "ready!" );
@@ -91,7 +111,8 @@
 			async: true,
 			success: function(msg) {
 				fundTable.loadData(msg.fund);
-				stockIndexTable.loadData(msg.stock)
+				stockIndexTable.loadData(msg.stock);
+				infoTable.loadData(msg.info);
 				//console.log('Loaded:');
 				//console.log(msg.data);
 			}
@@ -101,7 +122,7 @@
 	function save_data() { 
 	    // save all cell's data
 	    var csrftoken = $("meta[name=csrf-token]").attr("content");
-	    var arr = { "fund": fundTable.getData()};
+	    var arr = { "fund": fundTable.getData(), "info": infoTable.getData()};
 		$.ajax({
 			url: '/save-data/' + {{thread_id}},
 			type: 'POST',
@@ -122,23 +143,30 @@
     }
 	$("#save").click(save_data);
 	
+	function normalIntConditionColourRenderer(instance, td, row, col, prop, value, cellProperties) {
+	   Handsontable.renderers.TextRenderer.apply(this, arguments);
+	   rendConditionColour(td, value, false, false);
+	}
+
 	function normalConditionColourRenderer(instance, td, row, col, prop, value, cellProperties) {
 	   Handsontable.renderers.TextRenderer.apply(this, arguments);
+	   rendFloat(td, value);
 	   rendConditionColour(td, value, false, false);
 	}
 	
 	function toHightConditionColourRenderer(instance, td, row, col, prop, value, cellProperties) {
 	   Handsontable.renderers.TextRenderer.apply(this, arguments);
+	   rendFloat(td, value);
 	   rendConditionColour(td, value, true, false);
 	}
 
 	function toLowConditionColourRenderer(instance, td, row, col, prop, value, cellProperties) {
 	   Handsontable.renderers.TextRenderer.apply(this, arguments);
+	   rendFloat(td, value);
 	   rendConditionColour(td, value, false, true);
 	}
 	
 	function rendConditionColour(td, value, toHigh, toLow) {
-		rendFloat(td, value);
 		if (toHigh && value < 3) {
 			td.innerHTML = "<font color=\"#B3770F\">"+td.innerHTML+"</font>"
 			td.style.background = '#FEEA9B';
