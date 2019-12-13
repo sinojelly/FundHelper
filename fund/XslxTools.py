@@ -4,7 +4,7 @@ from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles.fills import PatternFill
 from openpyxl.styles import Font
 from openpyxl.formula.translate import Translator
-# from openpyxl.cell.cell import TYPE_FORMULA
+from openpyxl.cell.cell import TYPE_FORMULA
 import re
 
 
@@ -19,8 +19,8 @@ def set_p_n_condition(sheet, cell):
 
 
 def get_formula_type(cell):
-    return cell.TYPE_FORMULA   # 直接在pycharm中运行，要使用这个（可能是openpyxl的新版本)
-    # return TYPE_FORMULA    # 在flask中运行，要用这个
+    # return cell.TYPE_FORMULA   # 直接在pycharm中运行，要使用这个（可能是openpyxl的新版本)
+    return TYPE_FORMULA    # 在flask中运行，要用这个
 
 
 def get_cell_value(sheet, cell, default=''):
