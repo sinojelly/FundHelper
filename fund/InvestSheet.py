@@ -56,7 +56,7 @@ class InvestSheet(object):
     def process_one_fund(self, col):
         price = self.get_current_price(col)
         if price is None:
-            return
+            return 0, 0
         total_invest = 0
         total_income = 0
         need_process = True
@@ -116,11 +116,14 @@ class InvestSheet(object):
             self.sheet.cell(column=col+1, row=4).value = total_income / total_invest * 100   # 总收益率
             self.sheet.cell(column=col+1, row=4).number_format = FORMAT_NUMBER_00
             set_p_n_condition(self.sheet, self.sheet.cell(column=col+1, row=4))
+        return total_invest, total_income
 
     def update_all_invests(self, *stock_sheets):
         for stock_sheet in stock_sheets:
             self.stock_sheets[stock_sheet.get_sheet_name()] = stock_sheet
 
+        total_invest = 0
+        total_income = 0
         need_process = True
         for col in self.sheet.iter_cols(min_col=INVEST_COLUMN_START, min_row=2, max_row=2):   # 只读基金/指数ID
             for cell in col:
@@ -130,7 +133,16 @@ class InvestSheet(object):
                 need_process = False
                 if cell.value is None:  # 跳过未填写的
                     break
-                self.process_one_fund(int(cell.col_idx))
+                invest, income = self.process_one_fund(int(cell.col_idx))
+                total_invest += invest
+                total_income += income
+        self.sheet.cell(row=3, column=2).value = total_invest
+        self.sheet.cell(row=4, column=2).value = total_income
+        self.sheet.cell(row=4, column=3).value = total_income/total_invest*100
+        self.sheet.cell(row=4, column=2).number_format = FORMAT_NUMBER_00
+        set_p_n_condition(self.sheet, self.sheet.cell(row=4, column=2))
+        self.sheet.cell(row=4, column=3).number_format = FORMAT_NUMBER_00
+        set_p_n_condition(self.sheet, self.sheet.cell(row=4, column=3))
 
     def get_fund_id(self, col):
         category = self.sheet.cell(row=1, column=col).value
