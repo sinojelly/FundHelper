@@ -176,7 +176,7 @@ class FundSheet(object):
             if row_index is None:   # 原来不存在添加行
                 insert_row(self.sheet, 2, 1, row_data, WEB_SHOW_COLUMNS)
             else:
-                set_row_data(self.sheet, row_index, row_data, WEB_SHOW_COLUMNS, 2)
+                set_row_data(self.sheet, row_index, row_data, 2, WEB_SHOW_COLUMNS)
         delete_rows(self.sheet, 2, 2, MARK_AS_DELETE)
 
 

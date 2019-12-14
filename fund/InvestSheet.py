@@ -5,6 +5,7 @@ import openpyxl
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
 
 from XslxTools import set_p_n_condition
+from XslxTools import get_cell_value, set_row_data, find_value_row_index, get_index_range, insert_row
 
 
 INVEST_SHEET_NAME = "投资"
@@ -152,6 +153,28 @@ class InvestSheet(object):
                 if fund_id is not None:
                     invested_funds.append(str(fund_id))
         return invested_funds
+
+    def get_table(self):
+        result = []
+        row_index = 1
+        for row in self.sheet.iter_rows(min_row=row_index, max_col=1):
+            for cell in row:
+                row_result = []
+                for column in get_index_range(self.sheet.max_column):
+                    cell = self.sheet.cell(row=row_index, column=column)
+                    value = get_cell_value(self.sheet, cell)
+                    row_result.append(value)
+                result.append(row_result)
+                row_index = row_index + 1
+        return result
+
+    def save_table(self, data):
+        for row_data in data:   # for each row data
+            row_index = find_value_row_index(self.sheet, 1, 1, row_data[0])
+            if row_index is None:   # 原来不存在添加行
+                insert_row(self.sheet, 1, 1, row_data)
+            else:
+                set_row_data(self.sheet, row_index, row_data, 1)
 
 
 if __name__ == '__main__':

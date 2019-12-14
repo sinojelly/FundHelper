@@ -80,6 +80,26 @@
 		return cellProperties;
 	  }
 	});	
+	var investTableContainer = document.getElementById('invest-table');
+	var investTable = new Handsontable(investTableContainer, {
+	  data: null, //tabledata,
+	  rowHeaders: false,
+	  colHeaders: false,
+	  columnSorting : false,
+	  dropdownMenu: true,
+      autoColumnSize: true,
+	  contextMenu: true,
+	  licenseKey: 'non-commercial-and-evaluation',
+	  cells: function (row, col) {
+		var cellProperties = {};
+
+		if (row >= 3 && row%2 == 1) {
+		    cellProperties.renderer = normalConditionColourRenderer
+		}
+
+		return cellProperties;
+	  }
+	});
 	var infoTableContainer = document.getElementById('information-table');
 	var infoTable = new Handsontable(infoTableContainer, {
 	  data: null,
@@ -112,6 +132,7 @@
 			success: function(msg) {
 				fundTable.loadData(msg.fund);
 				stockIndexTable.loadData(msg.stock);
+				investTable.loadData(msg.invest);
 				infoTable.loadData(msg.info);
 				//console.log('Loaded:');
 				//console.log(msg.data);
@@ -122,7 +143,7 @@
 	function save_data() { 
 	    // save all cell's data
 	    var csrftoken = $("meta[name=csrf-token]").attr("content");
-	    var arr = { "fund": fundTable.getData(), "info": infoTable.getData()};
+	    var arr = { "fund": fundTable.getData(), "info": infoTable.getData(), "invest":investTable.getData()};
 		$.ajax({
 			url: '/save-data/' + {{thread_id}},
 			type: 'POST',

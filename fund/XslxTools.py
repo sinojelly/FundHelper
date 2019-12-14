@@ -32,6 +32,8 @@ def get_cell_value(sheet, cell, default=''):
     #计算公式
     formula = cell.value[1:]  # 去掉等号
     match = re.match(".*?([A-Z]\d+).*?([A-Z]\d+).*?([A-Z]\d+).*", formula)
+    if match is None:  # 遇到不同的公式
+        return cell.value
     for address in match.groups():
         formula = formula.replace(address, str(sheet[address].value))
     try:
@@ -94,16 +96,23 @@ def find_last_row_index(sheet, start_row, col):
     return row_index
 
 
-def set_row_data(sheet, row_index, data, columns, start_row):
+def set_row_data(sheet, row_index, data, start_row, columns=None):
+    col_range = get_index_range(sheet.max_column)
+    if columns is not None:
+        col_range = columns
     array_index = 0
-    for column in columns:
+    for column in col_range:
         cell = sheet.cell(row=row_index, column=column)
         set_cell_value(sheet, cell, data[array_index], start_row)
         array_index += 1
 
 
 # 在最后一行后面插入一行
-def insert_row(sheet, start_row, id_col, data, columns):
+def insert_row(sheet, start_row, id_col, data, columns=None):
     last_row_index = find_last_row_index(sheet, start_row, id_col)
-    set_row_data(sheet, last_row_index, data, columns, start_row)
+    set_row_data(sheet, last_row_index, data, start_row, columns)
 
+
+# excel from 1
+def get_index_range(max_index):
+    return range(1, max_index+1, 1)
