@@ -4,6 +4,8 @@
 	<button id="gitSubmit">Git Submit</button>
 	<div id="gitSubmitStatus"></div><br>
 	<h2>Fund table</h2>
+	<div>Search fund: <input id="fundSearchField" type="text" value="" ></input></div><br>
+	<div id="fundSearchStatus"></div><br>
 	<div id="fund-table"></div> 
 	<h2>Stock index table</h2>
 	<div id="stock-index-table"></div> 
@@ -26,6 +28,7 @@
 	  dropdownMenu: true,
       autoColumnSize: true,
 	  contextMenu: true,
+	  search: true,
 	  width: '100%',
       height: 500,
 	  modifyColWidth: function(width, col){
@@ -54,7 +57,17 @@
 
 		return cellProperties;
 	  }
-	});	
+	});
+	var searchFiled = document.getElementById('fundSearchField');
+	Handsontable.dom.addEvent(searchFiled, 'keyup', function (event) {
+	  var search = fundTable.getPlugin('search');
+	  var queryResult = search.query(this.value);
+	  var matchNumber = queryResult.length;
+	  $("#fundSearchStatus").text("Search result: "+matchNumber+" matched items.");
+	  //console.log(queryResult);
+	  fundTable.render();
+	});
+	
 	var stockIndexTableContainer = document.getElementById('stock-index-table');
 	var stockIndexTable = new Handsontable(stockIndexTableContainer, {
 	  data: null, //tabledata,
