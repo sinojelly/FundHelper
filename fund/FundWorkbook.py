@@ -42,8 +42,8 @@ class FundWorkbook(object):
         self.wb.save(self.file)
 
     def update_funds(self, fast_run, progress_updater):
-        print("Start ...")
-        starttime = datetime.datetime.now()
+        print("update_funds start ... fast_run =", fast_run)
+        # starttime = datetime.datetime.now()
 
         invest_sheet = InvestSheet(self.wb)
         invest_funds = invest_sheet.get_all_funds()
@@ -62,22 +62,22 @@ class FundWorkbook(object):
 
         fund_sheet.update_funds(invest_funds, progress_updater)
 
-        end_funds_time = datetime.datetime.now()
-        print("Finished update funds! It takes", (end_funds_time - starttime).seconds, "seconds.")
+        # end_funds_time = datetime.datetime.now()
+        # print("Finished update funds! It takes", (end_funds_time - starttime).seconds, "seconds.")
 
         stock_index_sheet.update_stock_index(progress_updater)
 
-        end_stock_index_time = datetime.datetime.now()
+        # end_stock_index_time = datetime.datetime.now()
 
-        print("Finished update stock index! It takes", (end_stock_index_time - end_funds_time).seconds, "seconds.")
+        # print("Finished update stock index! It takes", (end_stock_index_time - end_funds_time).seconds, "seconds.")
 
         invest_sheet.update_all_invests(fund_sheet, stock_index_sheet)
         # wb.save(file)  # not save to the origin file
 
         progress_updater(finished=True)  # 更新当前步骤，并且表明已经结束
 
-        endtime = datetime.datetime.now()
-        print("Finished all! It takes", (endtime - starttime).seconds, "seconds.")
+        # endtime = datetime.datetime.now()
+        # print("Finished all! It takes", (endtime - starttime).seconds, "seconds.")
 
     def download_excel(self):
         virtual_workbook = BytesIO()

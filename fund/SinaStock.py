@@ -36,7 +36,7 @@ class SinaStock(object):
         self.current_index_time = None
         self.current_index_change_ratio = None
 
-        print("[Sina] process :", self.stock_id)
+        # print("[Sina] process :", self.stock_id)
         # self.initialize()
 
     def get_url(self):

@@ -20,7 +20,7 @@ class JuheStockIndex(object):
         self.current_index_change_ratio = None
         self.prev_index = None
 
-        print("[Juhe] process :", self.stock_id)
+        # print("[Juhe] process :", self.stock_id)
         # self.initialize()
 
     def get_url(self):

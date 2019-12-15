@@ -159,7 +159,7 @@ class Fund(object):
         self.recent_unit_worth = self.recent_unit_worth[::-1]     # 截取最后60天，再逆序，最新时间在前面
         # self.calc_unit_worth()
         self.calc_ac_worth()
-        print("[Fund] process :", self.fund_id, self.fund_name)
+        # print("[Fund] process :", self.fund_id, self.fund_name)
 
     def get_url(self):
         head = 'http://fund.eastmoney.com/pingzhongdata/'

@@ -20,7 +20,7 @@
 		window.location.href = download_url;
 		worker();
 		function worker() {
-			$.get('progress/' + {{thread_id}}, function(data) {
+			$.get('/progress/' + {{thread_id}}, function(data) {
 			    current = data.current
 				total = data.total
 				if (total > 0 && current <= total) {

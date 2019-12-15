@@ -15,7 +15,7 @@ class EastMoneyPushStockIndex(object):
         self.current_index_change_ratio = None
         self.prev_index = None
 
-        print("[EastMoneyPush] process :", self.stock_id)
+        # print("[EastMoneyPush] process :", self.stock_id)
         # self.initialize()
 
     def get_url(self):

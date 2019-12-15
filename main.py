@@ -55,7 +55,7 @@ def generate_thread_id():
     progress_start_time[thread_id] = None
     work_book[thread_id] = FundWorkbook(get_model_name())
     update_status[thread_id] = 'Model'    # 未更新
-    print("thread id:", thread_id, "username: ", session['username'], "model_name:", get_model_name())
+    # print("thread id:", thread_id, "username: ", session['username'], "model_name:", get_model_name())
 
     return thread_id
 
@@ -78,7 +78,7 @@ def index(thread_id=None):
     if thread_id is None:
         thread_id = generate_thread_id()
 
-    print('task id: #%s' % thread_id)
+    # print('task id: #%s' % thread_id)
     if session['username'] == ADMIN_USER:
         return render_template("admin.html", title='Admin', user=session['username'], thread_id=thread_id)
     return render_template("index.html", title='Home', thread_id=thread_id)
@@ -87,7 +87,7 @@ def index(thread_id=None):
 @app.route('/update-excel/<int:thread_id>/')
 @app.route('/update-excel/<int:thread_id>/<fast_run>')
 def update_excel(thread_id, fast_run='True'):
-    print('update_excel thread id: #%s' % thread_id, "fast_run:", fast_run)
+    # print('update_excel thread id: #%s' % thread_id, "fast_run:", fast_run)
     progress_updater = make_progress_updater(thread_id)
     is_fast_run = str_to_bool(fast_run)
     update_status[thread_id] = 'Fast' if is_fast_run is True else 'Full'
@@ -124,9 +124,9 @@ def make_progress_updater(thread_id):
             progress_total[thread_id] = total
             progress_start_time[thread_id] = datetime.datetime.now()
         if finished and progress_current[thread_id] != progress_total[thread_id]:
-            print("Finished! current =", progress_current[thread_id], "total =", progress_total[thread_id])
+            # print("Finished! current =", progress_current[thread_id], "total =", progress_total[thread_id])
             progress_current[thread_id] = progress_total[thread_id]
-        print("thread:", thread_id, "total:", progress_total[thread_id], "current:", progress_current[thread_id])
+        # print("thread:", thread_id, "total:", progress_total[thread_id], "current:", progress_current[thread_id])
     return update_progress
 
 
@@ -135,8 +135,7 @@ def progress(thread_id):
     global progress_current
     global progress_total
 
-    print("get progress in thread:", thread_id)
-    # return str(exporting_threads[thread_id].progress)
+    # print("get progress in thread:", thread_id)
     result = {'current': progress_current[thread_id], 'total': progress_total[thread_id], 'time': 0}
     if progress_current[thread_id] >= progress_total[thread_id] and progress_start_time[thread_id] is not None:
         result['time'] = (datetime.datetime.now() - progress_start_time[thread_id]).seconds
@@ -163,7 +162,7 @@ def user_login():
 
 @app.route('/load-fund-data/<int:thread_id>')
 def load_fund_data(thread_id):
-    print("load fund data .....", thread_id)
+    # print("load fund data .....", thread_id)
     # result = {'data': [["005911", "广发双擎升级混合", "5", "2.0368", "0.17", "-15.21", "20191021", "-1.02", "20191120"]]} # 必须是两重数组
     result = work_book[thread_id].get_table()
     return jsonify(result)
@@ -207,18 +206,17 @@ def run_git_submit(work_dir):
     cmd = commit_cmd + " & " + push_cmd + " & " + status_cmd
     # result = os.popen(cmd).read()
     stdout_value, stderr_value = run_external_cmd(cmd)
-    print(stdout_value.decode())
-    print("---------------err-------------")
-    print(stderr_value.decode())
+    # print(stdout_value.decode())
+    # print("---------------err-------------")
+    # print(stderr_value.decode())
     return stdout_value.decode(), stderr_value.decode()
 
 
 @app.route('/git-submit/<int:thread_id>', methods=['GET'])
 def git_submit(thread_id):
-    work_dir = "D:\\Develop\\projects\\web-projects\\fundhelper-data"
-    # work_dir = "/usr/local/fundhelper-data"
+    # work_dir = "D:\\Develop\\projects\\web-projects\\fundhelper-data"
+    work_dir = "/usr/local/fundhelper-data"
     stdout_value, stderr_value = run_git_submit(work_dir)
-    print("000000000 - git_submit")
     return jsonify({'stdout': stdout_value, 'stderr':stderr_value})
 
 

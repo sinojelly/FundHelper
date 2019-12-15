@@ -66,28 +66,7 @@ class FundSheet(object):
                 self.sheet.cell(column=fixed_info_column_start + 3, row=row).value = fund.ac_worth
                 self.sheet.cell(column=fixed_info_column_start + 4, row=row).value = fund.unit_worth_time # datetime.datetime.now()
 
-                column_start = HISTORY_WORTH_COLUMN_START
-                # print("fund.recent_ac_worth_max")
-                # print(fund.recent_ac_worth_max)
-                min_min_value = 99999  # 极小值中最小的一个
-                min_min_column = 0  # 极小值中最小的一个对应的列
-                max_max_value = 0  # 极大值中最大的一个
-                max_max_column = 0  # 极大值中最小的一个对应的列
-                ac_worth_max = list(fund.recent_ac_worth_max[::-1])
-                for min_item in fund.recent_ac_worth_min[::-1]:
-                    max_item = None
-                    if len(ac_worth_max) > 0:
-                        max_item = ac_worth_max.pop(0)
-                    count,min_min_value,min_min_column,max_max_value,max_max_column = self.write_extrema_worth(column_start, row, min_item, max_item, fund.ac_worth, min_min_value, min_min_column, max_max_value, max_max_column)
-                    column_start = column_start + count
-
-                side = Side(border_style='medium', color=Color(rgb=BLUE))
-                border = Border(left=side, right=side, top=side, bottom=side)
-                self.sheet.cell(column=min_min_column, row=row).border = border
-
-                side = Side(border_style='medium', color=Color(rgb=RED))
-                border = Border(left=side, right=side, top=side, bottom=side)
-                self.sheet.cell(column=max_max_column, row=row).border = border
+                # self.update_history_worth(fund, row)
 
                 progress_updater()   # 每次row增加前+1
                 row = row + 1
@@ -96,6 +75,36 @@ class FundSheet(object):
                 continue
             # Inner loop was broken, break the outer.
             break
+
+    def update_history_worth(self, fund, row):
+        column_start = HISTORY_WORTH_COLUMN_START
+        # print("fund.recent_ac_worth_max")
+        # print(fund.recent_ac_worth_max)
+        min_min_value = 99999  # 极小值中最小的一个
+        min_min_column = 0  # 极小值中最小的一个对应的列
+        max_max_value = 0  # 极大值中最大的一个
+        max_max_column = 0  # 极大值中最小的一个对应的列
+        ac_worth_max = list(fund.recent_ac_worth_max[::-1])
+        for min_item in fund.recent_ac_worth_min[::-1]:
+            max_item = None
+            if len(ac_worth_max) > 0:
+                max_item = ac_worth_max.pop(0)
+            count, min_min_value, min_min_column, max_max_value, max_max_column = self.write_extrema_worth(column_start,
+                                                                                                           row,
+                                                                                                           min_item,
+                                                                                                           max_item,
+                                                                                                           fund.ac_worth,
+                                                                                                           min_min_value,
+                                                                                                           min_min_column,
+                                                                                                           max_max_value,
+                                                                                                           max_max_column)
+            column_start = column_start + count
+        side = Side(border_style='medium', color=Color(rgb=BLUE))
+        border = Border(left=side, right=side, top=side, bottom=side)
+        self.sheet.cell(column=min_min_column, row=row).border = border
+        side = Side(border_style='medium', color=Color(rgb=RED))
+        border = Border(left=side, right=side, top=side, bottom=side)
+        self.sheet.cell(column=max_max_column, row=row).border = border
 
     def write_extrema_worth(self, column_start, row, min_data, max_data, current, min_value, min_column, max_value, max_column):
         ratio = (min_data[1] - current) / current

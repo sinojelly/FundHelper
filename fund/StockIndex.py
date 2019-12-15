@@ -124,7 +124,7 @@ class StockIndex(object):
         self.recent_index_max = None  # 最近60天，最大值列表
         self.recent_index_min = None  # 最近60天，最小值列表
 
-        print("[StockIndex TuShare] process :", self.stock_id)
+        # print("[StockIndex TuShare] process :", self.stock_id)
 
     def initialize(self):
         self.has_realtime_info = self.init_realtime_info()

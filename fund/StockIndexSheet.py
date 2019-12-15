@@ -92,32 +92,41 @@ class StockIndexSheet(object):
                     row = row + 1
                     continue
 
-                # 后面是自动生成的极大极小值比例信息
-                column_start = auto_extrema_column_start
-                # print("fund.recent_ac_worth_max")
-                # print(fund.recent_ac_worth_max)
-                min_min_value = 99999  # 极小值中最小的一个
-                min_min_column = 0  # 极小值中最小的一个对应的列
-                max_max_value = 0  # 极大值中最大的一个
-                max_max_column = 0  # 极大值中最小的一个对应的列
-                index_max = list(stock_index.recent_index_max)
-                for min_item in stock_index.recent_index_min:
-                    max_item = None
-                    if len(index_max) > 0:
-                        max_item = index_max.pop(0)
-                    count,min_min_value,min_min_column,max_max_value,max_max_column = self.write_extrema_index(column_start, row, min_item, max_item, stock_index.current_index, min_min_value, min_min_column, max_max_value, max_max_column)
-                    column_start = column_start + count
-
-                side = Side(border_style='medium', color=Color(rgb=BLUE))
-                border = Border(left=side, right=side, top=side, bottom=side)
-                self.sheet.cell(column=min_min_column, row=row).border = border
-
-                side = Side(border_style='medium', color=Color(rgb=RED))
-                border = Border(left=side, right=side, top=side, bottom=side)
-                self.sheet.cell(column=max_max_column, row=row).border = border
+                # self.update_history_worth(stock_index, row, auto_extrema_column_start)
 
                 progress_updater()
                 row = row + 1
+
+    def update_history_worth(self, stock_index, row, auto_extrema_column_start):
+        # 后面是自动生成的极大极小值比例信息
+        column_start = auto_extrema_column_start
+        # print("fund.recent_ac_worth_max")
+        # print(fund.recent_ac_worth_max)
+        min_min_value = 99999  # 极小值中最小的一个
+        min_min_column = 0  # 极小值中最小的一个对应的列
+        max_max_value = 0  # 极大值中最大的一个
+        max_max_column = 0  # 极大值中最小的一个对应的列
+        index_max = list(stock_index.recent_index_max)
+        for min_item in stock_index.recent_index_min:
+            max_item = None
+            if len(index_max) > 0:
+                max_item = index_max.pop(0)
+            count, min_min_value, min_min_column, max_max_value, max_max_column = self.write_extrema_index(column_start,
+                                                                                                           row,
+                                                                                                           min_item,
+                                                                                                           max_item,
+                                                                                                           stock_index.current_index,
+                                                                                                           min_min_value,
+                                                                                                           min_min_column,
+                                                                                                           max_max_value,
+                                                                                                           max_max_column)
+            column_start = column_start + count
+        side = Side(border_style='medium', color=Color(rgb=BLUE))
+        border = Border(left=side, right=side, top=side, bottom=side)
+        self.sheet.cell(column=min_min_column, row=row).border = border
+        side = Side(border_style='medium', color=Color(rgb=RED))
+        border = Border(left=side, right=side, top=side, bottom=side)
+        self.sheet.cell(column=max_max_column, row=row).border = border
 
     def write_extrema_index(self, column_start, row, min_data, max_data, current, min_value, min_column, max_value, max_column):
         ratio = (min_data[1] - current) / current
