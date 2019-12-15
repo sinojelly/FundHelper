@@ -11,6 +11,7 @@ import random
 import time
 import datetime
 import os
+import subprocess
 from datetime import timedelta
 import sys
 from flask_wtf.csrf import CSRFProtect
@@ -40,6 +41,8 @@ update_status ={}
 DEFAULT_USER = 'Guest'
 ADMIN_USER = 'Jelly'
 
+FUND_HELPER_DATA_KEY = 'FUND_HELPER_DATA'
+
 
 def generate_thread_id():
     thread_id = random.randint(0, 10000)
@@ -59,7 +62,8 @@ def generate_thread_id():
 
 def get_model_name():
     username = session['username']
-    excel_model = "fund/" + username + "_model.xlsx"
+    data_dir = os.getenv(FUND_HELPER_DATA_KEY, 'fund')
+    excel_model = data_dir + "/" + username + "_model.xlsx"
     return excel_model
 
 
@@ -177,26 +181,45 @@ def save_data(thread_id):
     return jsonify(result)
 
 
-@app.route('/update-model', methods=['GET'])
-def update_model():
-    if request.method == 'GET':
-        fund_id_str = request.args.get('fund_id', default='', type=str)
-        fund_level_str = request.args.get('fund_level', default='', type=str)
-        fund_high_date_str = request.args.get('fund_high_date', default='', type=str)
-        fund_low_date_str = request.args.get('fund_low_date', default='', type=str)
-        remove_fund_id_str = request.args.get('remove_fund_id', default='', type=str)
-        fund_ids = fund_id_str.split(' ')
-        fund_levels = fund_level_str.split(' ')
-        fund_high_dates = fund_high_date_str.split(' ')
-        fund_low_dates = fund_low_date_str.split(' ')
-        remove_fund_ids = remove_fund_id_str.split(' ')
-        print("fund_id_str:", fund_ids)
-        print("fund_level_str",fund_levels)
-        print("fund_high_date_str",fund_high_dates)
-        print("fund_low_date_str", fund_low_dates)
-        print("remove_fund_id_str", remove_fund_ids)
-    print("000000000 - update model")
-    return jsonify({'msg': 'finished'})
+def run_external_cmd(cmd, msg_in=''):
+    try:
+        proc = subprocess.Popen(cmd,
+                                shell=True,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                )
+        stdout_value, stderr_value = proc.communicate(msg_in)
+        return stdout_value, stderr_value
+    except ValueError as err:
+        # log("ValueError: %s" % err)
+        return "ValueError exception.".encode(encoding='utf-8'), err.encode(encoding='utf-8')
+    except IOError as err:
+        # log("IOError: %s" % err)
+        return "IOError exception.".encode(encoding='utf-8'), err.encode(encoding='utf-8')
+
+
+def run_git_submit(work_dir):
+    git_cmd = "git --git-dir=" + work_dir + "/.git --work-tree=" + work_dir + " "
+    commit_cmd = git_cmd + "commit -am \"automatically submit.\""
+    push_cmd = git_cmd + "push"
+    status_cmd = git_cmd + "status"
+    cmd = commit_cmd + " & " + push_cmd + " & " + status_cmd
+    # result = os.popen(cmd).read()
+    stdout_value, stderr_value = run_external_cmd(cmd)
+    print(stdout_value.decode())
+    print("---------------err-------------")
+    print(stderr_value.decode())
+    return stdout_value.decode(), stderr_value.decode()
+
+
+@app.route('/git-submit/<int:thread_id>', methods=['GET'])
+def git_submit(thread_id):
+    work_dir = "D:\\Develop\\projects\\web-projects\\fundhelper-data"
+    # work_dir = "/usr/local/fundhelper-data"
+    stdout_value, stderr_value = run_git_submit(work_dir)
+    print("000000000 - git_submit")
+    return jsonify({'stdout': stdout_value, 'stderr':stderr_value})
 
 
 if __name__ == '__main__':
