@@ -7,8 +7,8 @@ RUN xz -d node-v10.15.3-linux-x64.tar.xz
 RUN tar -xvf node-v10.15.3-linux-x64.tar
 
 # 添加软链接
-RUN ln -s /node-v10.15.3-linux-x64/bin/node /usr/local/bin/node 
-RUN ln -s /node-v10.15.3-linux-x64/bin/npm /usr/local/bin/npm
+RUN ln -s /app/node-v10.15.3-linux-x64/bin/node /usr/local/bin/node 
+RUN ln -s /app/node-v10.15.3-linux-x64/bin/npm /usr/local/bin/npm
 # node -v  可验证node是否安装成功
 
 # 创建目录
