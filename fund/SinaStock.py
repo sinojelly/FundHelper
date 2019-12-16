@@ -66,10 +66,10 @@ class SinaStock(object):
         # 难解析，每种不同指数，格式都不同
         if self.stock_id == 'NDX': # 纳斯达克100
             self.current_index = float(result[1])  # 第0项是名称，第1项是当前实时指数点数
-            self.current_index_change_ratio = float(result[2])
+            self.current_index_change_ratio = float(result[2].rstrip("%"))
         elif self.stock_id == '100.HSI':  # 恒生指数
             self.current_index = float(result[1])  # 第0项是名称，第1项是当前实时指数点数
-            self.current_index_change_ratio = float(result[3])
+            self.current_index_change_ratio = float(result[3].rstrip("%"))  # 有时候带百分号
         else:  # 中国股市
             self.current_index = float(result[3])
             prev_index = float(result[2])
