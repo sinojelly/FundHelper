@@ -4,7 +4,7 @@ import openpyxl
 
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
 
-from XslxTools import set_p_n_condition
+from XslxTools import set_p_n_condition, str_to_float
 from XslxTools import get_cell_value, set_row_data, find_value_row_index, get_index_range, insert_row
 
 
@@ -73,7 +73,10 @@ class InvestSheet(object):
                 # print("row =", cell.row, ", status =", status)
                 if status != '投资':
                     continue
-                invest_amount = float(cell.value)
+                float_value = str_to_float(cell.value)
+                if float_value is None:
+                    continue
+                invest_amount = float(float_value)
 
                 invest_price = self.sheet.cell(column=int(cell.col_idx)+1, row=cell.row).value
                 if invest_price is None:
@@ -139,7 +142,8 @@ class InvestSheet(object):
                 total_income += income
         self.sheet.cell(row=3, column=2).value = total_invest
         self.sheet.cell(row=4, column=2).value = total_income
-        self.sheet.cell(row=4, column=3).value = total_income/total_invest*100
+        if total_invest != 0:
+            self.sheet.cell(row=4, column=3).value = total_income/total_invest*100
         self.sheet.cell(row=4, column=2).number_format = FORMAT_NUMBER_00
         set_p_n_condition(self.sheet, self.sheet.cell(row=4, column=2))
         self.sheet.cell(row=4, column=3).number_format = FORMAT_NUMBER_00

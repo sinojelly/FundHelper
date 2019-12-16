@@ -116,3 +116,11 @@ def insert_row(sheet, start_row, id_col, data, columns=None):
 # excel from 1
 def get_index_range(max_index):
     return range(1, max_index+1, 1)
+
+
+# 全空白字符，不要转换为float
+def str_to_float(value):
+    if isinstance(value,str):
+        no_blank_value = value.strip()
+        return float(no_blank_value)
+    return None
