@@ -152,7 +152,7 @@ class StockIndexSheet(object):
     def get_current_price(self, item_id):
         for col in self.sheet.iter_cols(min_row=2, max_col=1):
             for cell in col:
-                if cell.value == item_id:
+                if str(cell.value) == str(item_id):
                     return self.sheet.cell(row=int(cell.row), column=CURRENT_INDEX_COLUMN).value
         return None
 
