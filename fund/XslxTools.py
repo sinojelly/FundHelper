@@ -122,5 +122,7 @@ def get_index_range(max_index):
 def str_to_float(value):
     if isinstance(value,str):
         no_blank_value = value.strip()
+        if no_blank_value == '':  # 空白字符串
+            return None
         return float(no_blank_value)
-    return None
+    return float(value)   # 其它情况多半都是数字，直接返回

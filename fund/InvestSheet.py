@@ -195,13 +195,14 @@ class InvestSheet(object):
 
 
 if __name__ == '__main__':
-    wb = openpyxl.load_workbook('Jelly_model (3)- 副本.xlsx')
+    wb = openpyxl.load_workbook('Jelly_model.xlsx')
     import StockIndexSheet
     stock_index_sheet = StockIndexSheet.StockIndexSheet(wb)
     import FundSheet
     fund_sheet = FundSheet.FundSheet(wb)
     invest_sheet = InvestSheet(wb)
-    # my_funds = invest_sheet.get_all_funds()
-    # print(my_funds)
+    invest_funds = invest_sheet.get_all_funds()
+    from TestTools import empty_func
+    fund_sheet.update_funds(invest_funds, empty_func)
     invest_sheet.update_all_invests(fund_sheet, stock_index_sheet)
-    wb.save('Jelly_model (3)- 副本.xlsx')
+    wb.save('Jelly_model_new.xlsx')
