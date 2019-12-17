@@ -76,7 +76,12 @@ def index(thread_id=None):
     session.setdefault('username', DEFAULT_USER)   # 如果未设置，则设置为guest，避免KeyError; 如果已设置则不改变
 
     if thread_id is None:
-        thread_id = generate_thread_id()
+        try:
+            thread_id = generate_thread_id()
+        except FileNotFoundError as err:
+            return str(err)   # docker服务器重启，会遇到 model 文件找不到
+            # FileNotFoundError: [Errno 2]
+            # No such file or directory: '/usr/local/fundhelper-data/Guest_model.xlsx'
 
     # print('task id: #%s' % thread_id)
     if session['username'] == ADMIN_USER:
