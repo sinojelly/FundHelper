@@ -5,6 +5,7 @@ import time
 import execjs
 import datetime
 import re
+import pytz
 
 import numpy as np
 import scipy.signal as signal
@@ -20,8 +21,10 @@ INIT_IGNORE_COUNT = 100
 MIN_WORTH_VALUE = -99999  # 最小值
 
 
+# 获得的基金信息里的时间戳都是中国时间
 def timestamp2time(timestamp):
-    return datetime.datetime.fromtimestamp(timestamp/1000).strftime("%Y-%m-%d")  # 转换为字符串，规避excel不能设置显示格式的问题
+    tz = pytz.timezone('Asia/Shanghai')
+    return datetime.datetime.fromtimestamp(timestamp/1000, tz).strftime("%Y-%m-%d")  # 转换为字符串，规避excel不能设置显示格式的问题
 
 
 def only_keep_latest_extrema(items, target):
