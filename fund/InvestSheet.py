@@ -87,7 +87,10 @@ class InvestSheet(object):
                         self.sheet.cell(column=int(cell.col_idx) + 1, row=2).value = fund_name    # 写入基金名称(指数对应的组合名称不能自动写入)
                 if invest_price is None:  # 跳过查询不到投资价格的
                     continue
-                invest_price = float(invest_price)
+                float_value = str_to_float(invest_price)
+                if float_value is None:
+                    continue
+                invest_price = float(float_value)
 
                 if invest_amount > 0:
                     total_invest = total_invest + invest_amount
