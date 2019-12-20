@@ -97,7 +97,8 @@ def find_last_row_index(sheet, start_row, col):
 
 
 def set_row_data(sheet, row_index, data, start_row, columns=None):
-    col_range = get_index_range(sheet.max_column)
+    col_number = max(sheet.max_column, len(data))   # 如果网页插入列，则len(data)比原有sheet max_column大，应该取len(data)，否则会丢失列
+    col_range = get_index_range(col_number)
     if columns is not None:
         col_range = columns
     array_index = 0

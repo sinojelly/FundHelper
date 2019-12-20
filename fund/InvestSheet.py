@@ -183,10 +183,12 @@ class InvestSheet(object):
                     row_result.append(value)
                 result.append(row_result)
                 row_index = row_index + 1
+        # print("InvestSheet get table : length = ", len(result[0]))
         return result
 
     def save_table(self, data):
         for row_data in data:   # for each row data
+            # print("InvestSheet save table : length = ", len(row_data))
             row_index = find_value_row_index(self.sheet, 1, 1, row_data[0])
             if row_index is None:   # 原来不存在添加行
                 insert_row(self.sheet, 1, 1, row_data)

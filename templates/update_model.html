@@ -186,6 +186,9 @@
 	function save_data() { 
 	    // save all cell's data
 	    var csrftoken = $("meta[name=csrf-token]").attr("content");
+		//var temp = investTable.getData();
+		//console.log(temp.length);
+		//console.log(temp);
 	    var arr = { "fund": fundTable.getData(), "info": infoTable.getData(), "invest":investTable.getData()};
 		$.ajax({
 			url: '/save-data/' + {{thread_id}},
