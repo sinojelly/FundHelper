@@ -83,10 +83,10 @@ class InvestSheet(object):
                 if invest_price is None:
                     invest_price, fund_name = self.get_invest_price(cell.row, cell.col_idx)
                     print("invest_price", invest_price, "fund_name", fund_name)
-                    if invest_price is not None:
+                    if is_value_empty(invest_price) is not True:
                         self.sheet.cell(column=int(cell.col_idx) + 1, row=cell.row).value = float(invest_price)  # 写入投资价格
                         self.sheet.cell(column=int(cell.col_idx) + 1, row=2).value = fund_name    # 写入基金名称(指数对应的组合名称不能自动写入)
-                if invest_price is None:  # 跳过查询不到投资价格的
+                if is_value_empty(invest_price):  # 跳过查询不到投资价格的
                     continue
                 invest_price = float(invest_price)
 
