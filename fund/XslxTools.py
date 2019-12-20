@@ -121,9 +121,21 @@ def get_index_range(max_index):
 
 # 全空白字符，不要转换为float
 def str_to_float(value):
+    if value is None:
+        return None
     if isinstance(value,str):
         no_blank_value = value.strip()
         if no_blank_value == '':  # 空白字符串
             return None
         return float(no_blank_value)
     return float(value)   # 其它情况多半都是数字，直接返回
+
+
+def is_value_empty(value):
+    if value is None:
+        return True
+    if isinstance(value,str):
+        no_blank_value = value.strip()
+        if no_blank_value == '':  # 空白字符串
+            return True
+    return False

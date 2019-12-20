@@ -4,7 +4,7 @@ import openpyxl
 
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
 
-from XslxTools import set_p_n_condition, str_to_float
+from XslxTools import set_p_n_condition, str_to_float, is_value_empty
 from XslxTools import get_cell_value, set_row_data, find_value_row_index, get_index_range, insert_row
 
 
@@ -67,7 +67,7 @@ class InvestSheet(object):
                     need_process = True
                     continue
                 need_process = False
-                if cell.value is None:  # 跳过未填写的
+                if is_value_empty(cell.value):  # 跳过未填写的
                     continue
                 status = self.get_invest_status(cell.row)
                 # print("row =", cell.row, ", status =", status)
@@ -79,6 +79,7 @@ class InvestSheet(object):
                 invest_amount = float(float_value)
 
                 invest_price = self.sheet.cell(column=int(cell.col_idx)+1, row=cell.row).value
+                invest_price = str_to_float(invest_price)   # None or '' both need get_invest_price
                 if invest_price is None:
                     invest_price, fund_name = self.get_invest_price(cell.row, cell.col_idx)
                     print("invest_price", invest_price, "fund_name", fund_name)
@@ -87,10 +88,7 @@ class InvestSheet(object):
                         self.sheet.cell(column=int(cell.col_idx) + 1, row=2).value = fund_name    # 写入基金名称(指数对应的组合名称不能自动写入)
                 if invest_price is None:  # 跳过查询不到投资价格的
                     continue
-                float_value = str_to_float(invest_price)
-                if float_value is None:
-                    continue
-                invest_price = float(float_value)
+                invest_price = float(invest_price)
 
                 if invest_amount > 0:
                     total_invest = total_invest + invest_amount
