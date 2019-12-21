@@ -10,17 +10,34 @@
 	</p>
 	<script src="{{url_for('static', filename='jquery-3.4.0.min.js')}}"></script>
 	<script>
+	/*function next_id(){
+		var current_id = 0;
+		return function (){
+			return ++current_id;
+		}
+	}
+    var generate_id =  next_id();  always 1 */
+	function* next_id(){
+		let current_id =0;
+		while(true) {
+			current_id++;
+			yield current_id;
+		}
+	}
+
+	let generate_id = next_id();
 	function check_progress() {
 		$("#progress").text("Progress: Start...");
 		var full_update = $("#full_update[name='full_update']:checked").val();//获取当前选中的radio的值
-		var download_url = "/update-excel/{{thread_id}}/False"
+		var request_id = generate_id.next().value
+		var download_url = "/update-excel/{{thread_id}}/"+request_id+"/False"
 		if (full_update === undefined) { // 未选中是undefined,选中是 True
-		   download_url = "/update-excel/{{thread_id}}/"
+		   download_url = "/update-excel/{{thread_id}}/"+request_id
 		}
 		window.location.href = download_url;
 		worker();
 		function worker() {
-			$.get('/progress/' + {{thread_id}}, function(data) {
+			$.get('/progress/' + {{thread_id}} + "/" + request_id, function(data) {
 			    current = data.current
 				total = data.total
 				if (total > 0 && current <= total) {

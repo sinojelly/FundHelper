@@ -47,12 +47,6 @@ FUND_HELPER_DATA_KEY = 'FUND_HELPER_DATA'
 def generate_thread_id():
     thread_id = random.randint(0, 10000)
 
-    global progress_current
-    global progress_total
-    global progress_start_time
-    progress_current[thread_id] = 0
-    progress_total[thread_id] = 0
-    progress_start_time[thread_id] = None
     work_book[thread_id] = FundWorkbook(get_model_name())
     update_status[thread_id] = 'Model'    # 未更新
     # print("thread id:", thread_id, "username: ", session['username'], "model_name:", get_model_name())
@@ -89,11 +83,11 @@ def index(thread_id=None):
     return render_template("index.html", title='Home', thread_id=thread_id)
 
 
-@app.route('/update-excel/<int:thread_id>/')
-@app.route('/update-excel/<int:thread_id>/<fast_run>')
-def update_excel(thread_id, fast_run='True'):
+@app.route('/update-excel/<int:thread_id>/<int:request_id>')
+@app.route('/update-excel/<int:thread_id>/<int:request_id>/<fast_run>')
+def update_excel(thread_id, request_id, fast_run='True'):
     # print('update_excel thread id: #%s' % thread_id, "fast_run:", fast_run)
-    progress_updater = make_progress_updater(thread_id)
+    progress_updater = make_progress_updater(thread_id, request_id)
     is_fast_run = str_to_bool(fast_run)
     update_status[thread_id] = 'Fast' if is_fast_run is True else 'Full'
     work_book[thread_id].update_funds(is_fast_run, progress_updater)
@@ -114,36 +108,42 @@ def download_excel(thread_id):
     return response
 
 
-def make_progress_updater(thread_id):
+def make_progress_updater(thread_id, request_id):
     global progress_current
     global progress_total
-    progress_current[thread_id] = 0
-    progress_total[thread_id] = 0
+    progress_current[(thread_id, request_id)] = 0
+    progress_total[(thread_id, request_id)] = 0
 
     def update_progress(total=None, finished=False):   # total: 第一次调用传回total； finished:最后一次调用传入true,避免永不结束的情况
         global progress_current
-        progress_current[thread_id] += 1
+        old_value = progress_current.get((thread_id, request_id), 0)
+        progress_current[(thread_id, request_id)] = old_value + 1
         if total is not None:
             global progress_total
             global progress_start_time
-            progress_total[thread_id] = total
-            progress_start_time[thread_id] = datetime.datetime.now()
-        if finished and progress_current[thread_id] != progress_total[thread_id]:
+            progress_total[(thread_id, request_id)] = total
+            progress_start_time[(thread_id, request_id)] = datetime.datetime.now()
+        if finished and progress_current[(thread_id, request_id)] != progress_total[(thread_id, request_id)]:
             # print("Finished! current =", progress_current[thread_id], "total =", progress_total[thread_id])
-            progress_current[thread_id] = progress_total[thread_id]
-        # print("thread:", thread_id, "total:", progress_total[thread_id], "current:", progress_current[thread_id])
+            progress_current[(thread_id, request_id)] = progress_total[(thread_id, request_id)]
+        print("thread:", thread_id, "request:", request_id, "total:", progress_total[(thread_id, request_id)], "current:", progress_current[(thread_id, request_id)])
     return update_progress
 
 
-@app.route('/progress/<int:thread_id>')
-def progress(thread_id):
+# 解决第二次点击update不能更新进度的问题，似乎第一次结束时最后一次get process未调用，使得它未清零，
+# 下次进来直接返回53/53，进度已结束。有一种解决办法是每次请求生成一个递增数，该数也作为下标。
+@app.route('/progress/<int:thread_id>/<int:request_id>')
+def progress(thread_id, request_id):
     global progress_current
     global progress_total
 
-    # print("get progress in thread:", thread_id)
-    result = {'current': progress_current[thread_id], 'total': progress_total[thread_id], 'time': 0}
-    if progress_current[thread_id] >= progress_total[thread_id] and progress_start_time[thread_id] is not None:
-        result['time'] = (datetime.datetime.now() - progress_start_time[thread_id]).seconds
+    current = progress_current.get((thread_id, request_id), 0)
+    total = progress_total.get((thread_id, request_id), 0)
+    result = {'current': current, 'total': total, 'time': 0}
+    start_time = progress_start_time.get((thread_id, request_id), None)
+    if current >= total and start_time is not None:
+        result['time'] = (datetime.datetime.now() - start_time).seconds
+    print("get progress in thread:", thread_id, result)
     return jsonify(result)
 
 
