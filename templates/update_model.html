@@ -14,16 +14,30 @@
 	<h2>Information table</h2>
 	<div id="information-table"></div> 
 	</p>
+	<!-- If I put the following line in header, it does not work. https://stackoverflow.com/questions/51425397/sparkline-is-not-a-function-jquery-sparklines# -->
+	<script type="text/javascript" src="{{url_for('static', filename='jquery.sparkline.min.js')}}"></script>
 	<script>
+	function sparkLineRenderer(instance, td, row, col, prop, value, cellProperties) {
+	    //instantiate sparkline after the cell element has been aded to the DOM
+		console.log(value);
+		//var trend = instance.getDataAtRowProp(row, 'Trend');
+		//console.log("trend");
+		//console.log(trend);
+		var chartContainer = document.createElement('div');
+		td.appendChild(chartContainer);
+		console.log($(chartContainer));
+        $(chartContainer).sparkline([5,6,7,9,9,5,3,2,2,4,6,7], {width:"100%", type:"line", disableTooltips:true});
+    }
 	var tabledata = [
- 	["005911", "广发双擎升级混合", "5", "2.0368", "0.17", "-15.21", "20191021", "-1.02", "20191120"],
-	["320007", "诺安成长混合", "5", "1.195", "0.5", "-16.15", "20191021", "-3.77", "20191119"],
+ 	["005911", "广发双擎升级混合", "5", "2.0368", "0.17", "4", "20191212", "-15.21", "20191021", "-1.02", "20191120", "1,4,2,3,4,5,7,5,1,5"],
+	["320007", "诺安成长混合", "5", "1.195", "0.5", "4", "20191212", "-16.15", "20191021", "-3.77", "20191119", "1,4,2,3,4,5,7,5,1,5,6,8,2,3,1"],
     ];
 	var fundTableContainer = document.getElementById('fund-table');
 	var fundTable = new Handsontable(fundTableContainer, {
-	  data: null, //tabledata,
+	  //data: null, //tabledata,
+	  data: tabledata,
 	  rowHeaders: false,
-	  colHeaders: ["Fund ID", "Name", "Level", "Price", "Change", "Day", "UpdateTime", "R2Low", "LowDate", "R2High", "HighDate"],
+	  colHeaders: ["Fund ID", "Name", "Level", "Price", "Change", "Day", "UpdateTime", "R2Low", "LowDate", "R2High", "HighDate", "Trend"],
 	  columnSorting : true,
 	  dropdownMenu: true,
       autoColumnSize: true,
@@ -32,8 +46,12 @@
 	  width: '100%',
       height: 500,
 	  modifyColWidth: function(width, col){
-		  if(width > 70 && col > 1 && col != 6){ // name, update time 需要较宽的空间
+		  if(width > 70 && col > 1 && col != 6 && col != 11){ // name, update time 需要较宽的空间
 			return 70
+		  }
+		  
+		  if (col == 11) {
+		    return 200
 		  }
 		},
 	  fixedColumnsLeft: 2,
@@ -53,6 +71,9 @@
 		}
 		if (col == 9) {
 		    cellProperties.renderer = toHightConditionColourRenderer;
+		}
+		if (col == 11) {
+		    cellProperties.renderer = sparkLineRenderer;
 		}
 
 		return cellProperties;
@@ -173,7 +194,7 @@
 			dataType: 'json',
 			async: true,
 			success: function(msg) {
-				fundTable.loadData(msg.fund);
+				//fundTable.loadData(msg.fund);
 				stockIndexTable.loadData(msg.stock);
 				investTable.loadData(msg.invest);
 				infoTable.loadData(msg.info);
@@ -225,6 +246,7 @@
 		});
     }
 	$("#gitSubmit").click(git_submit);
+	
 	
 	function normalIntConditionColourRenderer(instance, td, row, col, prop, value, cellProperties) {
 	   Handsontable.renderers.TextRenderer.apply(this, arguments);
