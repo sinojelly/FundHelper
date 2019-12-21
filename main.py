@@ -141,6 +141,7 @@ def progress(thread_id, request_id):
     total = progress_total.get((thread_id, request_id), 0)
     result = {'current': current, 'total': total, 'time': 0}
     start_time = progress_start_time.get((thread_id, request_id), None)
+    # print("start time:", start_time)
     if current >= total and start_time is not None:
         result['time'] = (datetime.datetime.now() - start_time).seconds
     print("get progress in thread:", thread_id, result)

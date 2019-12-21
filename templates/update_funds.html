@@ -16,7 +16,7 @@
 			return ++current_id;
 		}
 	}
-    var generate_id =  next_id();  always 1 */
+    var generate_id =  next_id();    generate_id() always 1 
 	function* next_id(){
 		let current_id =0;
 		while(true) {
@@ -25,11 +25,57 @@
 		}
 	}
 
-	let generate_id = next_id();
+	let generate_id = next_id();     generate_id.next().value always 1  */
+	
+	/**
+	 * @description 生成随机数
+	 * @author (Set the text for this tag by adding docthis.authorName to your settings file.)
+	 * @date 2019-05-20
+	 * @param {*} type 生成随机数的类型 1：min ≤ r ≤ max 2：min ≤ r < max 3：min < r ≤ max 4：min < r < max
+	 * @param {*} min
+	 * @param {*} max
+	 * @example randomNumBoth(1, 1, 10) 生成1-10之间的随机数包含1和10
+	 * @example randomNumBoth(2, 1, 10) 生成1-10之间的随机数包含1，但不包含10
+	 * @example randomNumBoth(3, 1, 10) 生成1-10之间的随机数包含10，但不包含1
+	 * @example randomNumBoth(4, 1, 10) 生成1-10之间的随机数不包含1和10
+	 * @returns
+	 */
+	function randomNumBoth(type, min, max) {
+		let range = max - min;
+		let rand = Math.random();
+		let randomNum = null;
+		switch (type) {
+			case 1:
+				randomNum = min + Math.round(rand * range);
+				break;
+			case 2:
+				randomNum = min + Math.floor(rand * range);
+				break;
+			case 3:
+				if (Math.round(rand * range) == 0) return min + 1;
+				randomNum = min + Math.round(rand * range);
+				break;
+			case 4:
+				if (Math.round(rand * range) == 0) {
+					return min + 1;
+				} else if (Math.round(rand * max) == max) {
+					index++;
+					return max - 1;
+				} else {
+					randomNum = min + Math.round(rand * range) - 1;
+				}
+				break;
+			default:
+				randomNum = min + Math.round(rand * range);
+				break;
+		}
+		return randomNum;
+	}
+
 	function check_progress() {
 		$("#progress").text("Progress: Start...");
 		var full_update = $("#full_update[name='full_update']:checked").val();//获取当前选中的radio的值
-		var request_id = generate_id.next().value
+		var request_id = randomNumBoth(1, 1, 10000);
 		var download_url = "/update-excel/{{thread_id}}/"+request_id+"/False"
 		if (full_update === undefined) { // 未选中是undefined,选中是 True
 		   download_url = "/update-excel/{{thread_id}}/"+request_id
