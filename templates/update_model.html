@@ -63,7 +63,7 @@
 	  //data: tabledata,
 	  rowHeaders: false,
 	  colHeaders: ["Fund ID", "Name", "Link", '<span title="Recent 60 days unit worth trend.">Trend</span>', "Level", "Price", "Change", "Day", '<span title="Continuous ac worth change ratio.">CChange</span>', "UpdateTime", '<span title="Ratio to low unit worth.">R2Low</span>', "LowDate", "R2High", "HighDate"],
-	  colWidths:  [70,         220,   40,     200,    40,       60,     60,       40,    60,       150,           60,     80,        60,       80],
+	  colWidths:  [70,         220,   40,     200,    40,       60,     60,       40,    60,       150,           60,     110,        60,       110],
 	  columns: [{},{},{},{},{},{},{},{},{},{},{},{type: 'autocomplete', source: autoCompleteYear},{},{type: 'autocomplete', source: autoCompleteYear}],
 	  columnSorting : true,
 	  dropdownMenu: true,
@@ -169,7 +169,7 @@
 	  width: '100%',
       height: 500,
 	  modifyColWidth: function(width, col){
-		  if(width > 70){
+		  if(width > 70 && col != 1){
 			return 70
 		  }
 		},
@@ -203,7 +203,7 @@
 	  width: '100%',
       height: 500,
 	  modifyColWidth: function(width, col){
-		  if(width > 70 && col < 6){
+		  if(width > 70 && col < 6 && col != 1){
 			return 70
 		  }
 		},
