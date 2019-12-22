@@ -14,6 +14,9 @@ UNIT_WORTH_COLUMN = CURRENT_PRICE_COLUMN
 HISTORY_WORTH_COLUMN_START = UNIT_WORTH_COLUMN + 11
 
 UNIT_WORTH_HISTORY_COLUMN = 4
+FUND_FOCUS_LEVEL_COLUMN = 8
+BUY_OFFSET = 100    # 已买基金在level的位置加上offset
+
 WEB_SHOW_COLUMNS = [1, 2, 4, 8, 9, 10, 11, 13, 14, 16, 17, 19]
 MARK_AS_DELETE = "delete"
 
@@ -53,8 +56,10 @@ class FundSheet(object):
 
                 fund_id = str(cell.value)
                 fund = Fund(fund_id)
+                current_fund_buy = False
                 if fund_id in invested_funds:
                     self.invested_funds_map[fund_id] = fund
+                    current_fund_buy = True
                     # print("store invested fund", fund_id)
 
                 self.sheet['B' + str(row)].value = fund.fund_name
@@ -64,6 +69,7 @@ class FundSheet(object):
                     unit_worth_history_str = str(fund.unit_worth_history)
                     unit_worth_history_str = unit_worth_history_str[1:-1]   # 去掉中括号
                     self.sheet.cell(column=UNIT_WORTH_HISTORY_COLUMN, row=row).value = unit_worth_history_str
+                self.update_focus_level(row, current_fund_buy)
 
                 self.sheet.cell(column=fixed_info_column_start, row=row).value = fund.unit_worth
                 self.sheet.cell(column=fixed_info_column_start + 1, row=row).value = fund.unit_worth_change_ratio
@@ -81,6 +87,18 @@ class FundSheet(object):
                 continue
             # Inner loop was broken, break the outer.
             break
+
+    def update_focus_level(self, row, current_fund_buy):
+        focus_level_cell = self.sheet.cell(column=FUND_FOCUS_LEVEL_COLUMN, row=row)
+        old_value = get_cell_value(self.sheet, focus_level_cell, 0)
+        new_value = old_value
+        if current_fund_buy:
+            if old_value < BUY_OFFSET:
+                new_value = old_value + BUY_OFFSET
+        else:
+            if old_value >= BUY_OFFSET:
+                new_value = old_value - BUY_OFFSET
+        focus_level_cell.value = new_value
 
     def update_history_worth(self, fund, row):
         column_start = HISTORY_WORTH_COLUMN_START
