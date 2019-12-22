@@ -5,7 +5,7 @@ from Fund import Fund, timestamp2time
 from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
-from XslxTools import get_cell_value, set_row_data, find_value_row_index, delete_rows, insert_row, calc_change_ratio
+from XslxTools import get_cell_value, set_row_data, find_value_row_index, delete_rows, insert_row, calc_change_ratio, str_to_int
 
 FUND_SHEET_NAME = "基金"
 
@@ -44,9 +44,9 @@ def calc_ac_worth_continuous_change(fund):
         return 0
     old_value = fund.ac_worth_trend[-days-1][1]
     ratio = calc_change_ratio(old_value, fund.ac_worth)
-    print("calc_ac_worth_continuous_change old_value", old_value)
-    print("ac worth trend:", fund.ac_worth_trend[-days-2:])
-    print("ratio:", ratio, "days:", days)
+    # print("calc_ac_worth_continuous_change old_value", old_value)
+    # print("ac worth trend:", fund.ac_worth_trend[-days-2:])
+    # print("ratio:", ratio, "days:", days)
     return ratio
 
 
@@ -92,6 +92,7 @@ class FundSheet(object):
                 self.sheet.cell(column=fixed_info_column_start + 4, row=row).value = fund.ac_worth
                 self.sheet.cell(column=fixed_info_column_start + 5, row=row).value = fund.unit_worth_time # datetime.datetime.now()
 
+                self.update_target_values(fund, row, fixed_info_column_start + 6)
                 # self.update_history_worth(fund, row)
 
                 progress_updater()   # 每次row增加前+1
@@ -102,9 +103,26 @@ class FundSheet(object):
             # Inner loop was broken, break the outer.
             break
 
+    # 涉及目标低值/高值，从start_column开始的6列
+    def update_target_values(self, fund, row, start_column):
+        self.set_target_price(fund, row, start_column + 2)
+        self.set_target_price(fund, row, start_column + 5)
+
+    def set_target_price(self, fund, row, time_column):
+        target_price_cell = self.sheet.cell(column=time_column - 1, row=row)
+        str_target_price = get_cell_value(self.sheet, target_price_cell)
+        if str_target_price != '':   # 已经有值
+            return
+        str_date = get_cell_value(self.sheet, self.sheet.cell(column=time_column, row=row))
+        if str_date != '':
+            target_price = fund.get_price(str_date)
+            if target_price is not None:
+                target_price_cell.value = target_price
+
     def update_focus_level(self, row, current_fund_buy):
         focus_level_cell = self.sheet.cell(column=FUND_FOCUS_LEVEL_COLUMN, row=row)
         old_value = get_cell_value(self.sheet, focus_level_cell, 0)
+        old_value = str_to_int(old_value)
         new_value = old_value
         if current_fund_buy:
             if old_value < BUY_OFFSET:

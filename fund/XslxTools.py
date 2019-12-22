@@ -35,6 +35,8 @@ def get_cell_value(sheet, cell, default=''):
     if match is None:  # 遇到不同的公式
         return cell.value
     for address in match.groups():
+        if sheet[address].value is None:
+            return default
         formula = formula.replace(address, str(sheet[address].value))
     try:
         value = eval(formula)
@@ -139,6 +141,15 @@ def is_value_empty(value):
         if no_blank_value == '':  # 空白字符串
             return True
     return False
+
+
+def str_to_int(value, default=0):
+    if is_value_empty(value):
+        return default
+    if isinstance(value,str):
+        no_blank_value = value.strip()
+        return int(no_blank_value)
+    return value
 
 
 def calc_change_ratio(old_value, new_value):
