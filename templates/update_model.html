@@ -26,14 +26,17 @@
 	    if (value == null) {
 		    return;  // 刚启动时value为null
 		}
+		var chartContainer = null;
 		if (td.childNodes.length > 0) {  // 第一次添加的chart节点太短了,所以只好每次进来都删除已添加的chart节点
 		    if (td.childNodes[0].id == "sparkline_chart") {
-			    td.removeChild(td.childNodes[0]);
+			    //td.removeChild(td.childNodes[0]);
+				chartContainer = td.childNodes[0];
 			}
+		} else {
+			chartContainer = document.createElement('div');
+			chartContainer.id = "sparkline_chart";
+			td.appendChild(chartContainer);
 		}
-		var chartContainer = document.createElement('div');
-		chartContainer.id = "sparkline_chart";
-		td.appendChild(chartContainer);
 		var array = value.split(',');   // string to int array
 		//console.log("sparkLineRenderer");
 		//console.log(array);
