@@ -43,6 +43,9 @@
 		//instantiate sparkline after the cell element has been aded to the DOM
 		$(chartContainer).sparkline(array, {width:"100%", type:"line", disableTooltips:true});
     }
+	function hyperlinkRenderer(instance, td, row, col, prop, value, cellProperties) {
+	    td.innerHTML = "<a href=\""+value+"\" target=\"_blank\">link</a>"
+	}
 	var tabledata = [
  	["005911", "广发双擎升级混合", "5", "2.0368", "0.17", "4", "20191212", "-15.21", "20191021", "-1.02", "20191120", [1,4,2,3,4,5,7,5,1,5]],
 	["320007", "诺安成长混合", "5", "1.195", "0.5", "4", "20191212", "-16.15", "20191021", "-3.77", "20191119", [1,4,2,3,4,5,7,5,1,5,6,8,2,3,1]],
@@ -52,8 +55,8 @@
 	  data: null, //tabledata,
 	  //data: tabledata,
 	  rowHeaders: false,
-	  colHeaders: ["Fund ID", "Name", '<span title="Recent 60 days unit worth trend.">Trend</span>', "Level", "Price", "Change", "Day", '<span title="Continuous ac worth change ratio.">CChange</span>', "UpdateTime", '<span title="Ratio to low unit worth.">R2Low</span>', "LowDate", "R2High", "HighDate"],
-	  colWidths:  [70,         220,     200,    40,       60,     60,       40,    60,       150,           60,     80,        60,       80],
+	  colHeaders: ["Fund ID", "Name", "Link", '<span title="Recent 60 days unit worth trend.">Trend</span>', "Level", "Price", "Change", "Day", '<span title="Continuous ac worth change ratio.">CChange</span>', "UpdateTime", '<span title="Ratio to low unit worth.">R2Low</span>', "LowDate", "R2High", "HighDate"],
+	  colWidths:  [70,         220,   40,     200,    40,       60,     60,       40,    60,       150,           60,     80,        60,       80],
 	  columnSorting : true,
 	  dropdownMenu: true,
       autoColumnSize: true,
@@ -74,21 +77,24 @@
 	  licenseKey: 'non-commercial-and-evaluation',
 	  cells: function (row, col) {
 		var cellProperties = {};
-		
+
 		if (col == 2) {
+		    cellProperties.renderer = hyperlinkRenderer;
+		}		
+		if (col == 3) {
 		    cellProperties.renderer = sparkLineRenderer;
 		}
-		if (col == 4) { // col从0开始
+		if (col == 5) { // col从0开始
 		   cellProperties.type = 'numeric';
 		   cellProperties.numericFormat = {pattern: '0.00'};
 		}
-		if (col == 5 || col == 7) {
+		if (col == 6 || col == 8) {
 		    cellProperties.renderer = normalConditionColourRenderer
 		}
-		if (col == 9) {
+		if (col == 10) {
 		    cellProperties.renderer = toLowConditionColourRenderer;
 		}
-		if (col == 11) {
+		if (col == 12) {
 		    cellProperties.renderer = toHightConditionColourRenderer;
 		}
 

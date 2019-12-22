@@ -50,6 +50,10 @@ def calc_ac_worth_continuous_change(fund):
     return ratio
 
 
+def get_fund_hyperlink(fund_id):
+    return "http://fund.eastmoney.com/{}.html".format(fund_id)
+
+
 class FundSheet(object):
     def __init__(self, wb):
         self.work_book = wb
@@ -76,7 +80,7 @@ class FundSheet(object):
                     # print("store invested fund", fund_id)
 
                 self.sheet['B' + str(row)].value = fund.fund_name
-                self.sheet['B' + str(row)].hyperlink = "http://fund.eastmoney.com/{}.html".format(fund_id)
+                self.sheet['B' + str(row)].hyperlink = get_fund_hyperlink(fund_id)
 
                 if fund.unit_worth_history is not None:
                     unit_worth_history_str = str(fund.unit_worth_history)
@@ -217,6 +221,10 @@ class FundSheet(object):
                     # value = reader.get_cell_value(cell.coordinate, FUND_SHEET_NAME)
                     value = get_cell_value(self.sheet, cell)
                     row_result.append(value)
+                    if column == 2:  # name
+                        fund_id = self.sheet.cell(row=row_index, column=1).value
+                        link = get_fund_hyperlink(fund_id)
+                        row_result.append(link)
                 result.append(row_result)
                 row_index = row_index + 1
             else:
@@ -239,8 +247,10 @@ class FundSheet(object):
         for row_data in data:   # for each row data
             row_index = find_value_row_index(self.sheet, 2, 1, row_data[0])
             if row_index is None:   # 原来不存在添加行
+                del row_data[2]    # 删除 hyperlinnk
                 insert_row(self.sheet, 2, 1, row_data, WEB_SHOW_COLUMNS)
             else:
+                del row_data[2]    # 删除 hyperlinnk
                 set_row_data(self.sheet, row_index, row_data, 2, WEB_SHOW_COLUMNS)
         delete_rows(self.sheet, 2, 2, MARK_AS_DELETE)
 
