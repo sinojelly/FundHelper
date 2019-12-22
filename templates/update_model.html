@@ -46,6 +46,13 @@
 	function hyperlinkRenderer(instance, td, row, col, prop, value, cellProperties) {
 	    td.innerHTML = "<a href=\""+value+"\" target=\"_blank\">link</a>"
 	}
+	function autoCompleteYear(query, process) {
+		if (query <= 1231 && query >= 0101) { // 只输入了四位，在1月1日和12月31日之间，自动补齐前面的年份为当前年份
+			 var now = new Date();
+			 var year = now.getFullYear();
+			 process([year+query]);   // 前面补齐当前年份
+		}
+	}
 	var tabledata = [
  	["005911", "广发双擎升级混合", "5", "2.0368", "0.17", "4", "20191212", "-15.21", "20191021", "-1.02", "20191120", [1,4,2,3,4,5,7,5,1,5]],
 	["320007", "诺安成长混合", "5", "1.195", "0.5", "4", "20191212", "-16.15", "20191021", "-3.77", "20191119", [1,4,2,3,4,5,7,5,1,5,6,8,2,3,1]],
@@ -57,6 +64,7 @@
 	  rowHeaders: false,
 	  colHeaders: ["Fund ID", "Name", "Link", '<span title="Recent 60 days unit worth trend.">Trend</span>', "Level", "Price", "Change", "Day", '<span title="Continuous ac worth change ratio.">CChange</span>', "UpdateTime", '<span title="Ratio to low unit worth.">R2Low</span>', "LowDate", "R2High", "HighDate"],
 	  colWidths:  [70,         220,   40,     200,    40,       60,     60,       40,    60,       150,           60,     80,        60,       80],
+	  columns: [{},{},{},{},{},{},{},{},{},{},{},{type: 'autocomplete', source: autoCompleteYear},{},{type: 'autocomplete', source: autoCompleteYear}],
 	  columnSorting : true,
 	  dropdownMenu: true,
       autoColumnSize: true,
@@ -170,6 +178,11 @@
 	  licenseKey: 'non-commercial-and-evaluation',
 	  cells: function (row, col) {
 		var cellProperties = {};
+		
+		if (col == 1) {
+		    cellProperties.type = "autocomplete";
+			cellProperties.source = autoCompleteYear;
+		}
 
 		if (row >= 3 && row%2 == 1 && col >= 1) {
 		    cellProperties.renderer = normalConditionColourRenderer
@@ -198,7 +211,10 @@
 	  licenseKey: 'non-commercial-and-evaluation',
 	  cells: function (row, col) {
 		var cellProperties = {};
-		
+		if (col == 1) {
+		    cellProperties.type = "autocomplete";
+			cellProperties.source = autoCompleteYear;
+		}		
 		if (col == 4) {
 		    cellProperties.renderer = normalIntConditionColourRenderer
 		}
