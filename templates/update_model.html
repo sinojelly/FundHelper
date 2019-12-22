@@ -45,8 +45,8 @@
 	  data: null, //tabledata,
 	  //data: tabledata,
 	  rowHeaders: false,
-	  colHeaders: ["Fund ID", "Name", "Trend", "Level", "Price", "Change", "Day", "UpdateTime", "R2Low", "LowDate", "R2High", "HighDate"],
-	  colWidths:  [70,         220,     200,    40,       60,     60,       40,     100,           60,     80,        60,       80],
+	  colHeaders: ["Fund ID", "Name", "Trend", "Level", "Price", "Change", "Day", "CChange", "UpdateTime", "R2Low", "LowDate", "R2High", "HighDate"],
+	  colWidths:  [70,         220,     200,    40,       60,     60,       40,    60,       100,           60,     80,        60,       80],
 	  columnSorting : true,
 	  dropdownMenu: true,
       autoColumnSize: true,
@@ -75,13 +75,13 @@
 		   cellProperties.type = 'numeric';
 		   cellProperties.numericFormat = {pattern: '0.00'};
 		}
-		if (col == 5) {
+		if (col == 5 || col == 7) {
 		    cellProperties.renderer = normalConditionColourRenderer
 		}
-		if (col == 8) {
+		if (col == 9) {
 		    cellProperties.renderer = toLowConditionColourRenderer;
 		}
-		if (col == 10) {
+		if (col == 11) {
 		    cellProperties.renderer = toHightConditionColourRenderer;
 		}
 

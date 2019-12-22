@@ -5,19 +5,19 @@ from Fund import Fund, timestamp2time
 from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
-from XslxTools import get_cell_value, set_row_data, find_value_row_index, delete_rows, insert_row
+from XslxTools import get_cell_value, set_row_data, find_value_row_index, delete_rows, insert_row, calc_change_ratio
 
 FUND_SHEET_NAME = "基金"
 
 CURRENT_PRICE_COLUMN = 9
 UNIT_WORTH_COLUMN = CURRENT_PRICE_COLUMN
-HISTORY_WORTH_COLUMN_START = UNIT_WORTH_COLUMN + 11
+HISTORY_WORTH_COLUMN_START = UNIT_WORTH_COLUMN + 12
 
 UNIT_WORTH_HISTORY_COLUMN = 4
 FUND_FOCUS_LEVEL_COLUMN = 8
 BUY_OFFSET = 100    # 已买基金在level的位置加上offset
 
-WEB_SHOW_COLUMNS = [1, 2, 4, 8, 9, 10, 11, 13, 14, 16, 17, 19]
+WEB_SHOW_COLUMNS = [1, 2, 4, 8, 9, 10, 11, 12, 14, 15, 17, 18, 20]
 MARK_AS_DELETE = "delete"
 
 
@@ -25,8 +25,8 @@ def clear_sheet_columns(work_sheet, row, column_start, column_num):
     work_sheet.cell(column=2, row=row).value = None    # B列, name清空
     work_sheet.cell(column=2, row=row).hyperlink = None
 
-    # 清除5列自动填充数据
-    for index in range(5):
+    # 清除6列自动填充数据
+    for index in range(6):
         work_sheet.cell(column=column_start + index, row=row).value = None
         work_sheet.cell(column=column_start + index, row=row).border = None
 
@@ -35,6 +35,19 @@ def clear_sheet_columns(work_sheet, row, column_start, column_num):
     for index in range(column_num):
         work_sheet.cell(column=column_start + index, row=row).value = None
         work_sheet.cell(column=column_start + index, row=row).border = None
+
+
+def calc_ac_worth_continuous_change(fund):
+    days = fund.continuous_days
+    if days >= len(fund.ac_worth_trend):
+        print("calc_ac_worth_continuous_change days =", days, "ac_worth_trend.length =", fund.ac_worth_trend.length)
+        return 0
+    old_value = fund.ac_worth_trend[-days-1][1]
+    ratio = calc_change_ratio(old_value, fund.ac_worth)
+    print("calc_ac_worth_continuous_change old_value", old_value)
+    print("ac worth trend:", fund.ac_worth_trend[-days-2:])
+    print("ratio:", ratio, "days:", days)
+    return ratio
 
 
 class FundSheet(object):
@@ -75,8 +88,9 @@ class FundSheet(object):
                 self.sheet.cell(column=fixed_info_column_start + 1, row=row).value = fund.unit_worth_change_ratio
                 self.sheet.cell(column=fixed_info_column_start + 1, row=row).number_format = FORMAT_NUMBER_00
                 self.sheet.cell(column=fixed_info_column_start + 2, row=row).value = fund.continuous_days
-                self.sheet.cell(column=fixed_info_column_start + 3, row=row).value = fund.ac_worth
-                self.sheet.cell(column=fixed_info_column_start + 4, row=row).value = fund.unit_worth_time # datetime.datetime.now()
+                self.sheet.cell(column=fixed_info_column_start + 3, row=row).value = calc_ac_worth_continuous_change(fund)
+                self.sheet.cell(column=fixed_info_column_start + 4, row=row).value = fund.ac_worth
+                self.sheet.cell(column=fixed_info_column_start + 5, row=row).value = fund.unit_worth_time # datetime.datetime.now()
 
                 # self.update_history_worth(fund, row)
 
