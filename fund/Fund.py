@@ -140,6 +140,7 @@ class Fund(object):
         self.unit_worth = None
         self.unit_worth_time = None
         self.unit_worth_change_ratio = None
+        self.unit_worth_history = []
         self.continuous_days = None
         self.ac_worth = None
 
@@ -159,10 +160,17 @@ class Fund(object):
 
         self.init_info()
         self.recent_unit_worth = self.unit_worth_trend[-RECENT_DAY_COUNT:]
+        self.calc_unit_worth_history()   # 必须在逆序前，赋值后
         self.recent_unit_worth = self.recent_unit_worth[::-1]     # 截取最后60天，再逆序，最新时间在前面
         # self.calc_unit_worth()
         self.calc_ac_worth()
         # print("[Fund] process :", self.fund_id, self.fund_name)
+
+    def calc_unit_worth_history(self):
+        self.unit_worth_history = []
+        for worth in self.recent_unit_worth:
+            self.unit_worth_history.append(worth['y'])
+        # print(self.unit_worth_history)
 
     def get_url(self):
         head = 'http://fund.eastmoney.com/pingzhongdata/'

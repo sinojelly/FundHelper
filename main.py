@@ -126,7 +126,8 @@ def make_progress_updater(thread_id, request_id):
         if finished and progress_current[(thread_id, request_id)] != progress_total[(thread_id, request_id)]:
             # print("Finished! current =", progress_current[thread_id], "total =", progress_total[thread_id])
             progress_current[(thread_id, request_id)] = progress_total[(thread_id, request_id)]
-        print("thread:", thread_id, "request:", request_id, "total:", progress_total[(thread_id, request_id)], "current:", progress_current[(thread_id, request_id)])
+        # print("thread:", thread_id, "request:", request_id, "total:", progress_total[(thread_id, request_id)],
+        # "current:", progress_current[(thread_id, request_id)])
     return update_progress
 
 
@@ -144,7 +145,7 @@ def progress(thread_id, request_id):
     # print("start time:", start_time)
     if current >= total and start_time is not None:
         result['time'] = (datetime.datetime.now() - start_time).seconds
-    print("get progress in thread:", thread_id, result)
+    # print("get progress in thread:", thread_id, result)
     return jsonify(result)
 
 

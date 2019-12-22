@@ -18,6 +18,9 @@
 	<script type="text/javascript" src="{{url_for('static', filename='jquery.sparkline.min.js')}}"></script>
 	<script>
 	function sparkLineRenderer(instance, td, row, col, prop, value, cellProperties) {
+	    if (value == null) {
+		    return;  // 刚启动时value为null
+		}
 		if (td.childNodes.length > 0) {  // 第一次添加的chart节点太短了,所以只好每次进来都删除已添加的chart节点
 		    if (td.childNodes[0].id == "sparkline_chart") {
 			    td.removeChild(td.childNodes[0]);
@@ -26,8 +29,11 @@
 		var chartContainer = document.createElement('div');
 		chartContainer.id = "sparkline_chart";
 		td.appendChild(chartContainer);
+		var array = value.split(',');   // string to int array
+		//console.log("sparkLineRenderer");
+		//console.log(array);
 		//instantiate sparkline after the cell element has been aded to the DOM
-		$(chartContainer).sparkline(value, {width:"100%", type:"line", disableTooltips:true});
+		$(chartContainer).sparkline(array, {width:"100%", type:"line", disableTooltips:true});
     }
 	var tabledata = [
  	["005911", "广发双擎升级混合", "5", "2.0368", "0.17", "4", "20191212", "-15.21", "20191021", "-1.02", "20191120", [1,4,2,3,4,5,7,5,1,5]],
@@ -35,11 +41,11 @@
     ];
 	var fundTableContainer = document.getElementById('fund-table');
 	var fundTable = new Handsontable(fundTableContainer, {
-	  //data: null, //tabledata,
-	  data: tabledata,
+	  data: null, //tabledata,
+	  //data: tabledata,
 	  rowHeaders: false,
-	  colHeaders: ["Fund ID", "Name", "Level", "Price", "Change", "Day", "UpdateTime", "R2Low", "LowDate", "R2High", "HighDate", "Trend"],
-	  colWidths:  [70,        200,    40,       60,     60,       40,     80,           60,     80,        60,       80,         200],
+	  colHeaders: ["Fund ID", "Name", "Trend", "Level", "Price", "Change", "Day", "UpdateTime", "R2Low", "LowDate", "R2High", "HighDate"],
+	  colWidths:  [70,        200,     200,    40,       60,     60,       40,     80,           60,     80,        60,       80],
 	  columnSorting : true,
 	  dropdownMenu: true,
       autoColumnSize: true,
@@ -61,21 +67,21 @@
 	  cells: function (row, col) {
 		var cellProperties = {};
 		
-		if (col == 3) { // col从0开始
+		if (col == 2) {
+		    cellProperties.renderer = sparkLineRenderer;
+		}
+		if (col == 4) { // col从0开始
 		   cellProperties.type = 'numeric';
 		   cellProperties.numericFormat = {pattern: '0.00'};
 		}
-		if (col == 4) {
+		if (col == 5) {
 		    cellProperties.renderer = normalConditionColourRenderer
 		}
-		if (col == 7) {
+		if (col == 8) {
 		    cellProperties.renderer = toLowConditionColourRenderer;
 		}
-		if (col == 9) {
+		if (col == 10) {
 		    cellProperties.renderer = toHightConditionColourRenderer;
-		}
-		if (col == 11) {
-		    cellProperties.renderer = sparkLineRenderer;
 		}
 
 		return cellProperties;
@@ -196,7 +202,7 @@
 			dataType: 'json',
 			async: true,
 			success: function(msg) {
-				//fundTable.loadData(msg.fund);
+				fundTable.loadData(msg.fund);
 				stockIndexTable.loadData(msg.stock);
 				investTable.loadData(msg.invest);
 				infoTable.loadData(msg.info);
