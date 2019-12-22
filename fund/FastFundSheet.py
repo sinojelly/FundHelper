@@ -36,7 +36,7 @@ class FastFundSheet(object):
                 self.sheet.cell(column=fixed_info_column_start, row=row).value = fund.unit_worth
                 self.sheet.cell(column=fixed_info_column_start + 1, row=row).value = fund.unit_worth_change_ratio
                 self.sheet.cell(column=fixed_info_column_start + 1, row=row).number_format = FORMAT_NUMBER_00
-                self.sheet.cell(column=fixed_info_column_start + 4, row=row).value = fund.unit_worth_time # datetime.datetime.now()
+                self.sheet.cell(column=fixed_info_column_start + 5, row=row).value = fund.unit_worth_time # datetime.datetime.now()
 
                 progress_updater()
                 row = row + 1
