@@ -13,6 +13,8 @@ CURRENT_PRICE_COLUMN = 9
 UNIT_WORTH_COLUMN = CURRENT_PRICE_COLUMN
 HISTORY_WORTH_COLUMN_START = UNIT_WORTH_COLUMN + 12
 
+CURRENT_PRICE_CHANGE_COLUMN = CURRENT_PRICE_COLUMN + 1
+
 UNIT_WORTH_HISTORY_COLUMN = 4
 FUND_FOCUS_LEVEL_COLUMN = 8
 BUY_OFFSET = 100    # 已买基金在level的位置加上offset
@@ -193,7 +195,7 @@ class FundSheet(object):
         for col in self.sheet.iter_cols(min_row=2, max_col=1):
             for cell in col:
                 if str(cell.value) == str(item_id):
-                    return self.sheet.cell(row=cell.row, column=CURRENT_PRICE_COLUMN).value
+                    return self.sheet.cell(row=cell.row, column=CURRENT_PRICE_COLUMN).value, self.sheet.cell(row=cell.row, column=CURRENT_PRICE_CHANGE_COLUMN).value
         return None
 
     def get_sheet_name(self):

@@ -184,7 +184,7 @@
 			cellProperties.source = autoCompleteYear;
 		}
 
-		if (row >= 3 && row%2 == 1 && col >= 1) {
+		if ((row == 3||row == 4 || row >= 5 && row%2 == 0) && col >= 1) {
 		    cellProperties.renderer = normalConditionColourRenderer
 		}
 

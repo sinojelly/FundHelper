@@ -5,6 +5,7 @@ from openpyxl.styles.fills import PatternFill
 from openpyxl.styles import Font
 from openpyxl.formula.translate import Translator
 from openpyxl.cell.cell import TYPE_FORMULA
+from openpyxl.styles.numbers import FORMAT_NUMBER_00
 import re
 
 
@@ -16,6 +17,11 @@ def set_p_n_condition(sheet, cell):
     green_text = Font(color="006100")
     green_fill = PatternFill(start_color='006100', end_color='C6EFCE', fill_type='solid')
     sheet.conditional_formatting.add(cell.coordinate, CellIsRule(operator='lessThan', formula=['0'], stopIfTrue=True, font=green_text, fill=green_fill))
+
+
+def set_double_p_n_condition(sheet, cell):
+    set_p_n_condition(sheet, cell)
+    cell.number_format = FORMAT_NUMBER_00
 
 
 def get_formula_type(cell):

@@ -4,7 +4,7 @@ import openpyxl
 from FastFund import FastFund
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
 
-from FundSheet import FUND_SHEET_NAME, UNIT_WORTH_COLUMN, CURRENT_PRICE_COLUMN, clear_sheet_columns
+from FundSheet import FUND_SHEET_NAME, UNIT_WORTH_COLUMN, CURRENT_PRICE_COLUMN, CURRENT_PRICE_CHANGE_COLUMN, clear_sheet_columns
 
 
 class FastFundSheet(object):
@@ -50,7 +50,7 @@ class FastFundSheet(object):
         for col in self.sheet.iter_cols(min_row=2, max_col=1):
             for cell in col:
                 if str(cell.value) == str(item_id):
-                    return self.sheet.cell(row=cell.row, column=CURRENT_PRICE_COLUMN).value
+                    return self.sheet.cell(row=cell.row, column=CURRENT_PRICE_COLUMN).value, self.sheet.cell(row=cell.row, column=CURRENT_PRICE_CHANGE_COLUMN).value
         return None
 
     def get_sheet_name(self):

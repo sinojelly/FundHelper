@@ -16,6 +16,8 @@ STOCK_SHEET_NAME = "指数"
 
 CURRENT_INDEX_COLUMN = 6
 
+CURRENT_INDEX_CHANGE_COLUMN = CURRENT_INDEX_COLUMN + 1
+
 # excel: start from 1,  javascript: start from 0
 WEB_SHOW_COLUMNS = [1, 2, 6, 7, 8, 9, 10, 11, 12, 14, 15, 17]
 
@@ -153,7 +155,7 @@ class StockIndexSheet(object):
         for col in self.sheet.iter_cols(min_row=2, max_col=1):
             for cell in col:
                 if str(cell.value) == str(item_id):
-                    return self.sheet.cell(row=int(cell.row), column=CURRENT_INDEX_COLUMN).value
+                    return self.sheet.cell(row=int(cell.row), column=CURRENT_INDEX_COLUMN).value, self.sheet.cell(row=int(cell.row), column=CURRENT_INDEX_CHANGE_COLUMN).value
         return None
 
     def get_sheet_name(self):

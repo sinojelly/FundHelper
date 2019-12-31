@@ -4,14 +4,14 @@ import openpyxl
 
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
 
-from XslxTools import set_p_n_condition, str_to_float, is_value_empty
+from XslxTools import set_p_n_condition, str_to_float, is_value_empty, set_double_p_n_condition
 from XslxTools import get_cell_value, set_row_data, find_value_row_index, get_index_range, insert_row
 
 
 INVEST_SHEET_NAME = "投资"
 
 INVEST_COLUMN_START = 4
-INVEST_ROW_START = 5
+INVEST_ROW_START = 6
 
 
 class InvestSheet(object):
@@ -43,19 +43,19 @@ class InvestSheet(object):
         price_sheet = self.get_price_sheet(col)
 
         item_id = self.get_fund_or_stockindex_id(col)
-        price = price_sheet.get_current_price(item_id)
+        price, price_change = price_sheet.get_current_price(item_id)
 
         if price is None:
             print("get_current_price fail, col =", col, ", id =", item_id)
 
-        return price
+        return price, price_change
 
     def get_invest_status(self, row):
         return self.sheet.cell(row=row, column=3).value
 
     # 处理每一个基金
     def process_one_fund(self, col):
-        price = self.get_current_price(col)
+        price, price_change = self.get_current_price(col)
         if price is None:
             return 0, 0
         total_invest = 0
@@ -112,6 +112,7 @@ class InvestSheet(object):
             break
             # https://stackoverflow.com/questions/189645/how-to-break-out-of-multiple-loops
 
+        recent_day_change = 0
         if total_invest != 0:
             self.sheet.cell(column=col, row=3).value = total_invest    # 总投资额
             self.sheet.cell(column=col+1, row=3).value = price           # 当前价格/点数
@@ -121,7 +122,17 @@ class InvestSheet(object):
             self.sheet.cell(column=col+1, row=4).value = total_income / total_invest * 100   # 总收益率
             self.sheet.cell(column=col+1, row=4).number_format = FORMAT_NUMBER_00
             set_p_n_condition(self.sheet, self.sheet.cell(column=col+1, row=4))
-        return total_invest, total_income
+
+            # 最近一天变化情况
+            if price_change is not None:
+                recent_day_change = total_invest * price_change / 100
+                recent_day_change_cell = self.sheet.cell(column=col, row=5)
+                recent_day_change_cell.value = recent_day_change  # 最近一天收益
+                set_double_p_n_condition(self.sheet, recent_day_change_cell)
+                recent_day_change_ratio_cell = self.sheet.cell(column=col + 1, row=5)
+                recent_day_change_ratio_cell.value = price_change  # 最近一天收益率
+                set_double_p_n_condition(self.sheet, recent_day_change_ratio_cell)
+        return total_invest, total_income, recent_day_change
 
     def update_all_invests(self, *stock_sheets):
         for stock_sheet in stock_sheets:
@@ -129,6 +140,7 @@ class InvestSheet(object):
 
         total_invest = 0
         total_income = 0
+        total_recent_change = 0
         need_process = True
         for col in self.sheet.iter_cols(min_col=INVEST_COLUMN_START, min_row=2, max_row=2):   # 只读基金/指数ID
             for cell in col:
@@ -138,9 +150,10 @@ class InvestSheet(object):
                 need_process = False
                 if cell.value is None:  # 跳过未填写的
                     break
-                invest, income = self.process_one_fund(int(cell.col_idx))
+                invest, income, recent_change = self.process_one_fund(int(cell.col_idx))
                 total_invest += invest
                 total_income += income
+                total_recent_change += recent_change
         self.sheet.cell(row=3, column=2).value = total_invest
         self.sheet.cell(row=4, column=2).value = total_income
         if total_invest != 0:
@@ -149,6 +162,14 @@ class InvestSheet(object):
         set_p_n_condition(self.sheet, self.sheet.cell(row=4, column=2))
         self.sheet.cell(row=4, column=3).number_format = FORMAT_NUMBER_00
         set_p_n_condition(self.sheet, self.sheet.cell(row=4, column=3))
+
+        # 最近一天变化
+        recent_change_cell = self.sheet.cell(row=5, column=2)
+        recent_change_cell.value = total_recent_change
+        set_double_p_n_condition(self.sheet, recent_change_cell)
+        recent_change_ratio_cell = self.sheet.cell(row=5, column=3)
+        recent_change_ratio_cell.value = total_recent_change/total_invest*100
+        set_double_p_n_condition(self.sheet, recent_change_ratio_cell)
 
     def get_fund_id(self, col):
         category = self.sheet.cell(row=1, column=col).value
