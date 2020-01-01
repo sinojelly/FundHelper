@@ -1,0 +1,11 @@
+<div id='check_cookie'></div>
+<script language="javascript">
+$(document).ready(function(){
+    var text = '<p><font color="red"><b>Your browser does not support cookie, some function can not work properly.</b></font></p>';
+	if(navigator.cookieEnabled)
+	{
+        text = '<p><font color="green">Your browser support cookie.</font></p>';	
+	}
+	$("#check_cookie").html(text);
+})
+</script>

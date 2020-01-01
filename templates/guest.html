@@ -1,11 +1,13 @@
 <html>
   <head>
     <title>{{title}} Fund Helper</title>
-	<meta charset=utf-8>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<script type="text/javascript" src="{{url_for('static', filename='jquery-3.4.0.min.js')}}"></script>
   </head>
   <body>
   <h1>{{title}} Fund Helper</h1>
   <p>This web app is used to get fund information automatically!</p>
+  {% include "check_cookie.html" %}
   <p>Hi, {{user}}, welcome!</p>
   {% include "update_funds.html" %}
   </body>
