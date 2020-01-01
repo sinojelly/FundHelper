@@ -3,6 +3,7 @@
 	<div id="updateModelStatus"></div><br>
 	<span title="Git commit the model files and push to github."><button id="gitSubmit">Git Submit</button></span>
 	<div id="gitSubmitStatus"></div><br>
+	<div id="gitSubmitResult"></div><br>
 	<h2>Fund table</h2>
 	<p><b>Level: focus level.</b>
 	<br><b>Hundreds place :</b> 1 means have bought it. (automatically maintained)
@@ -285,6 +286,11 @@
 			success: function(msg) {
 			    text_result = "STDOUT:\n"+msg.stdout+"\nSTDERR:\n"+msg.stderr;
 				$("#gitSubmitStatus").html(convertTextToHtml(text_result));
+				returncode_result = '<font color="green">Git submit success.</font>';
+				if (msg.returncode != 0) {
+				    returncode_result = '<font color="red">Git submit fail('+msg.returncode+'). Try again later.</font>';
+				}
+				$("#gitSubmitResult").html(returncode_result);
 			}
 		});
     }

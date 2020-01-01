@@ -196,35 +196,37 @@ def run_external_cmd(cmd, msg_in=''):
                                 stderr=subprocess.PIPE,
                                 )
         stdout_value, stderr_value = proc.communicate(msg_in)
-        return stdout_value, stderr_value
+        return stdout_value, stderr_value, proc.returncode
     except ValueError as err:
-        # log("ValueError: %s" % err)
-        return "ValueError exception.".encode(encoding='utf-8'), err.encode(encoding='utf-8')
+        # print("ValueError: %s" % err)
+        return "ValueError exception.".encode(encoding='utf-8'), err.encode(encoding='utf-8'), -1000
     except IOError as err:
-        # log("IOError: %s" % err)
-        return "IOError exception.".encode(encoding='utf-8'), err.encode(encoding='utf-8')
+        # print("IOError: %s" % err)
+        return "IOError exception.".encode(encoding='utf-8'), err.encode(encoding='utf-8'), -1000
 
 
 def run_git_submit(work_dir):
+    # git_cmd = "\"D:\\Program Files\\Git\\bin\git.exe\" --git-dir=" + work_dir + "/.git --work-tree=" + work_dir + " "
     git_cmd = "git --git-dir=" + work_dir + "/.git --work-tree=" + work_dir + " "
     commit_cmd = git_cmd + "commit -am \"automatically submit.\""
     push_cmd = git_cmd + "push"
-    status_cmd = git_cmd + "status"
-    cmd = commit_cmd + " & " + push_cmd + " & " + status_cmd
+    # status_cmd = git_cmd + "status"
+    cmd = commit_cmd + " & " + push_cmd  # + " & " + status_cmd
     # result = os.popen(cmd).read()
-    stdout_value, stderr_value = run_external_cmd(cmd)
+    stdout_value, stderr_value, returncode = run_external_cmd(cmd)
     # print(stdout_value.decode())
     # print("---------------err-------------")
     # print(stderr_value.decode())
-    return stdout_value.decode(), stderr_value.decode()
+    # print('returncode', returncode)
+    return stdout_value.decode("utf8", "ignore"), stderr_value.decode("utf8", "ignore"), returncode
 
 
 @app.route('/git-submit/<int:thread_id>', methods=['GET'])
 def git_submit(thread_id):
     # work_dir = "D:\\Develop\\projects\\web-projects\\fundhelper-data"
     work_dir = "/usr/local/fundhelper-data"
-    stdout_value, stderr_value = run_git_submit(work_dir)
-    return jsonify({'stdout': stdout_value, 'stderr':stderr_value})
+    stdout_value, stderr_value, returncode = run_git_submit(work_dir)
+    return jsonify({'stdout': stdout_value, 'stderr':stderr_value, 'returncode':returncode})
 
 
 if __name__ == '__main__':

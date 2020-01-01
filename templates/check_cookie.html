@@ -2,7 +2,11 @@
 <script language="javascript">
 $(document).ready(function(){
     var text = '<p><font color="red"><b>Your browser does not support cookie, some function can not work properly.</b></font></p>';
-	if(navigator.cookieEnabled)
+	var dt = new Date(); 
+	dt.setSeconds(dt.getSeconds() + 60); 
+	document.cookie = "cookietest=1; expires=" + dt.toGMTString(); 
+	var cookiesEnabled = document.cookie.indexOf("cookietest=") != -1; 
+	if(cookiesEnabled)
 	{
         text = '<p><font color="green">Your browser support cookie.</font></p>';	
 	}
