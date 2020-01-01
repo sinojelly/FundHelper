@@ -15,7 +15,6 @@ import subprocess
 from datetime import timedelta
 import sys
 from flask_wtf.csrf import CSRFProtect
-from flask import current_app
 
 sys.path.append(os.path.join(os.getcwd(), 'fund'))
 
@@ -159,18 +158,20 @@ def progress(thread_id, request_id):
 @app.route('/user-login', methods=['POST'])
 def user_login():
     if request.method == 'POST':
+        import logging
+        _logger = logging.getLogger('werkzeug')
         username = request.form['username']
         password = request.form['password']
         if (username == ADMIN_USER or username == 'jelly') and password == '$henF@n':   # 允许j为小写
             session['username'] = ADMIN_USER
-            print("admin log in success.")
-            current_app.logger.info("admin log in success.")
+            # print("admin log in success.")
+            _logger.info("admin log in success.")
             thread_id = generate_thread_id()
             return render_template("admin.html", title='Admin', user=username, thread_id=thread_id)
         else:
             session['username'] = DEFAULT_USER
-            print("log in fail.")
-            current_app.logger.info("log in fail.")
+            # print("log in fail.")
+            _logger.info("log in fail. use default user.")
             thread_id = generate_thread_id()
             return render_template("guest.html", title='Guest', user=username, thread_id=thread_id)
 

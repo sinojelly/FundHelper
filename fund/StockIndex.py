@@ -135,15 +135,22 @@ class StockIndex(object):
         return self.has_realtime_info
 
     def fetch_info(self):
-        tushare.set_token(TUSHARE_APP_KEY)
-        api = tushare.pro_api()
-        time_start = datetime.now() - timedelta(days=RECENT_DAY_COUNT+5)
-        start_date = time_start.strftime("%Y%m%d")
-        end_date = datetime.now().strftime("%Y%m%d")
-        self.index_trend = api.index_daily(ts_code=self.stock_id, start_date=start_date, end_date=end_date,
-                               fields='trade_date,close,amount')  # index_trend -- 最新时间在最前面
-        if self.index_trend.empty:
-            print("Fetch info failed in TuShare.")
+        import logging
+        _logger = logging.getLogger('werkzeug')
+        try:
+            _logger.info("Use Tushare to get stock index : " + str(self.stock_id))
+            tushare.set_token(TUSHARE_APP_KEY)
+            api = tushare.pro_api()
+            time_start = datetime.now() - timedelta(days=RECENT_DAY_COUNT+5)
+            start_date = time_start.strftime("%Y%m%d")
+            end_date = datetime.now().strftime("%Y%m%d")
+            self.index_trend = api.index_daily(ts_code=self.stock_id, start_date=start_date, end_date=end_date,
+                                   fields='trade_date,close,amount')  # index_trend -- 最新时间在最前面
+            if self.index_trend.empty:
+                print("Fetch info failed in TuShare.")
+                return False
+        except Exception as ex:
+            _logger.error("Tushare throw exception: " + str(ex))
             return False
         return True
 

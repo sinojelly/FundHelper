@@ -81,6 +81,7 @@
 		   download_url = "/update-excel/{{thread_id}}/"+request_id
 		}
 		window.location.href = download_url;
+		console.log("request update excel : " + download_url);
 		worker();
 		function worker() {
 			$.get('/progress/' + {{thread_id}} + "/" + request_id, function(data) {
@@ -96,6 +97,8 @@
 				if (current < total || total == 0) {
 					setTimeout(worker, 1000);
 				} else {
+				    window.location.href = "/index/{{thread_id}}/";
+					console.log("redirect to index  after update finished.");
 				    //window.location.reload();  // 刷新页面，从而把fund数据更新结果显示出来
 				}
 			})
