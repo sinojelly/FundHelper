@@ -6,6 +6,7 @@ from openpyxl.styles.numbers import FORMAT_NUMBER_00
 
 from XslxTools import set_p_n_condition, str_to_float, is_value_empty, set_double_p_n_condition
 from XslxTools import get_cell_value, set_row_data, find_value_row_index, get_index_range, insert_row
+from flask import current_app
 
 
 INVEST_SHEET_NAME = "投资"
@@ -46,7 +47,8 @@ class InvestSheet(object):
         price, price_change = price_sheet.get_current_price(item_id)
 
         if price is None:
-            print("get_current_price fail, col =", col, ", id =", item_id)
+            # print("get_current_price fail, col =", col, ", id =", item_id)
+            current_app.logger.error("get_current_price fail, col =" + col + ", id =" + item_id)
 
         return price, price_change
 
@@ -57,7 +59,7 @@ class InvestSheet(object):
     def process_one_fund(self, col):
         price, price_change = self.get_current_price(col)
         if price is None:
-            return 0, 0
+            return 0, 0, 0
         total_invest = 0
         total_income = 0
         need_process = True
