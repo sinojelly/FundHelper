@@ -91,7 +91,10 @@ def update_excel(thread_id, request_id, fast_run='True'):
     is_fast_run = str_to_bool(fast_run)
     update_status[thread_id] = 'Fast' if is_fast_run is True else 'Full'
     work_book[thread_id].update_funds(is_fast_run, progress_updater)
-    if session['username'] == ADMIN_USER:
+    username = session.get('username')
+    if username is None:
+        return "No username in session. May be your browser does not support cookie, or there is a bug(android browser has the bug), use firefox instead."
+    if username == ADMIN_USER:
         return redirect(url_for('index') + "/" + str(thread_id))
     return download_excel(thread_id)   # 非admin登录，直接下载excel
 
@@ -100,7 +103,9 @@ def update_excel(thread_id, request_id, fast_run='True'):
 def download_excel(thread_id):
     content = work_book[thread_id].download_excel()
     file_name = datetime.datetime.now().strftime("Funds_%Y-%m-%d_%H_%M_%S.xlsx")
-    username = session['username']
+    username = session.get('username')
+    if username is None:
+        return "No username in session. May be your browser does not support cookie, or there is a bug(android browser has the bug), use firefox instead."
     file_name = username + "_" + update_status[thread_id] + "_" + file_name
     response = make_response(content)
     response.headers["Content-Disposition"] = "attachment; filename=" + file_name
