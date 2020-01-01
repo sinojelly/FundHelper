@@ -169,9 +169,10 @@ class InvestSheet(object):
         recent_change_cell = self.sheet.cell(row=5, column=2)
         recent_change_cell.value = total_recent_change
         set_double_p_n_condition(self.sheet, recent_change_cell)
-        recent_change_ratio_cell = self.sheet.cell(row=5, column=3)
-        recent_change_ratio_cell.value = total_recent_change/total_invest*100
-        set_double_p_n_condition(self.sheet, recent_change_ratio_cell)
+        if total_invest != 0:
+            recent_change_ratio_cell = self.sheet.cell(row=5, column=3)
+            recent_change_ratio_cell.value = total_recent_change/total_invest*100
+            set_double_p_n_condition(self.sheet, recent_change_ratio_cell)
 
     def get_fund_id(self, col):
         category = self.sheet.cell(row=1, column=col).value
