@@ -24,8 +24,9 @@ MARK_AS_DELETE = "delete"
 
 
 def clear_sheet_columns(work_sheet, row, column_start, column_num):
-    work_sheet.cell(column=2, row=row).value = None    # B列, name清空
-    work_sheet.cell(column=2, row=row).hyperlink = None
+    # name 不清空，有些基金获取名称会失败，可能是手动写入的。对于自动获取的，后面会更新。
+    # work_sheet.cell(column=2, row=row).value = None    # B列, name清空
+    # work_sheet.cell(column=2, row=row).hyperlink = None
 
     # 清除6列自动填充数据
     for index in range(6):
