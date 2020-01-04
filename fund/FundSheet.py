@@ -6,7 +6,7 @@ from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
 from XslxTools import get_cell_value, set_row_data, find_value_row_index, delete_rows, insert_row, \
-    calc_change_ratio, str_to_int, MARK_AS_DELETE
+    calc_change_ratio, str_to_int, MARK_AS_DELETE, update_focus_level
 
 FUND_SHEET_NAME = "基金"
 
@@ -18,7 +18,6 @@ CURRENT_PRICE_CHANGE_COLUMN = CURRENT_PRICE_COLUMN + 1
 
 UNIT_WORTH_HISTORY_COLUMN = 4
 FUND_FOCUS_LEVEL_COLUMN = 8
-BUY_OFFSET = 100    # 已买基金在level的位置加上offset
 
 WEB_SHOW_COLUMNS = [1, 2, 4, 8, 9, 10, 11, 12, 14, 15, 17, 18, 20]
 
@@ -90,7 +89,7 @@ class FundSheet(object):
                         unit_worth_history_str = str(fund.unit_worth_history)
                         unit_worth_history_str = unit_worth_history_str[1:-1]   # 去掉中括号
                         self.sheet.cell(column=UNIT_WORTH_HISTORY_COLUMN, row=row).value = unit_worth_history_str
-                    self.update_focus_level(row, current_fund_buy)
+                    update_focus_level(self.sheet, FUND_FOCUS_LEVEL_COLUMN, row, current_fund_buy)
 
                     self.sheet.cell(column=fixed_info_column_start, row=row).value = fund.unit_worth
                     self.sheet.cell(column=fixed_info_column_start + 1, row=row).value = fund.unit_worth_change_ratio
@@ -126,19 +125,6 @@ class FundSheet(object):
             target_price = fund.get_price(str_date)
             if target_price is not None:
                 target_price_cell.value = target_price
-
-    def update_focus_level(self, row, current_fund_buy):
-        focus_level_cell = self.sheet.cell(column=FUND_FOCUS_LEVEL_COLUMN, row=row)
-        old_value = get_cell_value(self.sheet, focus_level_cell, 0)
-        old_value = str_to_int(old_value)
-        new_value = old_value
-        if current_fund_buy:
-            if old_value < BUY_OFFSET:
-                new_value = old_value + BUY_OFFSET
-        else:
-            if old_value >= BUY_OFFSET:
-                new_value = old_value - BUY_OFFSET
-        focus_level_cell.value = new_value
 
     def update_history_worth(self, fund, row):
         column_start = HISTORY_WORTH_COLUMN_START

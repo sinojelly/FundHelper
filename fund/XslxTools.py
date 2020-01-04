@@ -11,6 +11,8 @@ import re
 
 MARK_AS_DELETE = "delete"
 
+BUY_OFFSET = 100    # 已买基金在level的位置加上offset
+
 
 # 设置positive, negative 条件格式
 def set_p_n_condition(sheet, cell):
@@ -166,3 +168,17 @@ def str_to_int(value, default=0):
 
 def calc_change_ratio(old_value, new_value):
     return (new_value - old_value)/old_value * 100
+
+
+def update_focus_level(sheet, focus_level_column, row, current_fund_buy):
+    focus_level_cell = sheet.cell(column=focus_level_column, row=row)
+    old_value = get_cell_value(sheet, focus_level_cell, 0)
+    old_value = str_to_int(old_value)
+    new_value = old_value
+    if current_fund_buy:
+        if old_value < BUY_OFFSET:
+            new_value = old_value + BUY_OFFSET
+    else:
+        if old_value >= BUY_OFFSET:
+            new_value = old_value - BUY_OFFSET
+    focus_level_cell.value = new_value

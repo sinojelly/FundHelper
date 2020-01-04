@@ -9,7 +9,8 @@ from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
 
-from XslxTools import get_cell_value, MARK_AS_DELETE, find_value_row_index, insert_row, set_row_data, delete_rows
+from XslxTools import get_cell_value, MARK_AS_DELETE, find_value_row_index, insert_row, \
+    set_row_data, delete_rows, update_focus_level
 
 
 STOCK_SHEET_NAME = "指数"
@@ -17,6 +18,9 @@ STOCK_SHEET_NAME = "指数"
 CURRENT_INDEX_COLUMN = 6
 
 CURRENT_INDEX_CHANGE_COLUMN = CURRENT_INDEX_COLUMN + 1
+
+RELATED_FUND_IDS_COLUMN = 4
+FOCUS_LEVEL_COLUMN = 5
 
 # excel: start from 1,  javascript: start from 0
 WEB_SHOW_COLUMNS = [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
@@ -46,13 +50,25 @@ class StockIndexSheet(object):
         self.sheet = wb[STOCK_SHEET_NAME]
         # self.update_stock_index()
 
-    def update_stock_index(self, progress_updater):
+    def update_focus_level(self, row, invested_funds):
+        fund_id_str = get_cell_value(self.sheet, self.sheet.cell(column=RELATED_FUND_IDS_COLUMN, row=row))
+        fund_ids = fund_id_str.split(',')   # 逗号分隔的多个FundID
+        current_fund_buy = False
+        for fund_id in fund_ids:    # 任何一个Fund 购买了，都认为该指数购买了
+            if fund_id in invested_funds:
+                current_fund_buy = True
+                break
+        update_focus_level(self.sheet, FOCUS_LEVEL_COLUMN, row, current_fund_buy)
+
+    def update_stock_index(self, invested_funds, progress_updater):
         row = 2
         for col in self.sheet.iter_cols(min_row=row, max_col=1):
             for cell in col:
                 fixed_info_column_start = 6
                 auto_extrema_column_start = fixed_info_column_start+12
                 clear_sheet_columns(self.sheet, row, auto_extrema_column_start, 80)  # 把80列清空，目前表格模板够用且留有余量
+
+                self.update_focus_level(cell.row, invested_funds)
 
                 stock_index_id = str(cell.value)
                 stock_index = StockIndex(stock_index_id)
