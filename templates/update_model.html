@@ -125,7 +125,7 @@
 	  data: null, //tabledata,
 	  rowHeaders: false,
 	  colHeaders: ["StockIndex", "Name", "FundId", "Level", "Point", "Change", "Day", "CChange","Amount", "UpdateTime", "R2Low", '<span title="Manual fill.">LPoint</span>', "LowDate", "R2High", '<span title="Manual fill.">HPoint</span>', "HighDate"],
-	  colWidths: [100, 120, 70, 40, 80, 60, 40, 60, 60, 170, 60, 80, 110, 60, 80, 110],
+	  colWidths: [100, 120, 70, 40, 80, 60, 40, 60, 60, 170, 60, 70, 110, 60, 70, 110],
 	  columns: [{},{},{},{},{},{},{},{},{},{},{},{},{type: 'autocomplete', source: autoCompleteYear},{},{},{type: 'autocomplete', source: autoCompleteYear}],
 	  columnSorting : true,
 	  dropdownMenu: true,
@@ -143,7 +143,7 @@
 	  cells: function (row, col) {
 		var cellProperties = {};
 		
-		if (col == 4 || col == 8 || col == 11 || col == 14) { // col从0开始
+		if (col == 4 || col == 8 /*|| col == 11 || col == 14*/) { // col从0开始, 目标高低值保持简洁，不显示小数，手动也不输入小数
 		   cellProperties.type = 'numeric';
 		   cellProperties.numericFormat = {pattern: '0.00'};
 		}
