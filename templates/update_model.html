@@ -253,7 +253,7 @@
 		//var temp = investTable.getData();
 		//console.log(temp.length);
 		//console.log(temp);
-	    var arr = { "fund": fundTable.getData(), "info": infoTable.getData(), "invest":investTable.getData()};
+	    var arr = { "fund": fundTable.getData(), /*"stock":stockIndexTable.getData(),*/ "info": infoTable.getData(), "invest":investTable.getData()};
 		$.ajax({
 			url: '/save-data/' + {{thread_id}},
 			type: 'POST',
