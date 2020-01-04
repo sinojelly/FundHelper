@@ -19,7 +19,7 @@ def update_work_book(file, fast_run, progress_updater):
     wb = openpyxl.load_workbook(file)
 
     invest_sheet = InvestSheet(wb)
-    invest_funds = invest_sheet.get_all_funds()
+    invest_funds, still_invest_funds = invest_sheet.get_all_funds()
 
     if fast_run:
         fund_sheet = FastFundSheet(wb)
@@ -33,7 +33,7 @@ def update_work_book(file, fast_run, progress_updater):
 
     progress_updater(total=step_count)  # 更新步骤总数
 
-    fund_sheet.update_funds(invest_funds, progress_updater)
+    fund_sheet.update_funds(still_invest_funds, progress_updater)
 
     end_funds_time = datetime.datetime.now()
     print("Finished update funds! It takes", (end_funds_time - starttime).seconds, "seconds.")

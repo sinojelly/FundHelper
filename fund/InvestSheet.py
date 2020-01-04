@@ -181,8 +181,11 @@ class InvestSheet(object):
             return self.sheet.cell(row=2, column=col).value
         return None
 
+    # 获取投资过的基金列表（便于查询当前价格），以及仍然在投资中的基金（便于标注focus level）
+    # 暂时只使用了 still_invest_funds, 因为它可以支持上述两种场景，更省内存
     def get_all_funds(self):
         invested_funds = []
+        still_invest_funds = []
         need_process = True
         for col in self.sheet.iter_cols(min_col=INVEST_COLUMN_START, min_row=1, max_row=1):
             for cell in col:
@@ -195,7 +198,26 @@ class InvestSheet(object):
                 fund_id = self.get_fund_id(int(cell.col_idx))
                 if fund_id is not None:
                     invested_funds.append(str(fund_id))
-        return invested_funds
+                    if self.is_still_invest(int(cell.col_idx)):
+                        still_invest_funds.append(str(fund_id))
+        return invested_funds, still_invest_funds
+
+    # 仍然未完全赎回
+    def is_still_invest(self, col_id):
+        need_process = True
+        for col_content in self.sheet.iter_cols(min_col=col_id, max_col=col_id, min_row=INVEST_ROW_START):  # 只遍历基金ID那一列
+            for cell in col_content:
+                if not need_process:  # 跳过一行，再处理。因为每一组投资都是两行
+                    need_process = True
+                    continue
+                need_process = False
+                if is_value_empty(cell.value):  # 跳过未填写的
+                    continue
+                status = self.get_invest_status(cell.row)
+                # print("row =", cell.row, ", status =", status)
+                if status == '投资':
+                    return True
+        return False
 
     def get_table(self):
         result = []
@@ -229,8 +251,8 @@ if __name__ == '__main__':
     import FundSheet
     fund_sheet = FundSheet.FundSheet(wb)
     invest_sheet = InvestSheet(wb)
-    invest_funds = invest_sheet.get_all_funds()
+    invest_funds, still_invested_funds = invest_sheet.get_all_funds()
     from TestTools import empty_func
-    fund_sheet.update_funds(invest_funds, empty_func)
+    fund_sheet.update_funds(still_invested_funds, empty_func)
     invest_sheet.update_all_invests(fund_sheet, stock_index_sheet)
     wb.save('Jelly_model_new.xlsx')

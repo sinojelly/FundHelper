@@ -46,7 +46,7 @@ class FundWorkbook(object):
         # starttime = datetime.datetime.now()
 
         invest_sheet = InvestSheet(self.wb)
-        invest_funds = invest_sheet.get_all_funds()
+        invest_funds, still_invest_funds = invest_sheet.get_all_funds()
 
         if fast_run:
             fund_sheet = FastFundSheet(self.wb)
@@ -60,7 +60,7 @@ class FundWorkbook(object):
 
         progress_updater(total=step_count)  # 更新步骤总数
 
-        fund_sheet.update_funds(invest_funds, progress_updater)
+        fund_sheet.update_funds(still_invest_funds, progress_updater)
 
         # end_funds_time = datetime.datetime.now()
         # print("Finished update funds! It takes", (end_funds_time - starttime).seconds, "seconds.")
