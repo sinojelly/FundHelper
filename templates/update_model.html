@@ -126,6 +126,7 @@
 	  rowHeaders: false,
 	  colHeaders: ["StockIndex", "Name", "Point", "Change", "Day", "CChange","Amount", "UpdateTime", "R2Low", "LowDate", "R2High", "HighDate"],
 	  colWidths: [100, 120, 80, 60, 40, 60, 60, 170, 60, 110, 60, 110],
+	  columns: [{},{},{},{},{},{},{},{},{},{type: 'autocomplete', source: autoCompleteYear},{},{type: 'autocomplete', source: autoCompleteYear}],
 	  columnSorting : true,
 	  dropdownMenu: true,
       autoColumnSize: true,
