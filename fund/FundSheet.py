@@ -5,7 +5,8 @@ from Fund import Fund, timestamp2time
 from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
-from XslxTools import get_cell_value, set_row_data, find_value_row_index, delete_rows, insert_row, calc_change_ratio, str_to_int
+from XslxTools import get_cell_value, set_row_data, find_value_row_index, delete_rows, insert_row, \
+    calc_change_ratio, str_to_int, MARK_AS_DELETE
 
 FUND_SHEET_NAME = "基金"
 
@@ -20,7 +21,6 @@ FUND_FOCUS_LEVEL_COLUMN = 8
 BUY_OFFSET = 100    # 已买基金在level的位置加上offset
 
 WEB_SHOW_COLUMNS = [1, 2, 4, 8, 9, 10, 11, 12, 14, 15, 17, 18, 20]
-MARK_AS_DELETE = "delete"
 
 
 def clear_sheet_columns(work_sheet, row, column_start, column_num):
@@ -250,6 +250,7 @@ class FundSheet(object):
         self.mark_name_delete()
         for row_data in data:   # for each row data
             row_index = find_value_row_index(self.sheet, 2, 1, row_data[0])
+            # print('row data:', row_data[0], row_data[1], ", row_index=", row_index)
             if row_index is None:   # 原来不存在添加行
                 del row_data[2]    # 删除 hyperlinnk
                 insert_row(self.sheet, 2, 1, row_data, WEB_SHOW_COLUMNS)

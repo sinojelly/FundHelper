@@ -9,6 +9,9 @@ from openpyxl.styles.numbers import FORMAT_NUMBER_00
 import re
 
 
+MARK_AS_DELETE = "delete"
+
+
 # 设置positive, negative 条件格式
 def set_p_n_condition(sheet, cell):
     red_text = Font(color="AA110D")
@@ -112,7 +115,10 @@ def set_row_data(sheet, row_index, data, start_row, columns=None):
     array_index = 0
     for column in col_range:
         cell = sheet.cell(row=row_index, column=column)
-        set_cell_value(sheet, cell, data[array_index], start_row)
+        if str(cell.value) == MARK_AS_DELETE and data[array_index] is None:
+            pass  # 如果标记为删除，且web传来的对应数据为None（即web上用户已删除），则不覆盖删除标记，便于最终删除它
+        else:
+            set_cell_value(sheet, cell, data[array_index], start_row)
         array_index += 1
 
 
