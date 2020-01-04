@@ -22,10 +22,13 @@ class FastFund(object):
         return head + self.fund_id + tail
 
     def initialize(self):
+        import logging
+        _logger = logging.getLogger('werkzeug')
+
         # 用requests获取到对应的文件
         content = requests.get(self.get_url())
         if content.status_code != 200:
-            print("Fetch info failed in FastFund.")
+            _logger.info("FastFund fetch info failed. content.status_code(" + content.status_code + "). fund_id = " + self.fund_id)
             return False
 
         # {"fundcode":"001186","name":"富国文体健康股票","jzrq":"2019-11-28","dwjz":"1.1190",
@@ -33,14 +36,14 @@ class FastFund(object):
         json_data = content.text[len('jsonpgz('):-2]
 
         if json_data == '':
-            print("FastFund get result fail. content.text =", content.text, "fund_id =", self.fund_id)
+            _logger.info("FastFund get result failed. content.text(" + content.text + "). fund_id = " + self.fund_id)
             return False
 
         try:
             json_obj = json.loads(json_data)
         except JSONDecodeError as e:
-            print("FastFund decode result fail. content.text =", content.text, "fund_id =", self.fund_id)
-            print(e)
+            _logger.info("FastFund decode result failed. content.text(" + content.text + "). fund_id = "
+                         + self.fund_id + ". exception: " + str(e))
             return False
 
         self.fund_name = json_obj['name']

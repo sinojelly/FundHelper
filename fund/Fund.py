@@ -180,12 +180,17 @@ class Fund(object):
         return head + self.fund_id + tail
 
     def init_info(self):
+        import logging
+        _logger = logging.getLogger('werkzeug')
+
         # 用requests获取到对应的文件
         content = requests.get(self.get_url())
 
         # 使用execjs获取到相应的数据
         js_content = execjs.compile(content.text)
-        self.fund_name = eval_js(js_content,'fS_name')
+        self.fund_name = eval_js(js_content,'fS_name', '')
+        if self.fund_name == '':
+            _logger.info("Fund get fund_name failed. fund_id = " + self.fund_id)
 
         # 单位净值走势
         self.unit_worth_trend = eval_js(js_content,'Data_netWorthTrend', [])
@@ -195,6 +200,8 @@ class Fund(object):
             self.unit_worth_change_ratio = calc_unit_worth_change_ratio(self.unit_worth_trend[-2:-1][0], self.unit_worth_trend[-1:][0])
             # print("self.unit_worth_change_ratio", self.unit_worth_change_ratio)
             self.continuous_days = calc_unit_worth_continuous_days(self.unit_worth_trend[:-1], self.unit_worth_change_ratio > 0)
+        else:
+            _logger.info("Fund get unit worth failed. fund_id = " + self.fund_id)
 
         # 累计净值走势
         self.ac_worth_trend = eval_js(js_content,'Data_ACWorthTrend', [])
@@ -203,6 +210,8 @@ class Fund(object):
             # last_ac_worth = self.ac_worth_trend[-2:-1][0][1]
             # self.ac_worth_change_ratio = (self.ac_worth - last_ac_worth) / last_ac_worth * 100
             # print("self.ac_worth_change_ratio", self.ac_worth_change_ratio)
+        else:
+            _logger.info("Fund get ac worth failed. fund_id = " + self.fund_id)
 
     def calc_unit_worth(self):
         unit_worth_list = []
