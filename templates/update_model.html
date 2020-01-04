@@ -242,6 +242,7 @@
 				investTable.loadData(msg.invest);
 				infoTable.loadData(msg.info);
 				fundTable.getPlugin('columnSorting').sort({ column: 4, sortOrder: 'desc' });
+				stockIndexTable.getPlugin('columnSorting').sort({ column: 3, sortOrder: 'desc' });
 				//console.log('Loaded:');
 				//console.log(msg.data);
 			}
