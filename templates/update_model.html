@@ -244,6 +244,7 @@
 	});
 	
 	function save_data() { 
+	    $("#updateModelStatus").text("Update model: Save start ...");
 	    // save all cell's data
 	    var csrftoken = $("meta[name=csrf-token]").attr("content");
 		//var temp = investTable.getData();
@@ -277,6 +278,7 @@
 	
 	function git_submit() {
 	    $("#gitSubmitStatus").text("Git submit start ... (maybe a few minutes needed.)");
+		$("#gitSubmitResult").html("Git submit running ...");
 		$.ajax({
 			url: '/git-submit/' + {{thread_id}},
 			type: 'GET',
@@ -291,6 +293,10 @@
 				    returncode_result = '<font color="red">Git submit fail('+msg.returncode+'). Try again later.</font>';
 				}
 				$("#gitSubmitResult").html(returncode_result);
+			}
+			error: function (err) {   //ajax请求失败时返回
+				//console.log(err);
+				$("#gitSubmitResult").html("Git submit error (" + err.status + " - "+ err.statusText + ")");
 			}
 		});
     }
