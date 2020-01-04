@@ -9,6 +9,7 @@ import pytz
 
 import numpy as np
 import scipy.signal as signal
+from JsTools import eval_js
 # import matplotlib.pyplot as plt
 
 
@@ -184,22 +185,24 @@ class Fund(object):
 
         # 使用execjs获取到相应的数据
         js_content = execjs.compile(content.text)
-        self.fund_name = js_content.eval('fS_name')
+        self.fund_name = eval_js(js_content,'fS_name')
 
         # 单位净值走势
-        self.unit_worth_trend = js_content.eval('Data_netWorthTrend')
-        self.unit_worth_time = timestamp2time(self.unit_worth_trend[-1:][0]['x'])
-        self.unit_worth = self.unit_worth_trend[-1:][0]['y']
-        self.unit_worth_change_ratio = calc_unit_worth_change_ratio(self.unit_worth_trend[-2:-1][0], self.unit_worth_trend[-1:][0])
-        # print("self.unit_worth_change_ratio", self.unit_worth_change_ratio)
-        self.continuous_days = calc_unit_worth_continuous_days(self.unit_worth_trend[:-1], self.unit_worth_change_ratio > 0)
+        self.unit_worth_trend = eval_js(js_content,'Data_netWorthTrend', [])
+        if len(self.unit_worth_trend) > 0:
+            self.unit_worth_time = timestamp2time(self.unit_worth_trend[-1:][0]['x'])
+            self.unit_worth = self.unit_worth_trend[-1:][0]['y']
+            self.unit_worth_change_ratio = calc_unit_worth_change_ratio(self.unit_worth_trend[-2:-1][0], self.unit_worth_trend[-1:][0])
+            # print("self.unit_worth_change_ratio", self.unit_worth_change_ratio)
+            self.continuous_days = calc_unit_worth_continuous_days(self.unit_worth_trend[:-1], self.unit_worth_change_ratio > 0)
 
         # 累计净值走势
-        self.ac_worth_trend = js_content.eval('Data_ACWorthTrend')
-        self.ac_worth = self.ac_worth_trend[-1:][0][1]
-        # last_ac_worth = self.ac_worth_trend[-2:-1][0][1]
-        # self.ac_worth_change_ratio = (self.ac_worth - last_ac_worth) / last_ac_worth * 100
-        # print("self.ac_worth_change_ratio", self.ac_worth_change_ratio)
+        self.ac_worth_trend = eval_js(js_content,'Data_ACWorthTrend', [])
+        if len(self.ac_worth_trend) > 0:
+            self.ac_worth = self.ac_worth_trend[-1:][0][1]
+            # last_ac_worth = self.ac_worth_trend[-2:-1][0][1]
+            # self.ac_worth_change_ratio = (self.ac_worth - last_ac_worth) / last_ac_worth * 100
+            # print("self.ac_worth_change_ratio", self.ac_worth_change_ratio)
 
     def calc_unit_worth(self):
         unit_worth_list = []
