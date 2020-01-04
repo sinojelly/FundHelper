@@ -19,7 +19,7 @@ CURRENT_INDEX_COLUMN = 6
 CURRENT_INDEX_CHANGE_COLUMN = CURRENT_INDEX_COLUMN + 1
 
 # excel: start from 1,  javascript: start from 0
-WEB_SHOW_COLUMNS = [1, 2, 6, 7, 8, 9, 10, 11, 12, 14, 15, 17]
+WEB_SHOW_COLUMNS = [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 
 def clear_sheet_columns(work_sheet, row, column_start, column_num):

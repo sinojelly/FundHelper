@@ -124,9 +124,9 @@
 	var stockIndexTable = new Handsontable(stockIndexTableContainer, {
 	  data: null, //tabledata,
 	  rowHeaders: false,
-	  colHeaders: ["StockIndex", "Name", "Point", "Change", "Day", "CChange","Amount", "UpdateTime", "R2Low", "LowDate", "R2High", "HighDate"],
-	  colWidths: [100, 120, 80, 60, 40, 60, 60, 170, 60, 110, 60, 110],
-	  columns: [{},{},{},{},{},{},{},{},{},{type: 'autocomplete', source: autoCompleteYear},{},{type: 'autocomplete', source: autoCompleteYear}],
+	  colHeaders: ["StockIndex", "Name", "FundId", "Level", "Point", "Change", "Day", "CChange","Amount", "UpdateTime", "R2Low", '<span title="Manual fill.">LPoint</span>', "LowDate", "R2High", '<span title="Manual fill.">HPoint</span>', "HighDate"],
+	  colWidths: [100, 120, 70, 40, 80, 60, 40, 60, 60, 170, 60, 80, 110, 60, 80, 110],
+	  columns: [{},{},{},{},{},{},{},{},{},{},{},{},{type: 'autocomplete', source: autoCompleteYear},{},{},{type: 'autocomplete', source: autoCompleteYear}],
 	  columnSorting : true,
 	  dropdownMenu: true,
       autoColumnSize: true,
@@ -143,17 +143,17 @@
 	  cells: function (row, col) {
 		var cellProperties = {};
 		
-		if (col == 2 || col == 6) { // col从0开始
+		if (col == 4 || col == 8 || col == 11 || col == 14) { // col从0开始
 		   cellProperties.type = 'numeric';
 		   cellProperties.numericFormat = {pattern: '0.00'};
 		}
-		if (col == 3 || col == 5) {
+		if (col == 5 || col == 7) {
 		    cellProperties.renderer = normalConditionColourRenderer
 		}
-		if (col == 8) {
+		if (col == 10) {
 		    cellProperties.renderer = toLowConditionColourRenderer;
 		}
-		if (col == 10) {
+		if (col == 13) {
 		    cellProperties.renderer = toHightConditionColourRenderer;
 		}
 
