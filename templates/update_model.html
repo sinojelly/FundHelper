@@ -125,17 +125,18 @@
 	  data: null, //tabledata,
 	  rowHeaders: false,
 	  colHeaders: ["StockIndex", "Name", "Point", "Change", "Day", "CChange","Amount", "UpdateTime", "R2Low", "LowDate", "R2High", "HighDate"],
+	  colWidths: [100, 120, 80, 60, 40, 60, 60, 170, 60, 110, 60, 110],
 	  columnSorting : true,
 	  dropdownMenu: true,
       autoColumnSize: true,
 	  contextMenu: true,
 	  width: '100%',
       height: 500,
-	  modifyColWidth: function(width, col){
+	  /*modifyColWidth: function(width, col){
 		  if(width > 70 && col != 1 && col != 7){
 			return 70
 		  }
-		},
+		},*/
 	  fixedColumnsLeft: 2,
 	  licenseKey: 'non-commercial-and-evaluation',
 	  cells: function (row, col) {

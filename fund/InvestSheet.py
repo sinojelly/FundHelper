@@ -181,7 +181,7 @@ class InvestSheet(object):
             return self.sheet.cell(row=2, column=col).value
         return None
 
-    # 获取投资过的基金列表（便于查询当前价格），以及仍然在投资中的基金（便于标注focus level）
+    # 获取投资过的基金列表（便于查询历史价格），以及仍然在投资中的基金（便于标注focus level）
     # 暂时只使用了 still_invest_funds, 因为它可以支持上述两种场景，更省内存
     def get_all_funds(self):
         invested_funds = []
