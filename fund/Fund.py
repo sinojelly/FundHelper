@@ -159,13 +159,16 @@ class Fund(object):
         self.recent_ac_worth_max = None
         self.recent_ac_worth_min = None
 
-        self.init_info()
-        self.recent_unit_worth = self.unit_worth_trend[-RECENT_DAY_COUNT:]
-        self.calc_unit_worth_history()   # 必须在逆序前，赋值后
-        self.recent_unit_worth = self.recent_unit_worth[::-1]     # 截取最后60天，再逆序，最新时间在前面
-        # self.calc_unit_worth()
-        self.calc_ac_worth()
-        # print("[Fund] process :", self.fund_id, self.fund_name)
+    def initialize(self):
+        if self.init_info():
+            self.recent_unit_worth = self.unit_worth_trend[-RECENT_DAY_COUNT:]
+            self.calc_unit_worth_history()   # 必须在逆序前，赋值后
+            self.recent_unit_worth = self.recent_unit_worth[::-1]     # 截取最后60天，再逆序，最新时间在前面
+            # self.calc_unit_worth()
+            self.calc_ac_worth()
+            # print("[Fund] process :", self.fund_id, self.fund_name)
+            return True
+        return False
 
     def calc_unit_worth_history(self):
         self.unit_worth_history = []
@@ -202,6 +205,7 @@ class Fund(object):
             self.continuous_days = calc_unit_worth_continuous_days(self.unit_worth_trend[:-1], self.unit_worth_change_ratio > 0)
         else:
             _logger.info("Fund get unit worth failed. fund_id = " + self.fund_id)
+            return False
 
         # 累计净值走势
         self.ac_worth_trend = eval_js(js_content,'Data_ACWorthTrend', [])
@@ -212,6 +216,8 @@ class Fund(object):
             # print("self.ac_worth_change_ratio", self.ac_worth_change_ratio)
         else:
             _logger.info("Fund get ac worth failed. fund_id = " + self.fund_id)
+            return False
+        return True
 
     def calc_unit_worth(self):
         unit_worth_list = []

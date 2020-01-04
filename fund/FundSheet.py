@@ -75,31 +75,32 @@ class FundSheet(object):
 
                 fund_id = str(cell.value)
                 fund = Fund(fund_id)
-                current_fund_buy = False
-                if fund_id in invested_funds:
-                    self.invested_funds_map[fund_id] = fund
-                    current_fund_buy = True
-                    # print("store invested fund", fund_id)
+                if fund.initialize():
+                    current_fund_buy = False
+                    if fund_id in invested_funds:
+                        self.invested_funds_map[fund_id] = fund
+                        current_fund_buy = True
+                        # print("store invested fund", fund_id)
 
-                self.sheet['B' + str(row)].value = fund.fund_name
-                self.sheet['B' + str(row)].hyperlink = get_fund_hyperlink(fund_id)
+                    self.sheet['B' + str(row)].value = fund.fund_name
+                    self.sheet['B' + str(row)].hyperlink = get_fund_hyperlink(fund_id)
 
-                if fund.unit_worth_history is not None:
-                    unit_worth_history_str = str(fund.unit_worth_history)
-                    unit_worth_history_str = unit_worth_history_str[1:-1]   # 去掉中括号
-                    self.sheet.cell(column=UNIT_WORTH_HISTORY_COLUMN, row=row).value = unit_worth_history_str
-                self.update_focus_level(row, current_fund_buy)
+                    if fund.unit_worth_history is not None:
+                        unit_worth_history_str = str(fund.unit_worth_history)
+                        unit_worth_history_str = unit_worth_history_str[1:-1]   # 去掉中括号
+                        self.sheet.cell(column=UNIT_WORTH_HISTORY_COLUMN, row=row).value = unit_worth_history_str
+                    self.update_focus_level(row, current_fund_buy)
 
-                self.sheet.cell(column=fixed_info_column_start, row=row).value = fund.unit_worth
-                self.sheet.cell(column=fixed_info_column_start + 1, row=row).value = fund.unit_worth_change_ratio
-                self.sheet.cell(column=fixed_info_column_start + 1, row=row).number_format = FORMAT_NUMBER_00
-                self.sheet.cell(column=fixed_info_column_start + 2, row=row).value = fund.continuous_days
-                self.sheet.cell(column=fixed_info_column_start + 3, row=row).value = calc_ac_worth_continuous_change(fund)
-                self.sheet.cell(column=fixed_info_column_start + 4, row=row).value = fund.ac_worth
-                self.sheet.cell(column=fixed_info_column_start + 5, row=row).value = fund.unit_worth_time # datetime.datetime.now()
+                    self.sheet.cell(column=fixed_info_column_start, row=row).value = fund.unit_worth
+                    self.sheet.cell(column=fixed_info_column_start + 1, row=row).value = fund.unit_worth_change_ratio
+                    self.sheet.cell(column=fixed_info_column_start + 1, row=row).number_format = FORMAT_NUMBER_00
+                    self.sheet.cell(column=fixed_info_column_start + 2, row=row).value = fund.continuous_days
+                    self.sheet.cell(column=fixed_info_column_start + 3, row=row).value = calc_ac_worth_continuous_change(fund)
+                    self.sheet.cell(column=fixed_info_column_start + 4, row=row).value = fund.ac_worth
+                    self.sheet.cell(column=fixed_info_column_start + 5, row=row).value = fund.unit_worth_time # datetime.datetime.now()
 
-                self.update_target_values(fund, row, fixed_info_column_start + 6)
-                # self.update_history_worth(fund, row)
+                    self.update_target_values(fund, row, fixed_info_column_start + 6)
+                    # self.update_history_worth(fund, row)
 
                 progress_updater()   # 每次row增加前+1
                 row = row + 1
