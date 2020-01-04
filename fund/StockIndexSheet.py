@@ -50,14 +50,17 @@ class StockIndexSheet(object):
         self.sheet = wb[STOCK_SHEET_NAME]
         # self.update_stock_index()
 
-    def update_focus_level(self, row, invested_funds):
-        fund_id_str = get_cell_value(self.sheet, self.sheet.cell(column=RELATED_FUND_IDS_COLUMN, row=row))
-        fund_ids = fund_id_str.split(',')   # 逗号分隔的多个FundID
+    def update_focus_level(self, row, stock_id, invested_funds):
         current_fund_buy = False
-        for fund_id in fund_ids:    # 任何一个Fund 购买了，都认为该指数购买了
-            if fund_id in invested_funds:
-                current_fund_buy = True
-                break
+        if stock_id in invested_funds:  # 如果购买的是指数，或者股票，直接判断
+            current_fund_buy = True
+        else:  # 如果购买的是指数关联的基金，则看关联基金是否购买了
+            fund_id_str = get_cell_value(self.sheet, self.sheet.cell(column=RELATED_FUND_IDS_COLUMN, row=row))
+            fund_ids = fund_id_str.split(',')  # 逗号分隔的多个FundID
+            for fund_id in fund_ids:  # 任何一个Fund 购买了，都认为该指数购买了
+                if fund_id in invested_funds:
+                    current_fund_buy = True
+                    break
         update_focus_level(self.sheet, FOCUS_LEVEL_COLUMN, row, current_fund_buy)
 
     def update_stock_index(self, invested_funds, progress_updater):
@@ -68,9 +71,8 @@ class StockIndexSheet(object):
                 auto_extrema_column_start = fixed_info_column_start+12
                 clear_sheet_columns(self.sheet, row, auto_extrema_column_start, 80)  # 把80列清空，目前表格模板够用且留有余量
 
-                self.update_focus_level(cell.row, invested_funds)
-
                 stock_index_id = str(cell.value)
+                self.update_focus_level(cell.row, stock_index_id, invested_funds)
                 stock_index = StockIndex(stock_index_id)
                 if not stock_index.initialize():
                     eastmoney_stock_index = EastMoneyPushStockIndex(stock_index_id)
