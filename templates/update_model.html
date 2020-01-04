@@ -293,7 +293,7 @@
 				    returncode_result = '<font color="red">Git submit fail('+msg.returncode+'). Try again later.</font>';
 				}
 				$("#gitSubmitResult").html(returncode_result);
-			}
+			},
 			error: function (err) {   //ajax请求失败时返回
 				//console.log(err);
 				$("#gitSubmitResult").html("Git submit error (" + err.status + " - "+ err.statusText + ")");
