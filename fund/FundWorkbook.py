@@ -35,10 +35,13 @@ class FundWorkbook(object):
                 self.sheet_alias[INFO_SHEET_NAME]: self.sheet[INFO_SHEET_NAME].get_table()}
 
     def save_table(self, data):
+        import logging
+        _logger = logging.getLogger('werkzeug')
         for key,value in data.items():
             # 每个key对应一个sheet
-            # print("save_table key is ", key)
+            _logger.info("save_table: process table " + key)
             self.alias_to_sheet[key].save_table(value)
+        _logger.info("save_table: now write to file.")
         self.wb.save(self.file)
 
     def update_funds(self, fast_run, progress_updater):

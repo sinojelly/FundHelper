@@ -186,7 +186,9 @@ def load_fund_data(thread_id):
 
 @app.route('/save-data/<int:thread_id>', methods=['POST'])
 def save_data(thread_id):
-    print("save data .....", thread_id)
+    import logging
+    _logger = logging.getLogger('werkzeug')
+    _logger.info("save data ..... " + str(thread_id))
     if request.method == 'POST':
         # data = request.form['data']
         # data = request.form.get('data', None)
