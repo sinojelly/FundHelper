@@ -233,7 +233,7 @@ class StockIndexSheet(object):
             row_index = find_value_row_index(self.sheet, 2, 1, row_data[0])
             # print('row data:', row_data[0], row_data[1], ", row_index=", row_index)
             del row_data[1]  # 删除 stock link, 下标从0开始
-            del row_data[3]  # 删除 zhishubao link, 下标从0开始
+            del row_data[2]  # 删除 zhishubao link, 下标从0开始 -- 本来下标是3，但是前面移除了一个，变成2
             if row_index is None:   # 原来不存在添加行
                 insert_row(self.sheet, 2, 1, row_data, WEB_SHOW_COLUMNS)
             else:
