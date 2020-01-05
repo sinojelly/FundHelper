@@ -46,13 +46,17 @@ def get_cell_value(sheet, cell, default=''):
     #计算公式
     formula = cell.value[1:]  # 去掉等号
     match = re.match(".*?([A-Z]\d+).*?([A-Z]\d+).*?([A-Z]\d+).*", formula)
+    # _logger.info("eval formula : |" + str(formula) + "|")
     if match is None:  # 遇到不同的公式
         return cell.value
     for address in match.groups():
         if sheet[address].value is None:
             return default
+        # if str(sheet[address].value) != '':  # 避免替换为空字符串, 不能用这种方法，会有 NameError: name 'P29' is not defined
         formula = formula.replace(address, str(sheet[address].value))
     try:
+        if str(formula) == '(-)/*100':   # 上面替换时替换成了空字符串，得到一个异常的公式，会抛出语法不对异常，即使catch住也影响性能
+            return default
         value = eval(formula)
     except TypeError as err:
         _logger.error("eval formula fail: " + str(formula) + " TypeError: " + str(err))
