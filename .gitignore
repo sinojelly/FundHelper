@@ -107,3 +107,5 @@ fund/.idea/
 
 *- 副本.xlsx
 ~$Jelly_model.xlsx
+
+*.csv

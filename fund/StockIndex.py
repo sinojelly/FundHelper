@@ -216,5 +216,22 @@ class StockIndex(object):
             plt.show()
 
 
+def write_file(file_name, data):
+    with open(file_name, 'w') as file_obj:
+        file_obj.write(data)
+
+
+def print_all_tushare_index():
+    tushare.set_token(TUSHARE_APP_KEY)
+    api = tushare.pro_api()
+    for market in ['MSCI', 'CSI', 'SSE', 'SZSE', 'CICC', 'SW', 'OTH']:
+        data = api.index_basic(market=market)
+        data.to_csv(market+"_tushare_index.csv", index=True, header=True)
+
+
 if __name__ == '__main__':
-    index = StockIndex("000001.SH")  # 上证指数
+    print_all_tushare_index()
+    # index = StockIndex("000001.SH")  # 上证指数
+    # index = StockIndex("H30588")  #
+    # index.initialize()
+
