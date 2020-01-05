@@ -29,25 +29,31 @@ class JuheStockIndex(object):
         return head + self.stock_id + tail
 
     def initialize(self):
+        import logging
+        _logger = logging.getLogger('werkzeug')
+
         # 用requests获取到对应的文件
         content = requests.get(self.get_url())
 
         if content.status_code != 200:
-            print("Fetch info failed in Juhe api.")
+            _logger.error("Fetch info failed in Juhe api.")
             return False
 
-        json_content = json.loads(content.text)
-        data = json_content['result'][0]['data']
-        self.current_index = float(data['lastestpri'])
-        self.prev_index = float(data['formpri'])
-        time_str = data['chtime']
-        time_obj = datetime.datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S')
-        self.current_index_time = datetime.datetime.strftime(time_obj, '%Y%m%d')
-        # print("self.current_index_time:", self.current_index_time)
-        self.current_index_change_ratio = (self.current_index - self.prev_index) / self.prev_index * 100
-        # print("self.current_index_change_ratio", self.current_index_change_ratio)
+        try:
+            json_content = json.loads(content.text)
+            data = json_content['result'][0]['data']
+            self.current_index = float(data['lastestpri'])
+            self.prev_index = float(data['formpri'])
+            time_str = data['chtime']
+            time_obj = datetime.datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S')
+            self.current_index_time = datetime.datetime.strftime(time_obj, '%Y%m%d')
+            # print("self.current_index_time:", self.current_index_time)
+            self.current_index_change_ratio = (self.current_index - self.prev_index) / self.prev_index * 100
+            # print("self.current_index_change_ratio", self.current_index_change_ratio)
+        except IndexError as err:
+            _logger.error("Juhe parse json_content for stock(" + self.stock_id + ") IndexError. content.text = " + content.text)
         if self.current_index is None:
-            print("Juhe self.current_index is None.")
+            _logger.error("Juhe self.current_index is None.")
             return False
         return True
 

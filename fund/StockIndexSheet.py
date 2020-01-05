@@ -56,7 +56,7 @@ class StockIndexSheet(object):
             current_fund_buy = True
         else:  # 如果购买的是指数关联的基金，则看关联基金是否购买了
             fund_id_str = get_cell_value(self.sheet, self.sheet.cell(column=RELATED_FUND_IDS_COLUMN, row=row))
-            fund_ids = fund_id_str.split(',')  # 逗号分隔的多个FundID
+            fund_ids = str(fund_id_str).split(',')  # 逗号分隔的多个FundID
             for fund_id in fund_ids:  # 任何一个Fund 购买了，都认为该指数购买了
                 if fund_id in invested_funds:
                     current_fund_buy = True
