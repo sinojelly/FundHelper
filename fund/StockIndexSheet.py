@@ -215,10 +215,8 @@ class StockIndexSheet(object):
             row_index = find_value_row_index(self.sheet, 2, 1, row_data[0])
             # print('row data:', row_data[0], row_data[1], ", row_index=", row_index)
             if row_index is None:   # 原来不存在添加行
-                # del row_data[2]    # 删除 hyperlinnk
                 insert_row(self.sheet, 2, 1, row_data, WEB_SHOW_COLUMNS)
             else:
-                # del row_data[2]    # 删除 hyperlinnk
                 set_row_data(self.sheet, row_index, row_data, 2, WEB_SHOW_COLUMNS)
         delete_rows(self.sheet, 2, 2)
 
