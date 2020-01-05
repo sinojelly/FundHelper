@@ -219,7 +219,8 @@ class StockIndexSheet(object):
     def get_stock_hyperlink(self, stock_id, row, column):
         if column == 1:  # return stock link
             link_value = self.sheet.cell(row=row, column=STOCK_LINK_COLUMN).value
-            if str(link_value).startswith('http'):
+            if str(link_value).startswith('http') or str(link_value).startswith('no_stock_link'):
+                # 如果明确没有可访问的stock链接，则Excel里面stock链接列以no_stock_link开头，直接返回，避免后面尝试哪个链接可用，很费时间
                 return link_value
             return get_a_stock_link(stock_id)
 
@@ -241,6 +242,9 @@ class StockIndexSheet(object):
         delete_rows(self.sheet, 2, 2)
 
 
+# 这个请求多了很耗时，避免它运行的两个方法：
+# 1) 如果确定没有stock link，则指数链接列写'no_stock_link'
+# 2）如果链接不能根据stock id遵循一定规则变化过来（.SH,.SZ)，则直接在指数链接写上对应的http开头的链接。
 def is_link_valid(url):
     import requests
     try:
