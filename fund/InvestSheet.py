@@ -40,16 +40,23 @@ class InvestSheet(object):
         return invest_price, fund_name
 
     def get_current_price(self, col):
+        import logging
+        _logger = logging.getLogger('werkzeug')
+
         price_sheet = self.get_price_sheet(col)
 
         item_id = self.get_fund_or_stockindex_id(col)
-        price, price_change = price_sheet.get_current_price(item_id)
+        price = None
+        price_change = None
+        try:
+            price, price_change = price_sheet.get_current_price(item_id)
+        except TypeError as err:
+            _logger.error("price_sheet.get_current_price TypeError. fund/stock_id = "
+                          + str(item_id) + ", col = " + str(col) + ", exception: " + str(err))
 
         if price is None:
             # print("get_current_price fail, col =", col, ", id =", item_id)
-            import logging
-            _logger = logging.getLogger('werkzeug')
-            _logger.error("get_current_price fail, col = " + col + ", id = " + item_id)
+            _logger.error("get_current_price fail, col = " + str(col) + ", id = " + str(item_id))
 
         return price, price_change
 
