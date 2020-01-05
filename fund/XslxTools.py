@@ -35,6 +35,9 @@ def get_formula_type(cell):
 
 
 def get_cell_value(sheet, cell, default=''):
+    import logging
+    _logger = logging.getLogger('werkzeug')
+
     if cell.value is None:
         return default
     if cell.data_type is not get_formula_type(cell):
@@ -52,7 +55,10 @@ def get_cell_value(sheet, cell, default=''):
     try:
         value = eval(formula)
     except TypeError as err:
-        print("eval formula fail: ", formula, " exception: ", err)
+        _logger.error("eval formula fail: " + str(formula) + " TypeError: " + str(err))
+        return default
+    except SyntaxError as err:
+        _logger.error("eval formula fail: " + str(formula) + " SyntaxError: " + str(err))
         return default
     return value
 

@@ -126,9 +126,9 @@
 	var stockIndexTable = new Handsontable(stockIndexTableContainer, {
 	  data: null, //tabledata,
 	  rowHeaders: false,
-	  colHeaders: ['<span title="Add stock id and name to add row.">StockIndex</span>', '<span title="Delete name to delete the row.">Name</span>', '<span title="Multi funds seprated by ,">FundID</span>', "Level", "Point", "Change", "Day", "CChange","Amount", "UpdateTime", "R2Low", '<span title="Manual fill.">LPoint</span>', "LowDate", "R2High", '<span title="Manual fill.">HPoint</span>', "HighDate"],
-	  colWidths: [100, 160, 70, 40, 80, 60, 40, 60, 60, 170, 60, 70, 110, 60, 70, 110],
-	  columns: [{},{},{},{},{},{},{},{},{},{},{},{},{type: 'autocomplete', source: autoCompleteYear},{},{},{type: 'autocomplete', source: autoCompleteYear}],
+	  colHeaders: ['<span title="Add stock id and name to add row.">StockIndex</span>','Stock', '<span title="Delete name to delete the row.">Name</span>', 'Fund', '<span title="Multi funds seprated by ,">FundID</span>', "Level", "Point", "Change", "Day", "CChange","Amount", "UpdateTime", "R2Low", '<span title="Manual fill.">LPoint</span>', "LowDate", "R2High", '<span title="Manual fill.">HPoint</span>', "HighDate"],
+	  colWidths: [100, 40, 160, 40, 70, 40, 80, 60, 40, 60, 60, 170, 60, 70, 110, 60, 70, 110],
+	  columns: [{},{},{},{},{},{},{},{},{},{},{},{},{},{},{type: 'autocomplete', source: autoCompleteYear},{},{},{type: 'autocomplete', source: autoCompleteYear}],
 	  columnSorting : true,
 	  dropdownMenu: true,
       autoColumnSize: true,
@@ -140,22 +140,27 @@
 			return 70
 		  }
 		},*/
-	  fixedColumnsLeft: 2,
+	  fixedColumnsLeft: 3,
 	  licenseKey: 'non-commercial-and-evaluation',
 	  cells: function (row, col) {
 		var cellProperties = {};
+		if (col == 1 || col == 3) {
+		    cellProperties.renderer = hyperlinkRenderer;
+		}
 		
-		if (col == 4 || col == 8 /*|| col == 11 || col == 14*/) { // col从0开始, 目标高低值保持简洁，不显示小数，手动也不输入小数
+		var point_col = 6;
+		
+		if (col == point_col || col == point_col + 4) { // col从0开始, 目标高低值保持简洁，不显示小数，手动也不输入小数
 		   cellProperties.type = 'numeric';
 		   cellProperties.numericFormat = {pattern: '0.00'};
 		}
-		if (col == 5 || col == 7) {
+		if (col == point_col + 1 || col == point_col + 3) {
 		    cellProperties.renderer = normalConditionColourRenderer
 		}
-		if (col == 10) {
+		if (col == point_col + 6) {
 		    cellProperties.renderer = toLowConditionColourRenderer;
 		}
-		if (col == 13) {
+		if (col == point_col + 9) {
 		    cellProperties.renderer = toHightConditionColourRenderer;
 		}
 

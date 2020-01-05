@@ -25,6 +25,10 @@ FOCUS_LEVEL_COLUMN = 5
 # excel: start from 1,  javascript: start from 0
 WEB_SHOW_COLUMNS = [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
+STOCK_LINK_COLUMN = 3
+
+DEFAULT_STOCK_LINK = "https://finance.sina.com.cn"
+
 
 def clear_sheet_columns(work_sheet, row, column_start, column_num):
     # 当前值相关信息清空
@@ -199,6 +203,10 @@ class StockIndexSheet(object):
                     # value = reader.get_cell_value(cell.coordinate, FUND_SHEET_NAME)
                     value = get_cell_value(self.sheet, cell)
                     row_result.append(value)
+                    if column == 1 or column == 2:  # stock index id cell has stock link, stock name cell has fund link
+                        stock_id = self.sheet.cell(row=row_index, column=1).value
+                        link = self.get_stock_hyperlink(stock_id, cell.row, column)
+                        row_result.append(link)
                 result.append(row_result)
                 row_index = row_index + 1
             else:
@@ -208,17 +216,80 @@ class StockIndexSheet(object):
             break
         return result
 
+    def get_stock_hyperlink(self, stock_id, row, column):
+        if column == 1:  # return stock link
+            link_value = self.sheet.cell(row=row, column=STOCK_LINK_COLUMN).value
+            if str(link_value).startswith('http'):
+                return link_value
+            return get_a_stock_link(stock_id)
+
+        elif column == 2:  # return funds link, 指数宝链接
+            return get_zhishubao_link(stock_id)
+
     def save_table(self, data):
         # 先把所有行第二列（名称）改为delete，然后根据web传来的数据覆盖excel内容，最后把名称为delete的删掉
         mark_name_delete(self.sheet, 2, 2)
         for row_data in data:   # for each row data
             row_index = find_value_row_index(self.sheet, 2, 1, row_data[0])
             # print('row data:', row_data[0], row_data[1], ", row_index=", row_index)
+            del row_data[1]  # 删除 stock link, 下标从0开始
+            del row_data[3]  # 删除 zhishubao link, 下标从0开始
             if row_index is None:   # 原来不存在添加行
                 insert_row(self.sheet, 2, 1, row_data, WEB_SHOW_COLUMNS)
             else:
                 set_row_data(self.sheet, row_index, row_data, 2, WEB_SHOW_COLUMNS)
         delete_rows(self.sheet, 2, 2)
+
+
+def is_link_valid(url):
+    import requests
+    try:
+        request = requests.get(url)
+        http_status_code = request.status_code
+        if http_status_code == 200:
+            return True
+    except requests.exceptions.HTTPError as e:
+        pass
+    return False
+
+
+# stock_id is NNNNNN
+def get_valid_stock_link(stock_id):
+    for stock in ['sh'+stock_id, 'sz'+stock_id]:
+        link = get_real_stock_link(stock)
+        if is_link_valid(link):
+            return link
+    return DEFAULT_STOCK_LINK
+
+
+def get_real_stock_link(stock):
+    return "https://finance.sina.com.cn/realstock/company/" + stock + "/nc.shtml"
+
+
+# stock_id is  NNNNNN.SZ / SH / CSI / SW
+def get_a_stock_link(stock_id):
+    stock_id_parts = str(stock_id).split('.')
+    if len(stock_id_parts) < 2:
+        return DEFAULT_STOCK_LINK
+    if stock_id_parts[1] in ['SH', 'SZ']:
+        stock = stock_id_parts[1].lower() + stock_id_parts[0]
+        return get_real_stock_link(stock)
+
+    return get_valid_stock_link(stock_id_parts[0])
+
+
+def get_zhishubao_real_link(code):
+    return "https://zhishubao.1234567.com.cn/home/detail?code=" + str(code)
+
+
+def get_zhishubao_link(stock_id):
+    stock_id_parts = str(stock_id).split('.')
+    if len(stock_id_parts) < 2:
+        return get_zhishubao_real_link(stock_id)
+    if stock_id_parts[1] in ['SH', 'SZ', 'CSI', 'MI', 'SI', 'CI', 'CIC']:
+        return get_zhishubao_real_link(stock_id_parts[0])
+    if stock_id_parts[1] == 'HSI':
+        return get_zhishubao_real_link(stock_id_parts[1])
 
 
 if __name__ == '__main__':
