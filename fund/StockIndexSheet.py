@@ -9,8 +9,8 @@ from openpyxl.styles import Border, Side
 from openpyxl.styles.colors import Color, BLUE, RED
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
 
-from XslxTools import get_cell_value, MARK_AS_DELETE, find_value_row_index, insert_row, \
-    set_row_data, delete_rows, update_focus_level
+from XslxTools import get_cell_value, find_value_row_index, insert_row, \
+    set_row_data, delete_rows, update_focus_level, mark_name_delete
 
 
 STOCK_SHEET_NAME = "指数"
@@ -208,16 +208,9 @@ class StockIndexSheet(object):
             break
         return result
 
-    def mark_name_delete(self):
-        row_index = 2
-        for row in self.sheet.iter_rows(min_row=row_index, min_col=2, max_col=2):
-            for cell in row:
-                cell.value = MARK_AS_DELETE
-                row_index = row_index + 1
-
     def save_table(self, data):
         # 先把所有行第二列（名称）改为delete，然后根据web传来的数据覆盖excel内容，最后把名称为delete的删掉
-        self.mark_name_delete()
+        mark_name_delete(self.sheet, 2, 2)
         for row_data in data:   # for each row data
             row_index = find_value_row_index(self.sheet, 2, 1, row_data[0])
             # print('row data:', row_data[0], row_data[1], ", row_index=", row_index)
@@ -227,7 +220,7 @@ class StockIndexSheet(object):
             else:
                 # del row_data[2]    # 删除 hyperlinnk
                 set_row_data(self.sheet, row_index, row_data, 2, WEB_SHOW_COLUMNS)
-        delete_rows(self.sheet, 2, 2, MARK_AS_DELETE)
+        delete_rows(self.sheet, 2, 2)
 
 
 if __name__ == '__main__':

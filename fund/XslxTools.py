@@ -88,9 +88,9 @@ def process_formula_for_rows(sheet, start_row):
 
 
 # 把col列为value的行都删除
-def delete_rows(sheet, start_row, col, value):
+def delete_rows(sheet, start_row, col):
     while True:
-        row_index = find_value_row_index(sheet, start_row, col, value)
+        row_index = find_value_row_index(sheet, start_row, col, MARK_AS_DELETE)
         if row_index is None:
             break
         process_formula_for_rows(sheet, row_index + 1)
@@ -182,3 +182,11 @@ def update_focus_level(sheet, focus_level_column, row, current_fund_buy):
         if old_value >= BUY_OFFSET:
             new_value = old_value - BUY_OFFSET
     focus_level_cell.value = new_value
+
+
+def mark_name_delete(sheet, start_row, col):
+    row_index = start_row
+    for row in sheet.iter_rows(min_row=row_index, min_col=col, max_col=col):
+        for cell in row:
+            cell.value = MARK_AS_DELETE
+            row_index = row_index + 1

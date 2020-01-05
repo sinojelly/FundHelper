@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import openpyxl
-from XslxTools import get_cell_value, set_row_data, find_value_row_index, delete_rows, insert_row
+from XslxTools import get_cell_value, set_row_data, find_value_row_index, insert_row
 
 INFO_SHEET_NAME = "信息"
 
