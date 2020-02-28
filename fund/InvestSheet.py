@@ -35,7 +35,7 @@ class InvestSheet(object):
     def get_invest_price(self, row, column):
         price_sheet = self.get_price_sheet(column)
         invest_time = str(self.sheet.cell(row=row, column=2).value)
-        # print("invest time:", invest_time)
+        print("invest time:", invest_time, "row:", row, "col:", column)
         invest_price, fund_name = price_sheet.get_invest_price(self.get_fund_id(column), invest_time)
         return invest_price, fund_name
 

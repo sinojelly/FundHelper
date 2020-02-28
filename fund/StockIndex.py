@@ -165,26 +165,47 @@ class StockIndex(object):
 
     def init_info(self):
         if not self.has_realtime_info:
-            self.current_index_time = self.index_trend['trade_date'][0]
+            self.current_index_time = self.get_index_trend('trade_date', 0)
             # print("current time:", self.current_index_time)
-            self.current_index = self.index_trend['close'][0]
+            self.current_index = self.get_index_trend('close', 0)
             # print("current index:", self.current_index)
-            last_index = self.index_trend['close'][1]
-            self.current_index_change_ratio = (self.current_index - last_index) / last_index * 100   # 换算成百分数
-            # print("change ratio:", self.current_index_change_ratio)
+            last_index = self.get_index_trend('close', 1)
+            if last_index != 0:
+                self.current_index_change_ratio = (self.current_index - last_index) / last_index * 100   # 换算成百分数
+                # print("change ratio:", self.current_index_change_ratio)
 
         # 成交额 （千元），感觉应该是元,https://tushare.pro/document/2?doc_id=27
         # 除以1亿，单位换算为亿
-        self.current_amount = self.index_trend['amount'][0]/100000000
-        index_list = self.index_trend['close'][1:].tolist()  # 需要把pandas dataframe对象或series对象转换成list
+        self.current_amount = self.get_index_trend('amount', 0)/100000000
+        import logging
+        _logger = logging.getLogger('werkzeug')
+        try:
+            index_list = self.index_trend['close'][1:].tolist()  # 需要把pandas dataframe对象或series对象转换成list
+        except Exception as ex:
+            _logger.error("Tushare init_info throw exception: " + str(ex))
+            return
         self.continuous_days, prev_index = calc_index_continuous_days(index_list, self.current_index_change_ratio > 0)
         # print("prev_index:", prev_index)
         self.continuous_ratio = (self.current_index - prev_index) / prev_index * 100
         # print("continuous_days:", self.continuous_days)
 
+    def get_index_trend(self, type, index):
+        import logging
+        _logger = logging.getLogger('werkzeug')
+        try:
+            return self.index_trend[type][index]
+        except Exception as ex:
+            _logger.error("Tushare get_index_trend throw exception: " + str(ex))
+            return 0
 
     def calc_index(self):
-        temp_array = self.index_trend[:RECENT_DAY_COUNT]  # 取最近60个
+        import logging
+        _logger = logging.getLogger('werkzeug')
+        try:
+            temp_array = self.index_trend[:RECENT_DAY_COUNT]  # 取最近60个
+        except Exception as ex:
+            _logger.error("Tushare calc_index throw exception: " + str(ex))
+            return
         self.recent_index = temp_array[::-1]   # 改成最新时间在最后面
         # print(self.recent_index)
         index_list = self.recent_index['close'].tolist()  # 转为list
@@ -229,8 +250,21 @@ def print_all_tushare_index():
         data.to_csv(market+"_tushare_index.csv", index=True, header=True)
 
 
+def try_to_get_pe_pb():
+    tushare.set_token(TUSHARE_APP_KEY)
+    api = tushare.pro_api()
+    # data = api.daily_basic("000001.SH")
+    # data = api.daily_basic(ts_code="", trade_date='20200106') # 股票的pe
+    data = api.index_dailybasic(ts_code="", trade_date='20200106', fields='ts_code,trade_date,turnover_rate,pe,pe_ttm,pb') # 指数 pe
+    # 用 PE_TTM 即可
+    # OK: 000016.SH,  905, 300
+    # err: 922,906,942    399975.SZ   991  913
+    print(data)
+
+
 if __name__ == '__main__':
-    print_all_tushare_index()
+    try_to_get_pe_pb()
+    # print_all_tushare_index()
     # index = StockIndex("000001.SH")  # 上证指数
     # index = StockIndex("H30588")  #
     # index.initialize()
