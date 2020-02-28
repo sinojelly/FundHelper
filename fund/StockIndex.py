@@ -181,13 +181,13 @@ class StockIndex(object):
         _logger = logging.getLogger('werkzeug')
         try:
             index_list = self.index_trend['close'][1:].tolist()  # 需要把pandas dataframe对象或series对象转换成list
+            self.continuous_days, prev_index = calc_index_continuous_days(index_list, self.current_index_change_ratio > 0)
+            # print("prev_index:", prev_index)
+            self.continuous_ratio = (self.current_index - prev_index) / prev_index * 100
+            # print("continuous_days:", self.continuous_days)
         except Exception as ex:
             _logger.error("Tushare init_info throw exception: " + str(ex))
             return
-        self.continuous_days, prev_index = calc_index_continuous_days(index_list, self.current_index_change_ratio > 0)
-        # print("prev_index:", prev_index)
-        self.continuous_ratio = (self.current_index - prev_index) / prev_index * 100
-        # print("continuous_days:", self.continuous_days)
 
     def get_index_trend(self, type, index):
         import logging
@@ -203,22 +203,22 @@ class StockIndex(object):
         _logger = logging.getLogger('werkzeug')
         try:
             temp_array = self.index_trend[:RECENT_DAY_COUNT]  # 取最近60个
+            self.recent_index = temp_array[::-1]   # 改成最新时间在最后面
+            # print(self.recent_index)
+            index_list = self.recent_index['close'].tolist()  # 转为list
+            index_array = np.array(index_list)
+            max_indexes = signal.argrelextrema(index_array, np.greater)
+            self.recent_index_max_indexes = filter_similar_index(index_array, max_indexes)
+            self.recent_index_max = np.array(self.recent_index)[self.recent_index_max_indexes]
+
+            min_indexes = signal.argrelextrema(-index_array, np.greater)
+            self.recent_index_min_indexes = filter_similar_index(-index_array, min_indexes)
+            self.recent_index_min = np.array(self.recent_index)[self.recent_index_min_indexes]
+
+            # self.show_debug_info(index_array, self.recent_index_max_indexes, self.recent_index_min_indexes)
         except Exception as ex:
             _logger.error("Tushare calc_index throw exception: " + str(ex))
             return
-        self.recent_index = temp_array[::-1]   # 改成最新时间在最后面
-        # print(self.recent_index)
-        index_list = self.recent_index['close'].tolist()  # 转为list
-        index_array = np.array(index_list)
-        max_indexes = signal.argrelextrema(index_array, np.greater)
-        self.recent_index_max_indexes = filter_similar_index(index_array, max_indexes)
-        self.recent_index_max = np.array(self.recent_index)[self.recent_index_max_indexes]
-
-        min_indexes = signal.argrelextrema(-index_array, np.greater)
-        self.recent_index_min_indexes = filter_similar_index(-index_array, min_indexes)
-        self.recent_index_min = np.array(self.recent_index)[self.recent_index_min_indexes]
-
-        # self.show_debug_info(index_array, self.recent_index_max_indexes, self.recent_index_min_indexes)
 
     def show_debug_info(self, data, max_indexes, min_indexes, figure=True):
         # print(data)
