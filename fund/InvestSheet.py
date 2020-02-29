@@ -35,7 +35,9 @@ class InvestSheet(object):
     def get_invest_price(self, row, column):
         price_sheet = self.get_price_sheet(column)
         invest_time = str(self.sheet.cell(row=row, column=2).value)
-        print("invest time:", invest_time, "row:", row, "col:", column)
+        import logging
+        _logger = logging.getLogger('werkzeug')
+        _logger.info("invest time: " + invest_time + "row: " + str(row) + "col: " + str(column))
         invest_price, fund_name = price_sheet.get_invest_price(self.get_fund_id(column), invest_time)
         return invest_price, fund_name
 
@@ -92,7 +94,9 @@ class InvestSheet(object):
                 invest_price = str_to_float(invest_price)   # None or '' both need get_invest_price
                 if invest_price is None:
                     invest_price, fund_name = self.get_invest_price(cell.row, cell.col_idx)
-                    print("invest_price", invest_price, "fund_name", fund_name)
+                    import logging
+                    _logger = logging.getLogger('werkzeug')
+                    _logger.info("info: invest_price " + str(invest_price) + ", fund_name " + fund_name)
                     if is_value_empty(invest_price) is not True:
                         self.sheet.cell(column=int(cell.col_idx) + 1, row=cell.row).value = float(invest_price)  # 写入投资价格
                         self.sheet.cell(column=int(cell.col_idx) + 1, row=2).value = fund_name    # 写入基金名称(指数对应的组合名称不能自动写入)
