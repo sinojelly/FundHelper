@@ -285,6 +285,15 @@ class Fund(object):
                 return day_unit_worth['y']
         return None
 
+    def get_ac_price(self, time_str):
+        # print("time_str", time_str)
+        for day_ac_worth in self.recent_ac_worth:
+            # print(day_ac_worth)
+            item_time = datetime.datetime.fromtimestamp(day_ac_worth[0]/1000).strftime("%Y%m%d")
+            # print(item_time)
+            if item_time == time_str:
+                return day_ac_worth[1]
+        return None
 
 if __name__ == '__main__':
     fund = Fund('110011')   # 易方达中小盘

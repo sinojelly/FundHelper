@@ -122,7 +122,7 @@ class FundSheet(object):
             return
         str_date = get_cell_value(self.sheet, self.sheet.cell(column=time_column, row=row))
         if str_date != '':
-            target_price = fund.get_price(str_date)
+            target_price = fund.get_ac_price(str_date)
             if target_price is not None:
                 target_price_cell.value = target_price
 
