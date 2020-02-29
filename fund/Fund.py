@@ -14,7 +14,7 @@ from JsTools import eval_js
 
 
 # 下面两个值需要配合调整，只调第一个，第二个未调高，可能最低值只取了早期的最低值。最近的低值都未体现。
-RECENT_DAY_COUNT = 60
+RECENT_DAY_COUNT = 60*2
 MAX_EXTREMA_COUNT = 7
 
 EXTREMA_DIFF_RATIO = 0.01  # 0.01    # 如果两个极大值之间距离比例小于此值，则忽略新的极值
@@ -281,17 +281,17 @@ class Fund(object):
             # print(day_unit_worth)
             item_time = datetime.datetime.fromtimestamp(day_unit_worth['x']/1000).strftime("%Y%m%d")
             # print(item_time)
-            if item_time == time_str:
+            if str(item_time) == str(time_str):
                 return day_unit_worth['y']
         return None
 
     def get_ac_price(self, time_str):
-        # print("time_str", time_str)
+        # print("get_ac_price time_str", time_str)
         for day_ac_worth in self.recent_ac_worth:
             # print(day_ac_worth)
             item_time = datetime.datetime.fromtimestamp(day_ac_worth[0]/1000).strftime("%Y%m%d")
             # print(item_time)
-            if item_time == time_str:
+            if str(item_time) == str(time_str):
                 return day_ac_worth[1]
         return None
 
