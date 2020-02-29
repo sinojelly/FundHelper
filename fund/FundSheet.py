@@ -85,8 +85,8 @@ class FundSheet(object):
                     self.sheet['B' + str(row)].value = fund.fund_name
                     self.sheet['B' + str(row)].hyperlink = get_fund_hyperlink(fund_id)
 
-                    if fund.unit_worth_history is not None:
-                        unit_worth_history_str = str(fund.unit_worth_history)
+                    if fund.ac_worth_history is not None:  # 表格趋势图有unit worth改为ac worth
+                        unit_worth_history_str = str(fund.ac_worth_history)
                         unit_worth_history_str = unit_worth_history_str[1:-1]   # 去掉中括号
                         self.sheet.cell(column=UNIT_WORTH_HISTORY_COLUMN, row=row).value = unit_worth_history_str
                     update_focus_level(self.sheet, FUND_FOCUS_LEVEL_COLUMN, row, current_fund_buy)

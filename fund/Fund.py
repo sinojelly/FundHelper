@@ -158,11 +158,12 @@ class Fund(object):
         self.recent_ac_worth_min_indexes = None
         self.recent_ac_worth_max = None
         self.recent_ac_worth_min = None
+        self.ac_worth_history = []
 
     def initialize(self):
         if self.init_info():
             self.recent_unit_worth = self.unit_worth_trend[-RECENT_DAY_COUNT:]
-            self.calc_unit_worth_history()   # 必须在逆序前，赋值后
+            # self.calc_unit_worth_history()   # 必须在逆序前，赋值后  # 表格趋势图改为ac worth
             self.recent_unit_worth = self.recent_unit_worth[::-1]     # 截取最后60天，再逆序，最新时间在前面
             # self.calc_unit_worth()
             self.calc_ac_worth()
@@ -235,9 +236,9 @@ class Fund(object):
 
     def calc_ac_worth(self):
         self.recent_ac_worth = self.ac_worth_trend[-RECENT_DAY_COUNT:]
-        ac_worth_list = []
+        self.ac_worth_history = []
         for day_ac_worth in self.recent_ac_worth:
-            ac_worth_list.append(day_ac_worth[1])
+            self.ac_worth_history.append(day_ac_worth[1])
 
         # print("ac_worth_list")
         # print(ac_worth_list)
@@ -247,7 +248,7 @@ class Fund(object):
         #                  1.7781, 1.7731, 1.7648, 1.7345, 1.7271, 1.7655, 1.7526, 1.7547, 1.7879, 1.8626, 1.8315, 1.8729,
         #                  1.8561, 1.8759, 1.8876, 1.9322, 1.9036, 1.904, 1.8911, 1.8595, 1.8624, 1.9337, 1.9786, 1.9708]
 
-        ac_worth_array = np.array(ac_worth_list)
+        ac_worth_array = np.array(self.ac_worth_history)
         max_indexes = signal.argrelextrema(ac_worth_array, np.greater)
         self.recent_ac_worth_max_indexes = filter_similar_worth(ac_worth_array, max_indexes)
         self.recent_ac_worth_max = np.array(self.recent_ac_worth)[self.recent_ac_worth_max_indexes]
