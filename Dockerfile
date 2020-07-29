@@ -15,6 +15,9 @@ RUN ln -s /app/node-v10.15.3-linux-x64/bin/npm /usr/local/bin/npm
 RUN mkdir -p /usr/local/fundhelper
 # 拷贝文件
 ADD ./ /usr/local/fundhelper
+
+RUN git clone https://github.com/sinojelly/fundhelper-data.git /usr/local/fundhelper-data
+
 # 设置工作目录
 WORKDIR /usr/local/fundhelper
 # 安装requirements
