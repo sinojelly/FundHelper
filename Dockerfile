@@ -16,7 +16,7 @@ RUN mkdir -p /usr/local/fundhelper
 # 拷贝文件
 ADD ./ /usr/local/fundhelper
 
-RUN git clone https://github.com/sinojelly/fundhelper-data.git /usr/local/fundhelper-data
+# RUN git clone https://github.com/sinojelly/fundhelper-data.git /usr/local/fundhelper-data
 
 # 设置工作目录
 WORKDIR /usr/local/fundhelper
