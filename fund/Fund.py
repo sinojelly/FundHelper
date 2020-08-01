@@ -164,7 +164,7 @@ class Fund(object):
 
     def initialize(self):
         if self.init_info():
-            _logger.info("[Fund] process :" + str(self.fund_id) + " " + self.fund_name)
+            #_logger.info("[Fund] process :" + str(self.fund_id) + " " + self.fund_name)
             self.recent_unit_worth = self.unit_worth_trend[-RECENT_DAY_COUNT:]
             # self.calc_unit_worth_history()   # 必须在逆序前，赋值后  # 表格趋势图改为ac worth
             self.recent_unit_worth = self.recent_unit_worth[::-1]     # 截取最后60天，再逆序，最新时间在前面
