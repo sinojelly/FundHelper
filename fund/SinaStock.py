@@ -49,8 +49,12 @@ class SinaStock(object):
         return head + tail
 
     def initialize(self):
-        # 用requests获取到对应的文件
-        content = requests.get(self.get_url())
+        try:
+            # 用requests获取到对应的文件
+            content = requests.get(self.get_url())
+        except NewConnectionError as err:
+            _logger.error("[SinaStock] request url fail: " + self.get_url() + " NewConnectionError: " + str(err))
+            return False
 
         if content.status_code != 200:
             print("Fetch info failed in Sina api.")
