@@ -2,11 +2,11 @@
 
 from execjs._exceptions import ProcessExitedWithNonZeroStatus, ProgramError
 
+import logging
+_logger = logging.getLogger('werkzeug')
+
 
 def eval_js(js_content, key, default=''):
-    import logging
-    _logger = logging.getLogger('werkzeug')
-
     try:
         result = js_content.eval(key)
     except ProcessExitedWithNonZeroStatus as err:

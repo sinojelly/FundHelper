@@ -8,6 +8,8 @@ from openpyxl.cell.cell import TYPE_FORMULA
 from openpyxl.styles.numbers import FORMAT_NUMBER_00
 import re
 
+import logging
+_logger = logging.getLogger('werkzeug')
 
 MARK_AS_DELETE = "delete"
 
@@ -35,9 +37,6 @@ def get_formula_type(cell):
 
 
 def get_cell_value(sheet, cell, default=''):
-    import logging
-    _logger = logging.getLogger('werkzeug')
-
     if cell.value is None:
         return default
     if cell.data_type is not get_formula_type(cell):

@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 
 from SinaStock import SinaStock
 
+import logging
+_logger = logging.getLogger('werkzeug')
 
 TUSHARE_APP_KEY = 'a64231cf514f205f90798848538491d7ed8725255809716c18fb48ee'
 
@@ -135,8 +137,6 @@ class StockIndex(object):
         return self.has_realtime_info
 
     def fetch_info(self):
-        import logging
-        _logger = logging.getLogger('werkzeug')
         try:
             _logger.info("Use Tushare to get stock index : " + str(self.stock_id))
             tushare.set_token(TUSHARE_APP_KEY)
@@ -177,8 +177,6 @@ class StockIndex(object):
         # 成交额 （千元），感觉应该是元,https://tushare.pro/document/2?doc_id=27
         # 除以1亿，单位换算为亿
         self.current_amount = self.get_index_trend('amount', 0)/100000000
-        import logging
-        _logger = logging.getLogger('werkzeug')
         try:
             index_list = self.index_trend['close'][1:].tolist()  # 需要把pandas dataframe对象或series对象转换成list
             self.continuous_days, prev_index = calc_index_continuous_days(index_list, self.current_index_change_ratio > 0)
@@ -190,8 +188,6 @@ class StockIndex(object):
             return
 
     def get_index_trend(self, type, index):
-        import logging
-        _logger = logging.getLogger('werkzeug')
         try:
             return self.index_trend[type][index]
         except Exception as ex:
@@ -199,8 +195,6 @@ class StockIndex(object):
             return 0
 
     def calc_index(self):
-        import logging
-        _logger = logging.getLogger('werkzeug')
         try:
             temp_array = self.index_trend[:RECENT_DAY_COUNT]  # 取最近60个
             self.recent_index = temp_array[::-1]   # 改成最新时间在最后面

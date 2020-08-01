@@ -10,6 +10,8 @@ from InvestSheet import INVEST_SHEET_NAME, InvestSheet
 from StockIndexSheet import STOCK_SHEET_NAME, StockIndexSheet
 from InfoSheet import INFO_SHEET_NAME, InfoSheet
 
+import logging
+_logger = logging.getLogger('werkzeug')
 
 class FundWorkbook(object):
     def __init__(self, file):
@@ -35,8 +37,6 @@ class FundWorkbook(object):
                 self.sheet_alias[INFO_SHEET_NAME]: self.sheet[INFO_SHEET_NAME].get_table()}
 
     def save_table(self, data):
-        import logging
-        _logger = logging.getLogger('werkzeug')
         for key,value in data.items():
             # 每个key对应一个sheet
             _logger.info("save_table: process table " + key)

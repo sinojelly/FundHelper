@@ -7,6 +7,8 @@ from openpyxl.styles.numbers import FORMAT_NUMBER_00
 from XslxTools import set_p_n_condition, str_to_float, is_value_empty, set_double_p_n_condition
 from XslxTools import get_cell_value, set_row_data, find_value_row_index, get_index_range, insert_row
 
+import logging
+_logger = logging.getLogger('werkzeug')
 
 INVEST_SHEET_NAME = "投资"
 
@@ -35,16 +37,11 @@ class InvestSheet(object):
     def get_invest_price(self, row, column):
         price_sheet = self.get_price_sheet(column)
         invest_time = str(self.sheet.cell(row=row, column=2).value)
-        import logging
-        _logger = logging.getLogger('werkzeug')
         _logger.info("invest time: " + invest_time + "row: " + str(row) + "col: " + str(column))
         invest_price, fund_name = price_sheet.get_invest_price(self.get_fund_id(column), invest_time)
         return invest_price, fund_name
 
     def get_current_price(self, col):
-        import logging
-        _logger = logging.getLogger('werkzeug')
-
         price_sheet = self.get_price_sheet(col)
 
         item_id = self.get_fund_or_stockindex_id(col)
@@ -94,8 +91,6 @@ class InvestSheet(object):
                 invest_price = str_to_float(invest_price)   # None or '' both need get_invest_price
                 if invest_price is None:
                     invest_price, fund_name = self.get_invest_price(cell.row, cell.col_idx)
-                    import logging
-                    _logger = logging.getLogger('werkzeug')
                     _logger.info("info: invest_price " + str(invest_price) + ", fund_name " + fund_name)
                     if is_value_empty(invest_price) is not True:
                         self.sheet.cell(column=int(cell.col_idx) + 1, row=cell.row).value = float(invest_price)  # 写入投资价格

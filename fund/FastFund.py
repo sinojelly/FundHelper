@@ -4,6 +4,8 @@ from json import JSONDecodeError
 import requests
 import json
 
+import logging
+_logger = logging.getLogger('werkzeug')
 
 class FastFund(object):
 
@@ -22,9 +24,6 @@ class FastFund(object):
         return head + self.fund_id + tail
 
     def initialize(self):
-        import logging
-        _logger = logging.getLogger('werkzeug')
-
         # 用requests获取到对应的文件
         content = requests.get(self.get_url())
         if content.status_code != 200:

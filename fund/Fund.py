@@ -12,6 +12,8 @@ import scipy.signal as signal
 from JsTools import eval_js
 # import matplotlib.pyplot as plt
 
+import logging
+_logger = logging.getLogger('werkzeug')
 
 # 下面两个值需要配合调整，只调第一个，第二个未调高，可能最低值只取了早期的最低值。最近的低值都未体现。
 RECENT_DAY_COUNT = 60*2
@@ -162,8 +164,6 @@ class Fund(object):
 
     def initialize(self):
         if self.init_info():
-            import logging
-            _logger = logging.getLogger('werkzeug')
             _logger.info("[Fund] process :" + str(self.fund_id) + " " + self.fund_name)
             self.recent_unit_worth = self.unit_worth_trend[-RECENT_DAY_COUNT:]
             # self.calc_unit_worth_history()   # 必须在逆序前，赋值后  # 表格趋势图改为ac worth
@@ -186,9 +186,6 @@ class Fund(object):
         return head + self.fund_id + tail
 
     def init_info(self):
-        import logging
-        _logger = logging.getLogger('werkzeug')
-
         # 用requests获取到对应的文件
         content = requests.get(self.get_url())
 
@@ -241,8 +238,6 @@ class Fund(object):
         self.show_figure(x)
 
     def calc_ac_worth(self):
-        import logging
-        _logger = logging.getLogger('werkzeug')
         self.recent_ac_worth = self.ac_worth_trend[-RECENT_DAY_COUNT:]  # 取最近RECENT_DAY_COUNT天
         self.ac_worth_history = []
         for day_ac_worth in self.recent_ac_worth:

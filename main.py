@@ -21,6 +21,8 @@ sys.path.append(os.path.join(os.getcwd(), 'fund'))
 from FundHelper import update_work_book, str_to_bool
 from FundWorkbook import FundWorkbook
 
+import logging
+_logger = logging.getLogger('werkzeug')
 
 app = Flask(__name__)
 CSRFProtect(app)
@@ -54,8 +56,6 @@ def generate_thread_id():
     return thread_id
 
 def get_data_dir():	
-    #import logging
-    #_logger = logging.getLogger('werkzeug')
     data_dir = os.getenv(FUND_HELPER_DATA_KEY, 'fund')
     #_logger.info("Data path in env: ." + data_dir)
     if os.path.exists(data_dir) :
@@ -167,8 +167,6 @@ def progress(thread_id, request_id):
 @app.route('/user-login', methods=['POST'])
 def user_login():
     if request.method == 'POST':
-        import logging
-        _logger = logging.getLogger('werkzeug')
         username = request.form['username']
         password = request.form['password']
         if (username == ADMIN_USER or username == 'jelly') and password == '$henF@n':   # 允许j为小写
@@ -187,8 +185,6 @@ def user_login():
 @app.route('/data-init-user-login', methods=['POST'])
 def data_init_user_login():
     if request.method == 'POST':
-        import logging
-        _logger = logging.getLogger('werkzeug')
         username = request.form['data_username']
         password = request.form['data_password']
         thread_id = request.form['thread_id']
@@ -212,8 +208,6 @@ def load_fund_data(thread_id):
 
 @app.route('/save-data/<int:thread_id>', methods=['POST'])
 def save_data(thread_id):
-    import logging
-    _logger = logging.getLogger('werkzeug')
     _logger.info("save data ..... " + str(thread_id))
     if request.method == 'POST':
         # data = request.form['data']

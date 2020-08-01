@@ -4,6 +4,9 @@ import requests
 import json
 import datetime
 
+import logging
+_logger = logging.getLogger('werkzeug')
+
 
 JUHE_APP_KEY = 'f95b84a65d4d51d4af05bbca424d2e40'
 
@@ -29,9 +32,6 @@ class JuheStockIndex(object):
         return head + self.stock_id + tail
 
     def initialize(self):
-        import logging
-        _logger = logging.getLogger('werkzeug')
-
         # 用requests获取到对应的文件
         content = requests.get(self.get_url())
 
