@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import requests
+from NetworkTools import request_url
 import json
 
 
@@ -24,8 +24,10 @@ class EastMoneyPushStockIndex(object):
         return head + self.stock_id
 
     def initialize(self):
-        # 用requests获取到对应的文件
-        content = requests.get(self.get_url())
+        content = request_url(self.get_url(), "EastMoneyPushStockIndex")
+        if content is None:
+            print("Fetch info failed.")
+            return False
 
         json_content = json.loads(content.text)
         if json_content['data'] is None:

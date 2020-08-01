@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import requests
 import datetime
 
+from NetworkTools import request_url
 
 # 通过访问新浪对应指数网页，然后用Fiddler抓包可以看到路径
 # 纳斯达克100 http://hq.sinajs.cn/format=text&list=gb_$ndx
@@ -49,15 +49,9 @@ class SinaStock(object):
         return head + tail
 
     def initialize(self):
-        try:
-            # 用requests获取到对应的文件
-            content = requests.get(self.get_url())
-        except NewConnectionError as err:
-            _logger.error("[SinaStock] request url fail: " + self.get_url() + " NewConnectionError: " + str(err))
-            return False
-
-        if content.status_code != 200:
-            print("Fetch info failed in Sina api.")
+        content = request_url(self.get_url(), "SinaStock")
+        if content is None:
+            print("Fetch info failed.")
             return False
 
         # print(content.text)

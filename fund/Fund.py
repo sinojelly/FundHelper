@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import requests
+from NetworkTools import request_url
 import time
 import execjs
 import datetime
@@ -186,8 +186,10 @@ class Fund(object):
         return head + self.fund_id + tail
 
     def init_info(self):
-        # 用requests获取到对应的文件
-        content = requests.get(self.get_url())
+        content = request_url(self.get_url(), "Fund")
+        if content is None:
+            print("Fetch info failed.")
+            return False
 
         # 使用execjs获取到相应的数据
         js_content = execjs.compile(content.text)

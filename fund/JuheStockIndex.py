@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import requests
+from NetworkTools import request_url
 import json
 import datetime
 
@@ -32,11 +32,9 @@ class JuheStockIndex(object):
         return head + self.stock_id + tail
 
     def initialize(self):
-        # 用requests获取到对应的文件
-        content = requests.get(self.get_url())
-
-        if content.status_code != 200:
-            _logger.error("Fetch info failed in Juhe api.")
+        content = request_url(self.get_url(), "JuheStockIndex")
+        if content is None:
+            print("Fetch info failed.")
             return False
 
         try:

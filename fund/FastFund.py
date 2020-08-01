@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from json import JSONDecodeError
 
-import requests
+from NetworkTools import request_url
 import json
 
 import logging
@@ -24,12 +24,11 @@ class FastFund(object):
         return head + self.fund_id + tail
 
     def initialize(self):
-        # 用requests获取到对应的文件
-        content = requests.get(self.get_url())
-        if content.status_code != 200:
-            _logger.info("FastFund fetch info failed. content.status_code(" + content.status_code + "). fund_id = " + self.fund_id)
+        content = request_url(self.get_url(), "FastFund")
+        if content is None:
+            print("Fetch info failed.")
             return False
-
+			
         # {"fundcode":"001186","name":"富国文体健康股票","jzrq":"2019-11-28","dwjz":"1.1190",
         # "gsz":"1.1130","gszzl":"-0.53","gztime":"2019-11-29 15:00"})
         json_data = content.text[len('jsonpgz('):-2]
