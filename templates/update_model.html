@@ -1,3 +1,24 @@
+    <p>
+  Current use the data path: {{data_path}}. <br>(If the path is fund, it means can not update, so you should run Git Clone & Init Enviroment first.)<br>
+	<span title="Git clone fundhelper-data from github."><button id="gitClone">Git Clone</button></span>
+	<div id="gitCloneStatus"></div><br>
+	<div id="gitCloneResult"></div><br>
+	</p>
+	<p>
+  Init data enviroment:
+  	<form action="/data-init-user-login" method="post"> 
+		<label>Data Init User name(not email): </label>
+		<input name="data_username" id="data_username" type="text" value="" /><br/> 
+		<label>Data Init Password: </label>
+		<input name="data_password" type="password" id="data_password" type="text" value=""/><br/>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+		<input type="hidden" name="thread_id" value="{{ thread_id }}" />
+		<input name="" type="submit" value="Init Enviroment"/> 
+    </form> 
+	<br>
+	Init enviroment result : {{cmd_result}}
+	</p>
+	{% include "update_funds.html" %}
 	<p>
 	<span title="Save web data to server memory and persisit to model excel file."><button id="save">Save</button></span>
 	<div id="updateModelStatus"></div><br>
@@ -313,6 +334,31 @@
     }
 	$("#gitSubmit").click(git_submit);
 	
+	function git_clone() {
+	    $("#gitCloneStatus").text("Git clone start ... (maybe a few minutes needed.)");
+		$("#gitCloneResult").html("Git clone running ...");
+		$.ajax({
+			url: '/git-clone/' + {{thread_id}},
+			type: 'GET',
+			contentType: 'application/json; charset=utf-8',    
+			dataType: 'json',
+			async: true,
+			success: function(msg) {
+			    text_result = "STDOUT:\n"+msg.stdout+"\nSTDERR:\n"+msg.stderr;
+				$("#gitCloneStatus").html(convertTextToHtml(text_result));
+				returncode_result = '<font color="green">Git clone success.</font>';
+				if (msg.returncode != 0) {
+				    returncode_result = '<font color="red">Git clone fail('+msg.returncode+'). Try again later.</font>';
+				}
+				$("#gitCloneResult").html(returncode_result);
+			},
+			error: function (err) {   //ajax请求失败时返回
+				//console.log(err);
+				$("#gitCloneResult").html("Git clone error (" + err.status + " - "+ err.statusText + ")");
+			}
+		});
+    }
+	$("#gitClone").click(git_clone);
 	
 	function normalIntConditionColourRenderer(instance, td, row, col, prop, value, cellProperties) {
 	   Handsontable.renderers.TextRenderer.apply(this, arguments);

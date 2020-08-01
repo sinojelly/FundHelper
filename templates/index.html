@@ -9,7 +9,7 @@
   <p>This web app is used to get fund information automatically!</p>
   {% include "check_cookie.html" %}
   <p>
-  Login or use the default user without login. (Now, registrition is not ready.).
+  Please Login. (Now, registrition is not allowed.).
   	<form action="/user-login" method="post"> 
 		<label>User name: </label>
 		<input name="username" id="username" type="text" value="guest" /><br/> 
@@ -19,6 +19,5 @@
 		<input name="" type="submit" value="Login"/> 
     </form> 
 	</p>
-	{% include "update_funds.html" %}
   </body>
 </html>

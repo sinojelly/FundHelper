@@ -53,10 +53,18 @@ def generate_thread_id():
 
     return thread_id
 
+def get_data_dir():	
+    #import logging
+    #_logger = logging.getLogger('werkzeug')
+    data_dir = os.getenv(FUND_HELPER_DATA_KEY, 'fund')
+    #_logger.info("Data path in env: ." + data_dir)
+    if os.path.exists(data_dir) :
+        return data_dir
+    return "fund"   # 环境变量指向的目录不存在，则使用fund目录
 
 def get_model_name():
     username = session['username']
-    data_dir = os.getenv(FUND_HELPER_DATA_KEY, 'fund')
+    data_dir = get_data_dir()
     excel_model = data_dir + "/" + username + "_model.xlsx"
     return excel_model
 
@@ -73,13 +81,14 @@ def index(thread_id=None):
         try:
             thread_id = generate_thread_id()
         except FileNotFoundError as err:
-            return str(err)   # docker服务器重启，会遇到 model 文件找不到
+            return render_template("index.html", title='Home', thread_id=0)
+            #return str(err)   # docker服务器重启，会遇到 model 文件找不到
             # FileNotFoundError: [Errno 2]
             # No such file or directory: '/usr/local/fundhelper-data/Guest_model.xlsx'
 
     # print('task id: #%s' % thread_id)
     if session['username'] == ADMIN_USER:
-        return render_template("admin.html", title='Admin', user=session['username'], thread_id=thread_id)
+        return render_template("admin.html", title='Admin', user=session['username'], thread_id=thread_id, data_path=get_data_dir())
     return render_template("index.html", title='Home', thread_id=thread_id)
 
 
@@ -167,7 +176,7 @@ def user_login():
             # print("admin log in success.")
             _logger.info("admin log in success.")
             thread_id = generate_thread_id()
-            return render_template("admin.html", title='Admin', user=username, thread_id=thread_id)
+            return render_template("admin.html", title='Admin', user=username, thread_id=thread_id, data_path=get_data_dir())
         else:
             session['username'] = DEFAULT_USER
             # print("log in fail.")
@@ -175,6 +184,23 @@ def user_login():
             thread_id = generate_thread_id()
             return render_template("guest.html", title='Guest', user=username, thread_id=thread_id)
 
+@app.route('/data-init-user-login', methods=['POST'])
+def data_init_user_login():
+    if request.method == 'POST':
+        import logging
+        _logger = logging.getLogger('werkzeug')
+        username = request.form['data_username']
+        password = request.form['data_password']
+        thread_id = request.form['thread_id']
+        # 更新 .gitpass 参数
+        data_dir = os.getenv(FUND_HELPER_DATA_KEY, 'fund')
+        cmd = data_dir + "/setup-env.sh " + username + " " + password + " " + data_dir
+        stdout_value, stderr_value, returncode = run_external_cmd(cmd)
+        cmd_result = "out: " + stdout_value.decode("utf8", "ignore") +" err: " + stderr_value.decode("utf8", "ignore") +" returnCode: " + str(returncode)
+        _logger.info(cmd_result)
+        if session['username'] == ADMIN_USER:
+            return render_template("admin.html", title='Admin', user=session['username'], thread_id=thread_id, data_path=get_data_dir(), cmd_result=cmd_result)
+        return render_template("index.html", title='Home', thread_id=thread_id)
 
 @app.route('/load-fund-data/<int:thread_id>')
 def load_fund_data(thread_id):
@@ -231,14 +257,30 @@ def run_git_submit(work_dir):
     # print('returncode', returncode)
     return stdout_value.decode("utf8", "ignore"), stderr_value.decode("utf8", "ignore"), returncode
 
+def run_git_clone(work_dir):
+    cmd = "git clone https://github.com/sinojelly/fundhelper-data.git " + work_dir
+    stdout_value, stderr_value, returncode = run_external_cmd(cmd)
+    # print(stdout_value.decode())
+    # print("---------------err-------------")
+    # print(stderr_value.decode())
+    # print('returncode', returncode)
+    return stdout_value.decode("utf8", "ignore"), stderr_value.decode("utf8", "ignore"), returncode
+
 
 @app.route('/git-submit/<int:thread_id>', methods=['GET'])
 def git_submit(thread_id):
     # work_dir = "D:\\Develop\\projects\\web-projects\\fundhelper-data"
-    work_dir = "/usr/local/fundhelper-data"
+    work_dir = get_data_dir()
     stdout_value, stderr_value, returncode = run_git_submit(work_dir)
     return jsonify({'stdout': stdout_value, 'stderr':stderr_value, 'returncode':returncode})
 
+@app.route('/git-clone/<int:thread_id>', methods=['GET'])
+def git_clone(thread_id):
+    # work_dir = "D:\\Develop\\projects\\web-projects\\fundhelper-data"
+    work_dir = os.getenv(FUND_HELPER_DATA_KEY, 'fund')
+    stdout_value, stderr_value, returncode = run_git_clone(work_dir)
+    return jsonify({'stdout': stdout_value, 'stderr':stderr_value, 'returncode':returncode})
+	
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
