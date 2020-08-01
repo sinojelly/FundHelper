@@ -211,6 +211,10 @@ class Fund(object):
             return False
 
         # 累计净值走势
+        # var Data_ACWorthTrend = [[1541088000000,1.0001],[1541692800000,1.0]
+        # >>> a=[1,2,3,4]
+        # >>> print(a[-1:])   # 取最后一个
+        # [4]
         self.ac_worth_trend = eval_js(js_content,'Data_ACWorthTrend', [])
         if len(self.ac_worth_trend) > 0:
             self.ac_worth = self.ac_worth_trend[-1:][0][1]
@@ -239,11 +243,11 @@ class Fund(object):
     def calc_ac_worth(self):
         import logging
         _logger = logging.getLogger('werkzeug')
-        self.recent_ac_worth = self.ac_worth_trend[-RECENT_DAY_COUNT:]
+        self.recent_ac_worth = self.ac_worth_trend[-RECENT_DAY_COUNT:]  # 取最近RECENT_DAY_COUNT天
         self.ac_worth_history = []
         for day_ac_worth in self.recent_ac_worth:
             if day_ac_worth[1] is None:
-                _logger.info("ay_ac_worth[1] is None. fund_id = " + self.fund_id)
+                _logger.info("ay_ac_worth[1] is None. fund_id = " + self.fund_id)  # 有时候出现 20200731 null  [1596038400000,3.4893],[1596124800000,null]];
             else:
                 self.ac_worth_history.append(day_ac_worth[1])
 
