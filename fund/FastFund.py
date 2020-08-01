@@ -15,7 +15,7 @@ class FastFund(object):
         self.unit_worth = None
         self.unit_worth_time = None
         self.unit_worth_change_ratio = None
-        # print("[FastFund] process :", self.fund_id, self.fund_name)
+        _logger.info("[FastFund] process : "+str(self.fund_id) + " " + self.fund_name)
 
     def get_url(self):
         head = 'http://fundgz.1234567.com.cn/js/'

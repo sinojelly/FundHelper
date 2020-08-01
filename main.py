@@ -22,6 +22,7 @@ from FundHelper import update_work_book, str_to_bool
 from FundWorkbook import FundWorkbook
 
 import logging
+logging.basicConfig(filename='error.log',level=logging.INFO)   # write log to file, MUST before get _logger
 _logger = logging.getLogger('werkzeug')
 
 app = Flask(__name__)
