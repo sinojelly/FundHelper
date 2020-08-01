@@ -162,12 +162,14 @@ class Fund(object):
 
     def initialize(self):
         if self.init_info():
+            import logging
+            _logger = logging.getLogger('werkzeug')
+            _logger.info("[Fund] process :" + str(self.fund_id) + " " + self.fund_name)
             self.recent_unit_worth = self.unit_worth_trend[-RECENT_DAY_COUNT:]
             # self.calc_unit_worth_history()   # 必须在逆序前，赋值后  # 表格趋势图改为ac worth
             self.recent_unit_worth = self.recent_unit_worth[::-1]     # 截取最后60天，再逆序，最新时间在前面
             # self.calc_unit_worth()
             self.calc_ac_worth()
-            # print("[Fund] process :", self.fund_id, self.fund_name)
             return True
         return False
 
@@ -235,10 +237,15 @@ class Fund(object):
         self.show_figure(x)
 
     def calc_ac_worth(self):
+        import logging
+        _logger = logging.getLogger('werkzeug')
         self.recent_ac_worth = self.ac_worth_trend[-RECENT_DAY_COUNT:]
         self.ac_worth_history = []
         for day_ac_worth in self.recent_ac_worth:
-            self.ac_worth_history.append(day_ac_worth[1])
+            if day_ac_worth[1] is None:
+                _logger.info("ay_ac_worth[1] is None. fund_id = " + self.fund_id)
+            else:
+                self.ac_worth_history.append(day_ac_worth[1])
 
         # print("ac_worth_list")
         # print(ac_worth_list)
