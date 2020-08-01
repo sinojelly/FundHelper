@@ -194,7 +194,7 @@ def data_init_user_login():
         thread_id = request.form['thread_id']
         # 更新 .gitpass 参数
         data_dir = os.getenv(FUND_HELPER_DATA_KEY, 'fund')
-        cmd = data_dir + "/setup-env.sh " + username + " " + password + " " + data_dir
+        cmd = data_dir + "/setup-env.sh " + username + " " + password + " " + data_dir + " \""+get_git_cmd(data_dir)+"\""
         stdout_value, stderr_value, returncode = run_external_cmd(cmd)
         cmd_result = "out: " + stdout_value.decode("utf8", "ignore") +" err: " + stderr_value.decode("utf8", "ignore") +" returnCode: " + str(returncode)
         _logger.info(cmd_result)
@@ -241,10 +241,13 @@ def run_external_cmd(cmd, msg_in=''):
         # print("IOError: %s" % err)
         return "IOError exception.".encode(encoding='utf-8'), err.encode(encoding='utf-8'), -1000
 
-
-def run_git_submit(work_dir):
+def get_git_cmd(work_dir):
     # git_cmd = "\"D:\\Program Files\\Git\\bin\git.exe\" --git-dir=" + work_dir + "/.git --work-tree=" + work_dir + " "
     git_cmd = "git --git-dir=" + work_dir + "/.git --work-tree=" + work_dir + " "
+    return git_cmd
+		
+def run_git_submit(work_dir):
+    git_cmd = get_git_cmd(work_dir)
     commit_cmd = git_cmd + "commit -am \"automatically submit.\""
     push_cmd = git_cmd + "push"
     # status_cmd = git_cmd + "status"
