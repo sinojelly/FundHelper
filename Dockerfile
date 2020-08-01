@@ -11,12 +11,14 @@ RUN ln -s /app/node-v10.15.3-linux-x64/bin/node /usr/local/bin/node
 RUN ln -s /app/node-v10.15.3-linux-x64/bin/npm /usr/local/bin/npm
 # node -v  可验证node是否安装成功
 
+RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
+
 # 创建目录
 RUN mkdir -p /usr/local/fundhelper
 # 拷贝文件
 ADD ./ /usr/local/fundhelper
 
-# RUN git clone https://github.com/sinojelly/fundhelper-data.git /usr/local/fundhelper-data
+# RUN git clone https://github.com/sinojelly/fundhelper-data.git /usr/local/fundhelper/data
 
 # 设置工作目录
 WORKDIR /usr/local/fundhelper

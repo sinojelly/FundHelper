@@ -255,7 +255,7 @@ def run_git_submit(work_dir):
     return stdout_value.decode("utf8", "ignore"), stderr_value.decode("utf8", "ignore"), returncode
 
 def run_git_clone(work_dir):
-    cmd = "git clone https://github.com/sinojelly/fundhelper-data.git " + work_dir
+    cmd = "git clone --depth 1 https://github.com/sinojelly/fundhelper-data.git " + work_dir
     stdout_value, stderr_value, returncode = run_external_cmd(cmd)
     # print(stdout_value.decode())
     # print("---------------err-------------")
