@@ -11,7 +11,7 @@ RUN ln -s /app/node-v10.15.3-linux-x64/bin/node /usr/local/bin/node
 RUN ln -s /app/node-v10.15.3-linux-x64/bin/npm /usr/local/bin/npm
 # node -v  可验证node是否安装成功
 
-RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
+RUN apt-get update && apt-get install -y vim
 
 # 创建目录
 RUN mkdir -p /usr/local/fundhelper

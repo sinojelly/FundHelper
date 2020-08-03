@@ -264,6 +264,11 @@ def run_git_clone(work_dir):
     # print('returncode', returncode)
     return stdout_value.decode("utf8", "ignore"), stderr_value.decode("utf8", "ignore"), returncode
 
+def run_git_pull(work_dir):
+    git_cmd = get_git_cmd(work_dir)
+    pull_cmd = git_cmd + "pull"
+    stdout_value, stderr_value, returncode = run_external_cmd(pull_cmd)
+    return stdout_value.decode("utf8", "ignore"), stderr_value.decode("utf8", "ignore"), returncode
 
 @app.route('/git-submit/<int:thread_id>', methods=['GET'])
 def git_submit(thread_id):
@@ -278,7 +283,13 @@ def git_clone(thread_id):
     work_dir = os.getenv(FUND_HELPER_DATA_KEY, 'fund')
     stdout_value, stderr_value, returncode = run_git_clone(work_dir)
     return jsonify({'stdout': stdout_value, 'stderr':stderr_value, 'returncode':returncode})
-	
+
+@app.route('/git-update/<int:thread_id>', methods=['GET'])
+def git_update(thread_id):
+    # work_dir = "D:\\Develop\\projects\\web-projects\\fundhelper-data"
+    work_dir = os.getenv(FUND_HELPER_DATA_KEY, 'fund')
+    stdout_value, stderr_value, returncode = run_git_pull(work_dir)
+    return jsonify({'stdout': stdout_value, 'stderr':stderr_value, 'returncode':returncode})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

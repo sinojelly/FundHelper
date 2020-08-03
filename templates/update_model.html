@@ -18,6 +18,12 @@
 	<br>
 	Init enviroment result : {{cmd_result}}
 	</p>
+    <p>
+    If you want to update data from github, you can run Git update, it will run git pull.<br>
+	<span title="Git update fundhelper-data from github."><button id="gitUpdate">Git update</button></span>
+	<div id="gitUpdateStatus"></div><br>
+	<div id="gitUpdateResult"></div><br>
+	</p>
 	{% include "update_funds.html" %}
 	<p>
 	<span title="Save web data to server memory and persisit to model excel file."><button id="save">Save</button></span>
@@ -361,6 +367,32 @@
 		});
     }
 	$("#gitClone").click(git_clone);
+
+	function git_update() {
+	    $("#gitUpdateStatus").text("Git update start ... (maybe a few minutes needed.)");
+		$("#gitUpdateResult").html("Git update running ...");
+		$.ajax({
+			url: '/git-update/' + {{thread_id}},
+			type: 'GET',
+			contentType: 'application/json; charset=utf-8',    
+			dataType: 'json',
+			async: true,
+			success: function(msg) {
+			    text_result = "STDOUT:\n"+msg.stdout+"\nSTDERR:\n"+msg.stderr;
+				$("#gitUpdateStatus").html(convertTextToHtml(text_result));
+				returncode_result = '<font color="green">Git update success.</font>';
+				if (msg.returncode != 0) {
+				    returncode_result = '<font color="red">Git update fail('+msg.returncode+'). Try again later.</font>';
+				}
+				$("#gitUpdateResult").html(returncode_result);
+			},
+			error: function (err) {   //ajax请求失败时返回
+				//console.log(err);
+				$("#gitUpdateResult").html("Git update error (" + err.status + " - "+ err.statusText + ")");
+			}
+		});
+    }
+	$("#gitUpdate").click(git_update);
 	
 	function normalIntConditionColourRenderer(instance, td, row, col, prop, value, cellProperties) {
 	   Handsontable.renderers.TextRenderer.apply(this, arguments);
