@@ -284,11 +284,11 @@ class Fund(object):
     #         plt.show()
 
     def get_price(self, time_str):
-        # print("time_str", time_str)
+        #print("time_str", time_str)
         for day_unit_worth in self.recent_unit_worth:
-            # print(day_unit_worth)
+            #print(day_unit_worth)
             item_time = datetime.datetime.fromtimestamp(day_unit_worth['x']/1000).strftime("%Y%m%d")
-            # print(item_time)
+            #print(item_time)
             if str(item_time) == str(time_str):
                 return day_unit_worth['y']
         return None
